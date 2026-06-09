@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>AR Medan Magnet</title>
+
+  <!-- A-Frame + MindAR (image tracking) via CDN -->
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <!-- Logika garis medan + partikel mengalir -->
+  <script src="./field-lines.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, sans-serif; overflow: hidden; }
+
+    #info {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+      background: linear-gradient(to top, rgba(0,0,0,0.78), rgba(0,0,0,0));
+      color: #fff; text-align: center; font-size: 14px; line-height: 1.4;
+      pointer-events: none;
+    }
+    #info b { color: #7fd2ff; }
+
+    /* Pesan saat kamera belum menemukan gambar target */
+    .scan-hint {
+      position: fixed; inset: 0; z-index: 9;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 14px;
+      color: #fff; text-align: center; padding: 24px;
+      pointer-events: none; transition: opacity .4s;
+    }
+    .scan-hint .box {
+      width: 220px; height: 150px; border: 2px dashed rgba(127,210,255,.9);
+      border-radius: 10px; animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
+    .hidden { opacity: 0; }
+  </style>
+</head>
+<body>
+  <div class="scan-hint" id="scanHint">
+    <div class="box"></div>
+    <div>Arahkan kamera ke <b>foto magnet</b> yang tercetak</div>
+  </div>
+
+  <div id="info">
+    Partikel mengalir <b>N → S</b> mengikuti arah medan magnet
+  </div>
+
+  <a-scene
+    mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiScanning: no; uiLoading: no; filterMinCF: 0.0005; filterBeta: 0.01"
+    color-space="sRGB"
+    renderer="colorManagement: true, physicallyCorrectLights: true, antialias: true"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false">
+
+    <a-assets></a-assets>
+
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+    <!-- Pencahayaan untuk balok magnet 3D -->
+    <a-light type="ambient" color="#ffffff" intensity="0.9"></a-light>
+    <a-light type="directional" color="#ffffff" intensity="0.6" position="0.5 1 1.5"></a-light>
+
+    <!-- Anchor: muncul saat foto target dikenali -->
+    <a-entity id="target" mindar-image-target="targetIndex: 0">
+      <a-entity magnetic-field></a-entity>
+    </a-entity>
+  </a-scene>
+
+  <script>
+    // Sembunyikan / tampilkan petunjuk scan sesuai status tracking
+    const sceneEl = document.querySelector('a-scene');
+    const hint = document.getElementById('scanHint');
+    const target = document.getElementById('target');
+    target.addEventListener('targetFound', () => hint.classList.add('hidden'));
+    target.addEventListener('targetLost',  () => hint.classList.remove('hidden'));
+  </script>
+</body>
+</html>
