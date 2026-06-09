@@ -48,7 +48,7 @@
   </div>
 
   <div id="info">
-    Partikel mengalir <b>N → S</b> mengikuti arah medan magnet
+    Objek 3D melayang di atas kartu — <b>gerakkan HP</b> mengelilinginya, atau <b>seret</b> untuk memutar
   </div>
 
   <a-scene
@@ -68,7 +68,26 @@
 
     <!-- Anchor: muncul saat foto target dikenali -->
     <a-entity id="target" mindar-image-target="targetIndex: 0">
+
+      <!-- Konten magnet 3D + medan + label (topik saat ini) -->
       <a-entity magnetic-field></a-entity>
+
+      <!--
+        SLOT MODEL 3D (GLB) — untuk topik lain seperti contoh organ/hewan.
+        Cara pakai:
+          1. Taruh file model.glb di folder ini.
+          2. Hapus komentar blok di bawah (dan boleh nonaktifkan <a-entity magnetic-field> di atas).
+          3. Atur position (z = tinggi melayang), scale, rotation sesuai modelmu.
+
+        <a-gltf-model
+          src="./model.glb"
+          position="0 0 0.12"
+          scale="0.3 0.3 0.3"
+          rotation="0 0 0"
+          animation="property: rotation; to: 0 0 360; loop: true; dur: 12000; easing: linear">
+        </a-gltf-model>
+      -->
+
     </a-entity>
   </a-scene>
 
