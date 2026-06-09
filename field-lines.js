@@ -2,32 +2,30 @@
 /*
  * Komponen A-Frame: <a-entity magnetic-field>
  *
- * Mode pop-out 3D ala Assemblr Edu untuk diagram DUA batang magnet (S–N):
- *  - Objek 3D melayang di atas kartu, mengambang + berputar pelan.
- *  - Magnet 3D (separuh N merah, separuh S biru) dgn garis tepi tegas + label huruf.
- *  - Garis medan 3D hasil field-line tracing (telusuri arah B dari N -> S).
- *  - Partikel mengalir sepanjang tiap garis (N -> S), kecepatan seragam.
- *  - Label callout TETAP di tempat (mudah dibaca); garis penunjuknya MELACAK
- *    kutub saat objek berputar (gaya Assemblr).
+ * WebAR pop-out 3D ala Assemblr Edu untuk medan magnet, dengan 3 MODE interaktif:
+ *   A = Bar magnet tunggal (N–S)
+ *   B = Dua magnet kutub BEDA berhadapan (N–S)  -> tarik-menarik, garis menyambung
+ *   C = Dua magnet kutub SAMA berhadapan (N–N)  -> tolak-menolak, garis menjauh
  *
- * Hirarki:
- *   anchor -> group (diangkat +z, mengambang) -> spinner (berputar di sumbu z)
- *   Konten (magnet+medan+partikel) ada di SPINNER; label ada di GROUP (tak ikut
- *   berputar), penunjuknya dihitung ulang tiap frame mengikuti rotasi spinner.
+ * Garis medan dihitung dgn FIELD-LINE TRACING dari kutub titik (fisika asli),
+ * jadi efek tarik/tolak muncul otomatis dari konfigurasi tanda kutub.
+ * Ganti mode -> geometri dibangun ulang dgn transisi CROSS-FADE (halus, bukan pop).
  *
- * Koordinat MindAR: lebar foto = 1 unit (x: -0.5..0.5), +y atas,
- * +z keluar dari kartu (arah "pop-out"); rotasi di sumbu z = aman, tak menembus kartu.
+ * Hirarki: anchor -> group (mengambang) -> spinner (berputar di sumbu z).
+ *   Konten 3D (magnet+medan+partikel) di SPINNER; chip label di GROUP (tak berputar),
+ *   garis penunjuknya dilacak tiap frame mengikuti rotasi.
  */
 AFRAME.registerComponent('magnetic-field', {
   schema: {
+    mode:          { type: 'string',  default: 'B' },   // A | B | C
     showMagnets:   { type: 'boolean', default: true },
     showLabels:    { type: 'boolean', default: true },
     autoRotate:    { type: 'boolean', default: true },
-    rotateSpeed:   { type: 'number',  default: 10 },    // derajat per detik
-    lift:          { type: 'number',  default: 0.11 },  // tinggi mengambang di atas kartu
-    particleSpeed: { type: 'number',  default: 0.12 },  // satuan-dunia per detik (seragam)
-    seedsPerPole:  { type: 'number',  default: 18 },    // jumlah garis medan per kutub N
-    density:       { type: 'number',  default: 0.05 }   // jarak antar partikel
+    rotateSpeed:   { type: 'number',  default: 10 },
+    lift:          { type: 'number',  default: 0.11 },
+    particleSpeed: { type: 'number',  default: 0.12 },
+    seedsPerPole:  { type: 'number',  default: 18 },
+    density:       { type: 'number',  default: 0.05 }
   },
 
   init: function () {
@@ -38,32 +36,20 @@ AFRAME.registerComponent('magnetic-field', {
     this.group = new THREE.Group();
     this.group.position.set(0, 0, this.data.lift);
     this.el.object3D.add(this.group);
-
-    this.spinner = new THREE.Group();      // konten yg berputar
+    this.spinner = new THREE.Group();
     this.group.add(this.spinner);
 
-    this.magnets = [
-      { sx: -0.345, nx: -0.045 },  // magnet kiri:  S(-) ... N(+)
-      { sx:  0.045, nx:  0.345 }   // magnet kanan
-    ];
-    this.poles = [];
-    this.magnets.forEach((m) => {
-      this.poles.push({ p: new THREE.Vector3(m.sx, 0, 0), q: -1 });   // S
-      this.poles.push({ p: new THREE.Vector3(m.nx, 0, 0), q: +1 });   // N
-    });
-
-    this.lines = [];
-    this.labels = [];
+    this.lines = [];        // entri partikel aktif (gabungan semua bundle terlihat)
+    this.labels = [];       // entri callout aktif
+    this.fades = [];         // animasi opacity berjalan
+    this._removals = [];     // bundle menunggu dihapus setelah fade-out
     this.dotTex = this._makeDotTexture();
     this._tmp = new THREE.Vector3();
     this._ax = new THREE.Vector3();
-    this._t = 0;
-    this._spin = 0;
+    this._t = 0; this._spin = 0;
 
-    if (this.data.showMagnets) this._buildMagnets();
-    this._buildFieldLines();
-    if (this.data.showLabels) this._buildLabels();
-
+    this.mode = this.data.mode;
+    this._switchTo(this.mode, true);   // bangun mode awal tanpa fade
     this._initDrag();
   },
 
@@ -77,10 +63,30 @@ AFRAME.registerComponent('magnetic-field', {
     }
   },
 
+  // API publik dipanggil dari tombol UI
+  setMode: function (mode) {
+    if (mode === this.mode) return;
+    this.mode = mode;
+    this._switchTo(mode, false);
+  },
+
   tick: function (time, dt) {
     if (!dt) return;
     const sec = dt / 1000;
     this._t += sec;
+
+    // hapus bundle lama yang sudah selesai fade-out
+    for (let i = this._removals.length - 1; i >= 0; i--) {
+      const r = this._removals[i]; r.t += sec;
+      if (r.t >= r.dur) { this._disposeBundle(r.bundle); this._removals.splice(i, 1); }
+    }
+    // animasi fade opacity
+    for (let i = this.fades.length - 1; i >= 0; i--) {
+      const f = this.fades[i]; f.t += sec;
+      const k = Math.min(1, f.t / f.dur);
+      f.mat.opacity = f.from + (f.to - f.from) * k;
+      if (k >= 1) this.fades.splice(i, 1);
+    }
 
     // mengambang + berputar
     this.group.position.z = this.data.lift + 0.012 * Math.sin(this._t * 1.5);
@@ -89,7 +95,7 @@ AFRAME.registerComponent('magnetic-field', {
     }
     this.spinner.rotation.z = this._spin;
 
-    // partikel mengalir (posisi di ruang spinner, ikut berputar otomatis)
+    // partikel mengalir
     const v = this._tmp, speed = this.data.particleSpeed;
     for (const L of this.lines) {
       const dT = (speed * sec) / L.length;
@@ -101,8 +107,7 @@ AFRAME.registerComponent('magnetic-field', {
       }
       pos.needsUpdate = true;
     }
-
-    // garis penunjuk label: lacak posisi anchor yg ikut berputar
+    // garis penunjuk label melacak anchor yang ikut berputar
     const ax = this._ax;
     for (const lb of this.labels) {
       ax.copy(lb.anchor).applyAxisAngle(this.Z, this._spin);
@@ -114,11 +119,111 @@ AFRAME.registerComponent('magnetic-field', {
     }
   },
 
-  // ===== FISIKA medan dari kutub titik =====
+  // ===== Pergantian mode + cross-fade =====
+  _switchTo: function (mode, immediate) {
+    const nb = this._buildBundle(mode);
+    nb.lineEntries.forEach((e) => this.lines.push(e));
+    nb.labelEntries.forEach((e) => this.labels.push(e));
+
+    if (immediate) {
+      nb.fadeMats.forEach((f) => { f.mat.opacity = f.target; });
+    } else {
+      const D = 0.45;
+      nb.fadeMats.forEach((f) => {
+        f.mat.transparent = true; f.mat.opacity = 0;
+        this.fades.push({ mat: f.mat, from: 0, to: f.target, t: 0, dur: D });
+      });
+      if (this.currentBundle) {
+        const ob = this.currentBundle;
+        ob.fadeMats.forEach((f) => {
+          f.mat.transparent = true;
+          this.fades.push({ mat: f.mat, from: f.mat.opacity, to: 0, t: 0, dur: D });
+        });
+        this._removals.push({ bundle: ob, t: 0, dur: D + 0.05 });
+      }
+    }
+    this.currentBundle = nb;
+  },
+
+  _disposeBundle: function (b) {
+    const drop = (o) => {
+      if (o.parent) o.parent.remove(o);
+      if (o.geometry) o.geometry.dispose();
+      if (o.material) { if (o.material.map) o.material.map.dispose(); o.material.dispose(); }
+    };
+    b.spinnerObjs.forEach(drop);
+    b.groupObjs.forEach(drop);
+    this.lines = this.lines.filter((e) => b.lineEntries.indexOf(e) === -1);
+    this.labels = this.labels.filter((e) => b.labelEntries.indexOf(e) === -1);
+  },
+
+  _buildBundle: function (mode) {
+    const THREE = this.THREE;
+    const bundle = { spinnerObjs: [], groupObjs: [], lineEntries: [], labelEntries: [], fadeMats: [] };
+    const addSpin = (o) => { this.spinner.add(o); bundle.spinnerObjs.push(o); };
+    const addGroup = (o) => { this.group.add(o); bundle.groupObjs.push(o); };
+    const fade = (mat, target) => { mat.transparent = true; bundle.fadeMats.push({ mat, target }); return mat; };
+
+    const cfg = this._modeConfig(mode);
+    const poles = [];
+    cfg.bars.forEach((b) => {
+      poles.push({ p: new THREE.Vector3(b.x0, 0, 0), q: b.q0 });
+      poles.push({ p: new THREE.Vector3(b.x1, 0, 0), q: b.q1 });
+    });
+
+    if (this.data.showMagnets) cfg.bars.forEach((b) => this._addBar(b, addSpin, fade));
+    this._addFieldLines(poles, addSpin, fade, bundle);
+    if (this.data.showLabels) this._addLabels(cfg, addGroup, fade, bundle);
+    return bundle;
+  },
+
+  // Definisi tiap mode (posisi & tanda kutub + teks label)
+  _modeConfig: function (mode) {
+    if (mode === 'A') {
+      return {
+        bars: [{ x0: -0.16, x1: 0.16, q0: +1, q1: -1 }],   // N(kiri)–S(kanan)
+        title: 'Bar Magnet Tunggal',
+        callouts: [
+          { t: 'Kutub Utara (N)',  a: [-0.16, 0, 0.04], c: [-0.5, 0.20, 0.12] },
+          { t: 'Kutub Selatan (S)', a: [0.16, 0, 0.04], c: [0.5, 0.20, 0.12] },
+          { t: 'Garis Gaya Magnet', a: [0, 0.18, 0.06], c: [0, 0.34, 0.13] }
+        ]
+      };
+    }
+    if (mode === 'C') {
+      return {
+        bars: [
+          { x0: -0.345, x1: -0.045, q0: -1, q1: +1 },   // kiri: S..N (N hadap celah)
+          { x0: 0.045, x1: 0.345, q0: +1, q1: -1 }       // kanan: N..S (N hadap celah)
+        ],
+        title: 'Kutub Sama (N–N): Tolak-menolak',
+        callouts: [
+          { t: 'N', a: [-0.045, 0, 0.04], c: [-0.42, 0.22, 0.12] },
+          { t: 'N', a: [0.045, 0, 0.04], c: [0.42, 0.22, 0.12] },
+          { t: 'Garis menjauh (tolak)', a: [0, 0.20, 0.06], c: [0, 0.34, 0.13] }
+        ]
+      };
+    }
+    // mode B (default)
+    return {
+      bars: [
+        { x0: -0.345, x1: -0.045, q0: -1, q1: +1 },   // kiri: S..N (N hadap celah)
+        { x0: 0.045, x1: 0.345, q0: -1, q1: +1 }       // kanan: S..N (S hadap celah)
+      ],
+      title: 'Kutub Beda (N–S): Tarik-menarik',
+      callouts: [
+        { t: 'Kutub Utara (N)', a: [0.345, 0, 0.04], c: [0.50, 0.20, 0.12] },
+        { t: 'Kutub Selatan (S)', a: [-0.345, 0, 0.04], c: [-0.50, 0.20, 0.12] },
+        { t: 'Garis merapat (tarik)', a: [0, 0, 0.03], c: [0, -0.30, 0.11] }
+      ]
+    };
+  },
+
+  // ===== FISIKA medan (pakai poles aktif saat tracing) =====
   _fieldAt: function (r, out) {
     out.set(0, 0, 0);
     const d = this._fTmp || (this._fTmp = new this.THREE.Vector3());
-    for (const pole of this.poles) {
+    for (const pole of this._tracePoles) {
       d.subVectors(r, pole.p);
       const len = d.length();
       if (len < 1e-4) continue;
@@ -147,24 +252,25 @@ AFRAME.registerComponent('magnetic-field', {
       if (r.length() > bound) break;
       pts.push(r.clone());
       let done = false;
-      for (const pole of this.poles) {
+      for (const pole of this._tracePoles) {
         if (pole.q < 0 && r.distanceTo(pole.p) < rStop) { done = true; break; }
       }
       if (done) break;
     }
     return pts;
   },
-  _buildFieldLines: function () {
+  _addFieldLines: function (poles, addSpin, fade, bundle) {
+    this._tracePoles = poles;
     const r0 = 0.03;
-    for (const pole of this.poles) {
+    for (const pole of poles) {
       if (pole.q <= 0) continue;
       for (const dir of this._fibSphere(this.data.seedsPerPole)) {
         const pts = this._trace(pole.p.clone().addScaledVector(dir, r0));
-        if (pts.length >= 4) this._addLine(pts);
+        if (pts.length >= 4) this._addLine(pts, addSpin, fade, bundle);
       }
     }
   },
-  _addLine: function (pts) {
+  _addLine: function (pts, addSpin, fade, bundle) {
     const THREE = this.THREE;
     const curve = new THREE.CatmullRomCurve3(pts);
     const length = curve.getLength();
@@ -182,50 +288,44 @@ AFRAME.registerComponent('magnetic-field', {
       colors[i * 3] = tmpC.r; colors[i * 3 + 1] = tmpC.g; colors[i * 3 + 2] = tmpC.b;
     }
     lineGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-    this.spinner.add(new THREE.Line(lineGeo, new THREE.LineBasicMaterial({
-      vertexColors: true, transparent: true, opacity: 0.6
-    })));
+    const lineMat = fade(new THREE.LineBasicMaterial({ vertexColors: true }), 0.6);
+    addSpin(new THREE.Line(lineGeo, lineMat));
 
     const count = Math.min(24, Math.max(3, Math.round(length / this.data.density)));
     const pGeo = new THREE.BufferGeometry();
     pGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(count * 3), 3));
-    const points = new THREE.Points(pGeo, new THREE.PointsMaterial({
-      color: 0xeaf6ff, size: 0.018, map: this.dotTex, transparent: true, opacity: 0.95,
+    const pMat = fade(new THREE.PointsMaterial({
+      color: 0xeaf6ff, size: 0.018, map: this.dotTex,
       blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true
-    }));
-    this.spinner.add(points);
+    }), 0.95);
+    const points = new THREE.Points(pGeo, pMat);
+    addSpin(points);
 
     const offsets = [];
     for (let i = 0; i < count; i++) offsets.push(i / count);
-    this.lines.push({ curve, length, points, offsets });
+    bundle.lineEntries.push({ curve, length, points, offsets });
   },
 
-  // ===== Magnet 3D (lebih tebal + garis tepi tegas) =====
-  _buildMagnets: function () {
+  // ===== Magnet 3D =====
+  _addBar: function (b, addSpin, fade) {
     const THREE = this.THREE;
     const hy = 0.08, dz = 0.08;
-    const half = (x, w, color) => {
-      const geo = new THREE.BoxGeometry(w, hy, dz);
-      const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
-        color: new THREE.Color(color), roughness: 0.3, metalness: 0.35
-      }));
-      mesh.position.set(x, 0, 0);
-      this.spinner.add(mesh);
-      // outline tepi biar bentuk 3D jelas
-      const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo),
-        new THREE.LineBasicMaterial({ color: 0x101418, transparent: true, opacity: 0.5 }));
-      edges.position.copy(mesh.position);
-      this.spinner.add(edges);
+    const mk = (cx, w, q) => {
+      const geo = new THREE.BoxGeometry(Math.max(0.01, w), hy, dz);
+      const mat = fade(new THREE.MeshStandardMaterial({
+        color: new THREE.Color(q > 0 ? '#e2331e' : '#1f5fd0'), roughness: 0.3, metalness: 0.35
+      }), 1);
+      const mesh = new THREE.Mesh(geo, mat); mesh.position.set(cx, 0, 0); addSpin(mesh);
+      const em = fade(new THREE.LineBasicMaterial({ color: 0x101418 }), 0.5);
+      const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo), em);
+      edges.position.copy(mesh.position); addSpin(edges);
+      this._addLetter(q > 0 ? 'N' : 'S', cx, dz / 2 + 0.001, addSpin, fade);
     };
-    this.magnets.forEach((m) => {
-      const w = (m.nx - m.sx) / 2;
-      half(m.sx + w / 2, w, '#1f5fd0');   // S biru
-      half(m.nx - w / 2, w, '#e2331e');   // N merah
-      this._letter('S', m.sx + w / 2, dz / 2 + 0.001);
-      this._letter('N', m.nx - w / 2, dz / 2 + 0.001);
-    });
+    const mid = (b.x0 + b.x1) / 2;
+    mk((b.x0 + mid) / 2, mid - b.x0, b.q0);
+    mk((mid + b.x1) / 2, b.x1 - mid, b.q1);
   },
-  _letter: function (text, x, zTop) {
+  _addLetter: function (text, x, zTop, addSpin, fade) {
     const THREE = this.THREE;
     const c = document.createElement('canvas'); c.width = c.height = 128;
     const ctx = c.getContext('2d');
@@ -233,53 +333,35 @@ AFRAME.registerComponent('magnetic-field', {
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText(text, 64, 70);
     const tex = new THREE.CanvasTexture(c); tex.needsUpdate = true;
-    const plane = new THREE.Mesh(new THREE.PlaneGeometry(0.05, 0.05),
-      new THREE.MeshBasicMaterial({ map: tex, transparent: true }));
-    plane.position.set(x, 0, zTop);
-    this.spinner.add(plane);
+    const mat = fade(new THREE.MeshBasicMaterial({ map: tex }), 1);
+    const plane = new THREE.Mesh(new THREE.PlaneGeometry(0.05, 0.05), mat);
+    plane.position.set(x, 0, zTop); addSpin(plane);
   },
 
-  // ===== Label callout: chip tetap, penunjuk melacak (lihat tick) =====
-  _buildLabels: function () {
+  // ===== Label callout =====
+  _addLabels: function (cfg, addGroup, fade, bundle) {
     const THREE = this.THREE;
-    const A = (x, y, z) => new THREE.Vector3(x, y, z);
-    const left = this.magnets[0], right = this.magnets[1];
     // judul (tanpa penunjuk)
-    this._titleChip('Medan Magnet — 2 Kutub', A(0, 0.47, 0.14));
-    // callout dgn penunjuk melacak
-    this._callout('Kutub Utara (N)',   A(right.nx, 0, 0.04), A(0.50, 0.20, 0.12));
-    this._callout('Kutub Selatan (S)', A(left.sx, 0, 0.04),  A(-0.50, 0.20, 0.12));
-    this._callout('Garis Gaya Magnet', A(0, 0.20, 0.07),     A(0.0, 0.34, 0.13));
-    this._callout('Tarik-menarik N–S', A((left.nx + right.sx) / 2, 0, 0.03), A(0.0, -0.30, 0.11));
-  },
-  _titleChip: function (text, pos) {
-    const THREE = this.THREE;
-    const { tex, aspect } = this._chip(text, true);
-    const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }));
-    const h = 0.062; spr.scale.set(h * aspect, h, 1);
-    spr.position.copy(pos);
-    this.group.add(spr);
-  },
-  _callout: function (text, anchor, chipPos) {
-    const THREE = this.THREE;
-    const line = new THREE.Line(
-      new THREE.BufferGeometry().setFromPoints([anchor.clone(), chipPos.clone()]),
-      new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.75, depthTest: false })
-    );
-    line.geometry.attributes.position.setUsage(THREE.DynamicDrawUsage);
-    this.group.add(line);
+    const tt = this._chip(cfg.title, true);
+    const tspr = new THREE.Sprite(fade(new THREE.SpriteMaterial({ map: tt.tex, depthTest: false }), 1));
+    const th = 0.062; tspr.scale.set(th * tt.aspect, th, 1);
+    tspr.position.set(0, 0.47, 0.14); addGroup(tspr);
 
-    const dot = new THREE.Mesh(new THREE.SphereGeometry(0.008, 12, 12),
-      new THREE.MeshBasicMaterial({ color: 0xffcf66, depthTest: false }));
-    dot.position.copy(anchor); this.group.add(dot);
-
-    const { tex, aspect } = this._chip(text, false);
-    const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }));
-    const h = 0.055; spr.scale.set(h * aspect, h, 1);
-    spr.position.copy(chipPos);
-    this.group.add(spr);
-
-    this.labels.push({ line, dot, anchor: anchor.clone(), chip: chipPos.clone() });
+    cfg.callouts.forEach((co) => {
+      const anchor = new THREE.Vector3(co.a[0], co.a[1], co.a[2]);
+      const chip = new THREE.Vector3(co.c[0], co.c[1], co.c[2]);
+      const lmat = fade(new THREE.LineBasicMaterial({ color: 0xffffff, depthTest: false }), 0.75);
+      const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([anchor.clone(), chip.clone()]), lmat);
+      line.geometry.attributes.position.setUsage(THREE.DynamicDrawUsage); addGroup(line);
+      const dmat = fade(new THREE.MeshBasicMaterial({ color: 0xffcf66, depthTest: false }), 1);
+      const dot = new THREE.Mesh(new THREE.SphereGeometry(0.008, 12, 12), dmat);
+      dot.position.copy(anchor); addGroup(dot);
+      const ch = this._chip(co.t, false);
+      const spr = new THREE.Sprite(fade(new THREE.SpriteMaterial({ map: ch.tex, depthTest: false }), 1));
+      const h = 0.055; spr.scale.set(h * ch.aspect, h, 1);
+      spr.position.copy(chip); addGroup(spr);
+      bundle.labelEntries.push({ line, dot, anchor: anchor.clone(), chip: chip.clone() });
+    });
   },
   _chip: function (text, isTitle) {
     const THREE = this.THREE;
@@ -304,7 +386,7 @@ AFRAME.registerComponent('magnetic-field', {
     return { tex, aspect: w / h };
   },
 
-  // ===== Seret untuk memutar manual =====
+  // ===== Seret untuk memutar =====
   _initDrag: function () {
     let lastX = null;
     const start = (x) => { lastX = x; this._dragging = true; };

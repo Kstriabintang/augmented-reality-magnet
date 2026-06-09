@@ -39,12 +39,37 @@
     }
     @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
     .hidden { opacity: 0; }
+
+    /* Bar pemilih mode kutub */
+    #modebar {
+      position: fixed; top: calc(10px + env(safe-area-inset-top)); left: 0; right: 0;
+      z-index: 11; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+      padding: 0 10px; pointer-events: none;
+    }
+    #modebar button {
+      pointer-events: auto; cursor: pointer; border: none; outline: none;
+      font: 600 13px/1 system-ui, sans-serif; color: #fff;
+      padding: 10px 14px; border-radius: 999px;
+      background: rgba(20,24,30,.62); backdrop-filter: blur(6px);
+      box-shadow: 0 2px 10px rgba(0,0,0,.3); transition: background .2s, transform .1s;
+    }
+    #modebar button:active { transform: scale(.95); }
+    #modebar button.active { background: #ff9614; box-shadow: 0 2px 14px rgba(255,150,20,.5); }
+    #modebar .title { width: 100%; text-align: center; color: #fff; font-size: 12px;
+      opacity: .85; margin-bottom: 2px; text-shadow: 0 1px 3px rgba(0,0,0,.6); pointer-events: none; }
   </style>
 </head>
 <body>
   <div class="scan-hint" id="scanHint">
     <div class="box"></div>
     <div>Arahkan kamera ke <b>foto magnet</b> yang tercetak</div>
+  </div>
+
+  <div id="modebar">
+    <div class="title">Pilih konfigurasi kutub</div>
+    <button data-mode="A">Magnet Tunggal</button>
+    <button data-mode="B" class="active">N–S (Tarik)</button>
+    <button data-mode="C">N–N (Tolak)</button>
   </div>
 
   <div id="info">
@@ -100,6 +125,19 @@
     const target = document.getElementById('target');
     target.addEventListener('targetFound', () => hint.classList.add('hidden'));
     target.addEventListener('targetLost',  () => hint.classList.remove('hidden'));
+
+    // Tombol pemilih mode kutub -> panggil komponen magnetic-field
+    const modebar = document.getElementById('modebar');
+    const fieldEl = document.querySelector('[magnetic-field]');
+    modebar.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const comp = fieldEl && fieldEl.components && fieldEl.components['magnetic-field'];
+      if (!comp) return;
+      comp.setMode(btn.dataset.mode);
+      [...modebar.querySelectorAll('button')].forEach((b) =>
+        b.classList.toggle('active', b === btn));
+    });
   </script>
 </body>
 </html>
