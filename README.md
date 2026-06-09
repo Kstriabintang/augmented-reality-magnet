@@ -3,7 +3,7 @@
 Media ajar **Augmented Reality** interaktif untuk memvisualisasikan **medan magnet** secara 3D, langsung dari browser HP tanpa perlu instal aplikasi. Cukup arahkan kamera ke gambar penanda, dan model magnet 3D beserta garis gaya magnetnya akan muncul melayang di atasnya.
 
 <p align="center">
-  <a href="https://ksatriabintangsamudra.my.id/augmented-reality-magnet/"><b>🚀 Buka Demo Langsung</b></a>
+  <a href="https://adindautami.web.id/"><b>🚀 Buka Demo Langsung</b></a>
 </p>
 
 <p align="center">
