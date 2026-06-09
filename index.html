@@ -62,9 +62,11 @@
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <!-- Pencahayaan untuk balok magnet 3D -->
-    <a-light type="ambient" color="#ffffff" intensity="0.9"></a-light>
-    <a-light type="directional" color="#ffffff" intensity="0.6" position="0.5 1 1.5"></a-light>
+    <!-- Pencahayaan untuk balok magnet 3D (ambient + hemisphere + 2 arah) -->
+    <a-light type="ambient" color="#ffffff" intensity="0.55"></a-light>
+    <a-light type="hemisphere" color="#ffffff" groundColor="#404a5a" intensity="0.6"></a-light>
+    <a-light type="directional" color="#ffffff" intensity="0.85" position="0.6 1 1.5"></a-light>
+    <a-light type="directional" color="#cfe0ff" intensity="0.35" position="-0.8 0.4 0.6"></a-light>
 
     <!-- Anchor: muncul saat foto target dikenali -->
     <a-entity id="target" mindar-image-target="targetIndex: 0">
