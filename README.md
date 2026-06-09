@@ -136,4 +136,4 @@ Dirilis di bawah [Lisensi MIT](./LICENSE) — bebas digunakan untuk keperluan ed
 
 ---
 
-<p align="center"><sub>Dibuat untuk pembelajaran fisika · © 2026 Adinda Utami</sub></p>
+<p align="center"><sub>© 2026 Ksatria Bintang Samudra</sub></p>
