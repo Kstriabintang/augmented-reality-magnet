@@ -304,6 +304,29 @@ AFRAME.registerComponent('magnetic-field', {
     const offsets = [];
     for (let i = 0; i < count; i++) offsets.push(i / count);
     bundle.lineEntries.push({ curve, length, points, offsets });
+
+    this._addArrows(curve, length, addSpin, fade);
+  },
+
+  // Kepala panah kecil menunjuk arah aliran N -> S (seperti diagram buku)
+  _addArrows: function (curve, length, addSpin, fade) {
+    const THREE = this.THREE;
+    const n = Math.min(3, Math.max(1, Math.round(length / 0.4)));
+    const cN = new THREE.Color('#ff4a33'), cMid = new THREE.Color('#eef3ff'), cS = new THREE.Color('#3a7bff');
+    const up = new THREE.Vector3(0, 1, 0);
+    const pos = new THREE.Vector3(), tan = new THREE.Vector3(), col = new THREE.Color();
+    for (let i = 0; i < n; i++) {
+      const t = 0.25 + ((i + 1) / (n + 1)) * 0.6;
+      curve.getPointAt(t, pos);
+      curve.getTangentAt(t, tan).normalize();        // arah N->S (t naik)
+      if (t < 0.5) col.copy(cN).lerp(cMid, t / 0.5);
+      else col.copy(cMid).lerp(cS, (t - 0.5) / 0.5);
+      const mat = fade(new THREE.MeshBasicMaterial({ color: col.clone() }), 0.95);
+      const cone = new THREE.Mesh(new THREE.ConeGeometry(0.012, 0.03, 10), mat);
+      cone.position.copy(pos);
+      cone.quaternion.setFromUnitVectors(up, tan);     // ujung kerucut = arah aliran
+      addSpin(cone);
+    }
   },
 
   // ===== Magnet 3D =====

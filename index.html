@@ -57,9 +57,46 @@
     #modebar button.active { background: #ff9614; box-shadow: 0 2px 14px rgba(255,150,20,.5); }
     #modebar .title { width: 100%; text-align: center; color: #fff; font-size: 12px;
       opacity: .85; margin-bottom: 2px; text-shadow: 0 1px 3px rgba(0,0,0,.6); pointer-events: none; }
+
+    /* Layar menu pembuka */
+    #welcome {
+      position: fixed; inset: 0; z-index: 30; display: flex;
+      align-items: center; justify-content: center; padding: 22px;
+      background: radial-gradient(120% 120% at 50% 0%, #1a2740 0%, #0a0f1a 70%);
+      transition: opacity .4s; overflow-y: auto;
+    }
+    #welcome.hidden { opacity: 0; pointer-events: none; }
+    #welcome .card { width: 100%; max-width: 420px; text-align: center; color: #fff; }
+    #welcome h1 { margin: 0 0 6px; font-size: 24px; }
+    #welcome .sub { margin: 0 0 22px; font-size: 14px; line-height: 1.5; color: #b9c6da; }
+    #welcome .choices { display: flex; flex-direction: column; gap: 12px; }
+    #welcome .choices button {
+      cursor: pointer; border: 1px solid rgba(255,255,255,.12); outline: none;
+      border-radius: 16px; padding: 16px 18px; text-align: left; color: #fff;
+      background: rgba(255,255,255,.06); transition: background .15s, transform .1s, border-color .15s;
+      display: flex; flex-direction: column; gap: 3px;
+    }
+    #welcome .choices button:active { transform: scale(.98); }
+    #welcome .choices button:hover { background: rgba(255,150,20,.16); border-color: rgba(255,150,20,.6); }
+    #welcome .choices b { font-size: 16px; }
+    #welcome .choices span { font-size: 12.5px; color: #aab7cc; }
+    #welcome .hint { margin-top: 18px; font-size: 12px; color: #8a98ad; }
   </style>
 </head>
 <body>
+  <div id="welcome">
+    <div class="card">
+      <h1>AR Medan Magnet</h1>
+      <p class="sub">Pilih konfigurasi kutub untuk memulai. Setelah memilih, arahkan kamera ke foto/kartu magnet.</p>
+      <div class="choices">
+        <button data-mode="A"><b>Magnet Tunggal</b><span>Satu batang magnet (N–S) + garis gaya</span></button>
+        <button data-mode="B"><b>N–S · Tarik-menarik</b><span>Dua magnet kutub beda berhadapan</span></button>
+        <button data-mode="C"><b>N–N · Tolak-menolak</b><span>Dua magnet kutub sama berhadapan</span></button>
+      </div>
+      <div class="hint">Mode masih bisa diganti kapan saja lewat tombol di atas layar.</div>
+    </div>
+  </div>
+
   <div class="scan-hint" id="scanHint">
     <div class="box"></div>
     <div>Arahkan kamera ke <b>foto magnet</b> yang tercetak</div>
@@ -126,17 +163,35 @@
     target.addEventListener('targetFound', () => hint.classList.add('hidden'));
     target.addEventListener('targetLost',  () => hint.classList.remove('hidden'));
 
-    // Tombol pemilih mode kutub -> panggil komponen magnetic-field
+    // ---- Pemilihan mode kutub ----
     const modebar = document.getElementById('modebar');
+    const welcome = document.getElementById('welcome');
     const fieldEl = document.querySelector('[magnetic-field]');
+
+    function applyMode(mode) {
+      const comp = fieldEl && fieldEl.components && fieldEl.components['magnetic-field'];
+      if (comp) {
+        comp.setMode(mode);                       // sudah init -> rebuild + cross-fade
+      } else {
+        fieldEl.setAttribute('magnetic-field', 'mode', mode);  // belum init -> jadi mode awal
+      }
+      [...modebar.querySelectorAll('button')].forEach((b) =>
+        b.classList.toggle('active', b.dataset.mode === mode));
+    }
+
+    // Tombol mode di dalam AR
     modebar.addEventListener('click', (e) => {
       const btn = e.target.closest('button');
+      if (btn) applyMode(btn.dataset.mode);
+    });
+
+    // Menu pembuka: pilih mode lalu mulai
+    welcome.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-mode]');
       if (!btn) return;
-      const comp = fieldEl && fieldEl.components && fieldEl.components['magnetic-field'];
-      if (!comp) return;
-      comp.setMode(btn.dataset.mode);
-      [...modebar.querySelectorAll('button')].forEach((b) =>
-        b.classList.toggle('active', b === btn));
+      applyMode(btn.dataset.mode);
+      welcome.classList.add('hidden');
+      setTimeout(() => { welcome.style.display = 'none'; }, 400);
     });
   </script>
 </body>
