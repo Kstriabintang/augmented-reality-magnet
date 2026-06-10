@@ -24,6 +24,7 @@ AFRAME.registerComponent('magnetic-field', {
     rotateSpeed:   { type: 'number',  default: 10 },
     lift:          { type: 'number',  default: 0.11 },
     particleSpeed: { type: 'number',  default: 0.12 },
+    arrowSpeed:    { type: 'number',  default: 0.38 },  // panah berjalan cepat sesuai arah
     seedsPerPole:  { type: 'number',  default: 14 },
     density:       { type: 'number',  default: 0.05 }
   },
@@ -40,6 +41,7 @@ AFRAME.registerComponent('magnetic-field', {
     this.group.add(this.spinner);
 
     this.lines = [];        // entri partikel aktif (gabungan semua bundle terlihat)
+    this.arrows = [];       // panah berjalan aktif
     this.labels = [];       // entri callout aktif
     this.fades = [];         // animasi opacity berjalan
     this._removals = [];     // bundle menunggu dihapus setelah fade-out
@@ -109,6 +111,17 @@ AFRAME.registerComponent('magnetic-field', {
       }
       pos.needsUpdate = true;
     }
+    // panah berjalan cepat sepanjang garis sesuai arah aliran (N -> S)
+    const up = this._up || (this._up = new this.THREE.Vector3(0, 1, 0));
+    const tv = this._tv || (this._tv = new this.THREE.Vector3());
+    const aSpeed = this.data.arrowSpeed;
+    for (const A of this.arrows) {
+      A.t = (A.t + (aSpeed * sec) / A.length) % 1;
+      A.curve.getPointAt(A.t, v);
+      A.cone.position.copy(v);
+      A.curve.getTangentAt(A.t, tv);
+      A.cone.quaternion.setFromUnitVectors(up, tv);
+    }
     // garis penunjuk label melacak anchor yang ikut berputar
     const ax = this._ax;
     for (const lb of this.labels) {
@@ -156,12 +169,13 @@ AFRAME.registerComponent('magnetic-field', {
     b.spinnerObjs.forEach(drop);
     b.groupObjs.forEach(drop);
     this.lines = this.lines.filter((e) => b.lineEntries.indexOf(e) === -1);
+    this.arrows = this.arrows.filter((e) => b.arrowEntries.indexOf(e) === -1);
     this.labels = this.labels.filter((e) => b.labelEntries.indexOf(e) === -1);
   },
 
   _buildBundle: function (mode) {
     const THREE = this.THREE;
-    const bundle = { spinnerObjs: [], groupObjs: [], lineEntries: [], labelEntries: [], fadeMats: [] };
+    const bundle = { spinnerObjs: [], groupObjs: [], lineEntries: [], arrowEntries: [], labelEntries: [], fadeMats: [] };
     const addSpin = (o) => { this.spinner.add(o); bundle.spinnerObjs.push(o); };
     const addGroup = (o) => { this.group.add(o); bundle.groupObjs.push(o); };
     const fade = (mat, target) => { mat.transparent = true; bundle.fadeMats.push({ mat, target }); return mat; };
@@ -217,7 +231,8 @@ AFRAME.registerComponent('magnetic-field', {
       callouts: [
         { t: 'Kutub Utara (N)', a: [0.345, 0, 0.04], c: [0.50, 0.20, 0.12] },
         { t: 'Kutub Selatan (S)', a: [-0.345, 0, 0.04], c: [-0.50, 0.20, 0.12] },
-        { t: 'Garis merapat (tarik)', a: [0, 0, 0.03], c: [0, -0.30, 0.11] }
+        { t: 'Garis rapat = medan KUAT', a: [0, 0.06, 0.02], c: [0, -0.30, 0.11] },
+        { t: 'Garis renggang = medan LEMAH', a: [-0.52, -0.13, 0], c: [-0.40, -0.36, 0.11] }
       ]
     };
   },
@@ -281,7 +296,20 @@ AFRAME.registerComponent('magnetic-field', {
         if (pts.length >= 4) this._addLine(pts, addSpin, fade, bundle);
       }
     }
-    // 2) Garis MASUK dari tepi luar ke kutub S sisi luar (kipas kiri/kanan foto):
+    // 2) Rapatkan garis di CELAH antar magnet (garis rapat = medan kuat):
+    //    kutub N yang menghadap pusat diberi kipas seed tambahan ke arah celah
+    for (const pole of poles) {
+      if (pole.q <= 0 || pole.outer) continue;
+      const toCenter = -Math.sign(pole.p.x) || 1;
+      const fan = 4, spread = Math.PI * 0.5;   // +4 garis dalam kipas ±45°
+      for (let i = 0; i < fan; i++) {
+        const th = (i / (fan - 1) - 0.5) * spread;
+        const dir = new THREE.Vector3(toCenter * Math.cos(th), Math.sin(th), 0);
+        const pts = this._trace(pole.p.clone().addScaledVector(dir, r0), 1);
+        if (pts.length >= 4) this._addLine(pts, addSpin, fade, bundle);
+      }
+    }
+    // 3) Garis MASUK dari tepi luar ke kutub S sisi luar (kipas kiri/kanan foto):
     //    telusur mundur dari S, lalu dibalik agar aliran/panah menuju S
     for (const pole of poles) {
       if (pole.q >= 0 || !pole.outer) continue;
@@ -330,27 +358,26 @@ AFRAME.registerComponent('magnetic-field', {
     for (let i = 0; i < count; i++) offsets.push(i / count);
     bundle.lineEntries.push({ curve, length, points, offsets });
 
-    this._addArrows(curve, length, addSpin, fade);
+    this._addArrows(curve, length, addSpin, fade, bundle);
   },
 
-  // Kepala panah kecil menunjuk arah aliran N -> S (seperti diagram buku)
-  _addArrows: function (curve, length, addSpin, fade) {
+  // Kepala panah BERJALAN sepanjang garis sesuai arah aliran N -> S
+  _addArrows: function (curve, length, addSpin, fade, bundle) {
     const THREE = this.THREE;
-    const n = Math.min(3, Math.max(1, Math.round(length / 0.4)));
-    const cN = new THREE.Color('#ff4a33'), cMid = new THREE.Color('#eef3ff'), cS = new THREE.Color('#3a7bff');
+    const n = Math.min(3, Math.max(1, Math.round(length / 0.35)));
     const up = new THREE.Vector3(0, 1, 0);
-    const pos = new THREE.Vector3(), tan = new THREE.Vector3(), col = new THREE.Color();
+    const pos = new THREE.Vector3(), tan = new THREE.Vector3();
     for (let i = 0; i < n; i++) {
-      const t = 0.25 + ((i + 1) / (n + 1)) * 0.6;
-      curve.getPointAt(t, pos);
-      curve.getTangentAt(t, tan).normalize();        // arah N->S (t naik)
-      if (t < 0.5) col.copy(cN).lerp(cMid, t / 0.5);
-      else col.copy(cMid).lerp(cS, (t - 0.5) / 0.5);
-      const mat = fade(new THREE.MeshBasicMaterial({ color: col.clone() }), 0.95);
-      const cone = new THREE.Mesh(new THREE.ConeGeometry(0.012, 0.03, 10), mat);
-      cone.position.copy(pos);
-      cone.quaternion.setFromUnitVectors(up, tan);     // ujung kerucut = arah aliran
+      const t = (i + 0.5) / n;                          // tersebar merata, lalu dianimasikan
+      const mat = fade(new THREE.MeshBasicMaterial({ color: 0xfff3d6 }), 0.95);
+      const cone = new THREE.Mesh(new THREE.ConeGeometry(0.013, 0.034, 10), mat);
+      curve.getPointAt(t, pos); cone.position.copy(pos);
+      curve.getTangentAt(t, tan);
+      cone.quaternion.setFromUnitVectors(up, tan);       // ujung kerucut = arah aliran
       addSpin(cone);
+      const entry = { cone, curve, length, t };
+      this.arrows.push(entry);
+      bundle.arrowEntries.push(entry);
     }
   },
 
