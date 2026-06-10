@@ -6,6 +6,12 @@
   <title>AR Medan Magnet — Media Ajar WebAR 3D</title>
   <meta name="description" content="Visualisasi medan magnet 3D interaktif lewat Augmented Reality di browser HP. 3 mode kutub: magnet tunggal, tarik-menarik (N–S), tolak-menolak (N–N).">
 
+  <!-- Ikon situs -->
+  <link rel="icon" href="./favicon.ico" sizes="16x16 32x32 48x48">
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <meta name="theme-color" content="#0e1626">
+
   <!-- Open Graph (pratinjau saat dibagikan di WhatsApp / media sosial) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="AR Medan Magnet">
@@ -24,9 +30,9 @@
   <meta name="twitter:description" content="Visualisasi medan magnet 3D interaktif lewat AR di browser HP.">
   <meta name="twitter:image" content="https://adindautami.web.id/og-image.jpg">
 
-  <!-- A-Frame + MindAR (image tracking) via CDN -->
-  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <!-- A-Frame + MindAR (image tracking) — self-hosted agar tidak bergantung CDN -->
+  <script src="./vendor/aframe-1.5.0.min.js"></script>
+  <script src="./vendor/mindar-image-aframe-1.2.5.prod.js"></script>
 
   <!-- Logika garis medan + partikel mengalir -->
   <script src="./field-lines.js"></script>
@@ -133,7 +139,7 @@
   </div>
 
   <a-scene
-    mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiScanning: no; uiLoading: no; filterMinCF: 0.0005; filterBeta: 0.01"
+    mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; uiScanning: no; uiLoading: no; filterMinCF: 0.0005; filterBeta: 0.01"
     color-space="sRGB"
     renderer="colorManagement: true, physicallyCorrectLights: true, antialias: true"
     vr-mode-ui="enabled: false"
@@ -204,6 +210,14 @@
       if (btn) applyMode(btn.dataset.mode);
     });
 
+    // Mulai kamera AR (dipanggil SETELAH user memilih mode, agar prompt izin
+    // kamera tidak muncul di belakang menu pembuka)
+    function startAR() {
+      const sys = sceneEl.systems['mindar-image-system'];
+      if (sceneEl.hasLoaded) sys.start();
+      else sceneEl.addEventListener('loaded', () => sys.start(), { once: true });
+    }
+
     // Menu pembuka: pilih mode lalu mulai
     welcome.addEventListener('click', (e) => {
       const btn = e.target.closest('button[data-mode]');
@@ -211,6 +225,7 @@
       applyMode(btn.dataset.mode);
       welcome.classList.add('hidden');
       setTimeout(() => { welcome.style.display = 'none'; }, 400);
+      startAR();
     });
   </script>
 </body>

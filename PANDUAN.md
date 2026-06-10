@@ -1,76 +1,68 @@
-# AR Medan Magnet — Panduan
+# Panduan Pengembangan
 
-Web AR (image tracking) yang menampilkan garis medan magnet dengan **partikel
-mengalir** dari kutub **N → S**, muncul saat kamera HP diarahkan ke foto magnet.
+Catatan teknis untuk mengembangkan/memodifikasi proyek ini. Dokumentasi umum ada di [README.md](./README.md).
 
-Stack: **MindAR** (image tracking di browser) + **A-Frame / Three.js**. Semua via
-CDN, tidak perlu install apa pun.
+## Arsitektur singkat
 
-## Isi proyek
 ```
-index.html                  halaman AR
-field-lines.js              garis medan + partikel mengalir
-targets.mind                target hasil compile foto  (LANGKAH 1 — belum ada)
-photo_2026-06-09_22-04-47.jpg   foto sumber untuk dicetak / dijadikan target
+index.html      UI (menu pembuka, tombol mode, scan-hint), scene A-Frame + MindAR, pencahayaan
+field-lines.js  Komponen <a-entity magnetic-field>: fisika medan, garis, partikel, panah, label, mode A/B/C
+targets.mind    Target image-tracking (hasil kompilasi photo_*.jpg)
+og-image.jpg    Gambar pratinjau link (Open Graph)
 ```
 
-## Langkah 1 — Compile foto jadi target `targets.mind`
-1. Buka **MindAR Image Targets Compiler**:
-   https://hiukim.github.io/mind-ar-js-doc/tools/compile
-2. Upload `photo_2026-06-09_22-04-47.jpg`.
-3. Klik **Start**, lalu **Download** → ganti namanya jadi `targets.mind`
-   dan taruh di folder ini (sebelah `index.html`).
+Alur: pengguna memilih mode di **menu pembuka** → kamera AR baru dinyalakan →
+MindAR mengenali marker → komponen `magnetic-field` menampilkan konten 3D.
+Ganti mode memicu `setMode()` → geometri dibangun ulang dengan transisi cross-fade.
 
-> Foto ini berlatar putih polos, jadi "fitur" untuk dilacak agak sedikit.
-> Agar tracking stabil: **crop** supaya magnetnya memenuhi gambar, dan saat
-> dipakai **cetak/tampilkan cukup besar** dengan pencahayaan merata.
+## Parameter komponen `magnetic-field`
 
-## Langkah 2 — Tes di HP (kamera wajib HTTPS)
-Pilih salah satu:
+Diatur lewat atribut di `index.html`, contoh:
 
-- **ngrok** (paling cepat):
-  ```bash
-  npx serve .          # jalankan server lokal di port 3000
-  npx ngrok http 3000  # dapat URL https://... -> buka di HP
-  ```
-- atau langsung deploy ke GitHub Pages (Langkah 3) lalu buka linknya di HP.
-
-Arahkan kamera ke foto tercetak → partikel mengalir di sepanjang garis medan.
-
-## Langkah 3 — Deploy ke GitHub Pages
-```bash
-git init
-git add .
-git commit -m "AR medan magnet"
-git branch -M main
-git remote add origin https://github.com/<user>/<repo>.git
-git push -u origin main
-```
-Lalu di GitHub: **Settings → Pages → Source: Deploy from a branch → main / root**.
-Beberapa menit kemudian situs aktif di `https://<user>.github.io/<repo>/`.
-
-### Custom domain
-1. Buat file bernama **`CNAME`** (tanpa ekstensi) di root, isinya domainmu saja, misal:
-   ```
-   ar.domainku.com
-   ```
-2. Di pengelola DNS domainmu, tambah record:
-   - **CNAME** `ar` → `<user>.github.io`  (untuk subdomain), atau
-   - **A** record apex → IP GitHub Pages (`185.199.108.153` dst).
-3. Di **Settings → Pages → Custom domain**, isi domainmu & centang **Enforce HTTPS**.
-
-## Menyesuaikan tampilan
-Semua bisa diatur lewat atribut di `index.html`:
 ```html
-<a-entity magnetic-field="particleSpeed: 0.12; seedsPerPole: 16; density: 0.05; showMagnets: true"></a-entity>
+<a-entity magnetic-field="mode: B; rotateSpeed: 10; seedsPerPole: 18"></a-entity>
 ```
-- `particleSpeed` — kecepatan aliran partikel (satuan-dunia per detik, seragam semua garis)
-- `seedsPerPole`  — jumlah garis medan per kutub N (makin banyak = medan makin "padat")
-- `density`       — jarak antar partikel (makin kecil = partikel makin rapat)
-- `showMagnets`   — tampilkan/sembunyikan balok magnet 3D
-- `poleZ`         — ketinggian magnet di atas foto
 
-Garis medan dihitung otomatis dari posisi kutub (field-line tracing), jadi tak perlu
-menggambar lengkungan manual. Kalau posisi magnet belum pas dengan foto, ubah angka
-`sx`/`nx` di array `magnets` dalam `field-lines.js` (satuan relatif lebar foto: x dari
--0.5 sampai 0.5).
+| Parameter | Default | Arti |
+|---|---|---|
+| `mode` | `B` | Konfigurasi kutub awal: `A` tunggal, `B` N–S (tarik), `C` N–N (tolak) |
+| `showMagnets` | `true` | Tampilkan balok magnet 3D |
+| `showLabels` | `true` | Tampilkan judul & label callout |
+| `autoRotate` | `true` | Putar otomatis (selain drag manual) |
+| `rotateSpeed` | `10` | Kecepatan putar (derajat/detik) |
+| `lift` | `0.11` | Tinggi melayang di atas marker |
+| `particleSpeed` | `0.12` | Kecepatan partikel (satuan-dunia/detik, seragam semua garis) |
+| `seedsPerPole` | `18` | Jumlah garis medan per kutub N (kepadatan medan) |
+| `density` | `0.05` | Jarak antar partikel (lebih kecil = lebih rapat) |
+
+Posisi/tanda kutub tiap mode didefinisikan di `_modeConfig()` dalam `field-lines.js`
+(koordinat relatif lebar marker: x dari -0.5 sampai 0.5).
+
+## Mengganti gambar marker
+
+1. Kompilasi gambar baru di MindAR Image Targets Compiler:
+   https://hiukim.github.io/mind-ar-js-doc/tools/compile
+2. Unduh hasilnya, ganti `targets.mind`.
+3. Ganti pula file foto marker + referensinya di README.
+
+Tips marker yang baik: penuh detail/tekstur, kontras tinggi, hindari area kosong luas.
+
+## Menjalankan lokal & tes di HP
+
+```bash
+npx serve .            # perhatikan port yang tercetak (bisa berbeda bila 3000 terpakai)
+cloudflared tunnel --url http://localhost:PORT   # kamera HP butuh HTTPS
+```
+
+Buka URL `https://...` dari tunnel di HP. Desktop tanpa webcam hanya menampilkan UI.
+
+## Deploy
+
+Sudah tersambung ke GitHub Pages + domain `adindautami.web.id` (file `CNAME`).
+Cukup:
+
+```bash
+git add -A && git commit -m "..." && git push
+```
+
+Pages membangun ulang otomatis (~1 menit). Jangan hapus `.nojekyll` dan `CNAME`.

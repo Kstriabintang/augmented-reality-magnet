@@ -25,23 +25,25 @@
 
 ## 📑 Daftar Isi
 
-- [Tentang](#-tentang)
-- [Fitur](#-fitur)
-- [Cara Pakai](#-cara-pakai)
-- [Gambar Penanda](#️-gambar-penanda-marker)
-- [Mode Konfigurasi Kutub](#-mode-konfigurasi-kutub)
-- [Cara Kerja](#-cara-kerja)
-- [Teknologi](#️-teknologi)
-- [Menjalankan Lokal](#️-menjalankan-secara-lokal)
-- [Struktur Proyek](#-struktur-proyek)
-- [Lisensi](#-lisensi)
+- [Tentang](#tentang)
+- [Fitur](#fitur)
+- [Cara Pakai](#cara-pakai)
+- [Gambar Penanda](#gambar-penanda)
+- [Mode Konfigurasi Kutub](#mode-kutub)
+- [Cara Kerja](#cara-kerja)
+- [Teknologi](#teknologi)
+- [Menjalankan Lokal](#menjalankan-lokal)
+- [Struktur Proyek](#struktur-proyek)
+- [Lisensi](#lisensi)
 
+<a id="tentang"></a>
 ## 📖 Tentang
 
 **AR Medan Magnet** adalah media ajar interaktif yang mengubah diagram magnet pada buku menjadi objek **3D yang hidup**. Cukup arahkan kamera HP ke gambar penanda, dan model magnet beserta **garis gaya magnet**-nya akan muncul melayang di atasnya — lengkap dengan partikel yang mengalir mengikuti arah medan.
 
 Dibuat sebagai **media pembelajaran fisika** agar konsep medan magnet (aliran gaya antara kutub utara dan selatan, tarik-menarik, dan tolak-menolak) lebih mudah dipahami dan menarik bagi siswa.
 
+<a id="fitur"></a>
 ## ✨ Fitur
 
 - 📷 **WebAR Image Tracking** — berjalan di browser HP, tanpa instal aplikasi apa pun.
@@ -54,6 +56,7 @@ Dibuat sebagai **media pembelajaran fisika** agar konsep medan magnet (aliran ga
 - 👆 **Interaktif** — seret untuk memutar, gerakkan HP untuk melihat dari segala sisi.
 - 🔗 **Pratinjau sosial (Open Graph)** rapi saat link dibagikan di WhatsApp/medsos.
 
+<a id="cara-pakai"></a>
 ## 📱 Cara Pakai
 
 1. Buka **[demo](https://adindautami.web.id/)** di browser HP.
@@ -64,6 +67,7 @@ Dibuat sebagai **media pembelajaran fisika** agar konsep medan magnet (aliran ga
 
 > 💡 AR membutuhkan **HTTPS** (sudah terpenuhi) dan perangkat **berkamera** (HP / tablet).
 
+<a id="gambar-penanda"></a>
 ## 🖼️ Gambar Penanda (Marker)
 
 Arahkan kamera ke gambar ini — cetak atau tampilkan di layar:
@@ -72,6 +76,7 @@ Arahkan kamera ke gambar ini — cetak atau tampilkan di layar:
   <img src="./photo_2026-06-09_22-04-47.jpg" alt="Penanda magnet" width="440">
 </p>
 
+<a id="mode-kutub"></a>
 ## 🧭 Mode Konfigurasi Kutub
 
 | Mode | Konfigurasi | Perilaku Garis Medan |
@@ -80,6 +85,7 @@ Arahkan kamera ke gambar ini — cetak atau tampilkan di layar:
 | **B** | Dua magnet **kutub beda** berhadapan (N–S) | Garis **menyambung & merapat** antar kutub → **tarik-menarik** |
 | **C** | Dua magnet **kutub sama** berhadapan (N–N) | Garis **melengkung menjauh** dari celah → **tolak-menolak** |
 
+<a id="cara-kerja"></a>
 ## 🔬 Cara Kerja
 
 Setiap magnet dimodelkan sebagai dua **kutub titik**: utara (muatan **+**) dan selatan (muatan **−**). Medan di sembarang titik dihitung sebagai jumlah kontribusi seluruh kutub:
@@ -92,6 +98,7 @@ Lalu **garis gaya ditelusuri** (numerical field-line tracing, integrasi RK2) men
 
 Partikel dan kepala panah dianimasikan sepanjang tiap garis untuk menunjukkan arah aliran **N → S**.
 
+<a id="teknologi"></a>
 ## 🛠️ Teknologi
 
 | Komponen | Peran |
@@ -101,8 +108,9 @@ Partikel dan kepala panah dianimasikan sepanjang tiap garis untuk menunjukkan ar
 | [Three.js](https://threejs.org) | Render 3D: kurva medan, partikel, panah, label |
 | GitHub Pages | Hosting statis + HTTPS + custom domain |
 
-Seluruh library dimuat via CDN — **tanpa proses build**.
+Seluruh library di-*self-host* di folder `vendor/` — **tanpa proses build, tanpa ketergantungan CDN** (demo tetap jalan meski jaringan venue memblokir CDN).
 
+<a id="menjalankan-lokal"></a>
 ## ▶️ Menjalankan Secara Lokal
 
 ```bash
@@ -118,6 +126,7 @@ cloudflared tunnel --url http://localhost:PORT
 
 lalu buka URL `https://...` dari tunnel di HP.
 
+<a id="struktur-proyek"></a>
 ## 📂 Struktur Proyek
 
 ```
@@ -125,11 +134,15 @@ lalu buka URL `https://...` dari tunnel di HP.
 ├── index.html       # Halaman AR: scene, menu & tombol mode, pencahayaan, meta Open Graph
 ├── field-lines.js   # Komponen magnetic-field: fisika medan, partikel, panah, label, mode A/B/C
 ├── targets.mind     # Target image-tracking hasil kompilasi gambar penanda
+├── vendor/          # Library self-hosted (A-Frame, MindAR)
 ├── photo_*.jpg      # Gambar penanda (marker)
 ├── og-image.jpg     # Gambar pratinjau saat link dibagikan
+├── favicon.ico      # Ikon situs (+ apple-touch-icon.png)
+├── 404.html         # Halaman 404 kustom
 └── README.md
 ```
 
+<a id="lisensi"></a>
 ## 📜 Lisensi
 
 Dirilis di bawah [Lisensi MIT](./LICENSE) — bebas digunakan untuk keperluan edukasi.

@@ -56,6 +56,8 @@ AFRAME.registerComponent('magnetic-field', {
   remove: function () {
     if (this.group) this.el.object3D.remove(this.group);
     if (this._onMove) {
+      window.removeEventListener('touchstart', this._onDown);
+      window.removeEventListener('mousedown', this._onDown);
       window.removeEventListener('touchmove', this._onMove);
       window.removeEventListener('mousemove', this._onMove);
       window.removeEventListener('touchend', this._onUp);
@@ -409,18 +411,21 @@ AFRAME.registerComponent('magnetic-field', {
     return { tex, aspect: w / h };
   },
 
-  // ===== Seret untuk memutar =====
+  // ===== Seret untuk memutar (hanya dari kanvas AR, bukan tombol UI) =====
   _initDrag: function () {
     let lastX = null;
-    const start = (x) => { lastX = x; this._dragging = true; };
+    // mulai drag hanya jika sentuhan berawal di kanvas A-Frame
+    const start = (e, x) => {
+      if (!(e.target && e.target.tagName === 'CANVAS')) return;
+      lastX = x; this._dragging = true;
+    };
     const move = (x) => { if (lastX != null) { this._spin += (x - lastX) * 0.01; lastX = x; } };
     const end = () => { lastX = null; this._dragging = false; };
-    const sceneEl = this.el.sceneEl;
-    const canvas = (sceneEl && sceneEl.canvas) ? sceneEl.canvas : window;
-    canvas.addEventListener('touchstart', (e) => start(e.touches[0].clientX));
-    canvas.addEventListener('mousedown', (e) => start(e.clientX));
+    this._onDown = (e) => start(e, e.touches ? e.touches[0].clientX : e.clientX);
     this._onMove = (e) => move(e.touches ? e.touches[0].clientX : e.clientX);
     this._onUp = end;
+    window.addEventListener('touchstart', this._onDown);
+    window.addEventListener('mousedown', this._onDown);
     window.addEventListener('touchmove', this._onMove);
     window.addEventListener('mousemove', this._onMove);
     window.addEventListener('touchend', this._onUp);
