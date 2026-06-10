@@ -32,7 +32,7 @@ Diatur lewat atribut di `index.html`, contoh:
 | `rotateSpeed` | `10` | Kecepatan putar (derajat/detik) |
 | `lift` | `0.11` | Tinggi melayang di atas marker |
 | `particleSpeed` | `0.12` | Kecepatan partikel (satuan-dunia/detik, seragam semua garis) |
-| `seedsPerPole` | `18` | Jumlah garis medan per kutub N (kepadatan medan) |
+| `seedsPerPole` | `14` | Jumlah garis medan per kutub N — ditabur di bidang kartu agar pola seperti diagram foto |
 | `density` | `0.05` | Jarak antar partikel (lebih kecil = lebih rapat) |
 
 Posisi/tanda kutub tiap mode didefinisikan di `_modeConfig()` dalam `field-lines.js`

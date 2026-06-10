@@ -24,7 +24,7 @@ AFRAME.registerComponent('magnetic-field', {
     rotateSpeed:   { type: 'number',  default: 10 },
     lift:          { type: 'number',  default: 0.11 },
     particleSpeed: { type: 'number',  default: 0.12 },
-    seedsPerPole:  { type: 'number',  default: 18 },
+    seedsPerPole:  { type: 'number',  default: 14 },
     density:       { type: 'number',  default: 0.05 }
   },
 
@@ -169,8 +169,9 @@ AFRAME.registerComponent('magnetic-field', {
     const cfg = this._modeConfig(mode);
     const poles = [];
     cfg.bars.forEach((b) => {
-      poles.push({ p: new THREE.Vector3(b.x0, 0, 0), q: b.q0 });
-      poles.push({ p: new THREE.Vector3(b.x1, 0, 0), q: b.q1 });
+      // outer = kutub di sisi luar sistem (dapat garis masuk/keluar dari tepi, spt foto)
+      poles.push({ p: new THREE.Vector3(b.x0, 0, 0), q: b.q0, outer: Math.abs(b.x0) >= Math.abs(b.x1) });
+      poles.push({ p: new THREE.Vector3(b.x1, 0, 0), q: b.q1, outer: Math.abs(b.x1) >= Math.abs(b.x0) });
     });
 
     if (this.data.showMagnets) cfg.bars.forEach((b) => this._addBar(b, addSpin, fade));
@@ -240,35 +241,57 @@ AFRAME.registerComponent('magnetic-field', {
     out.multiplyScalar(1 / len);
     return out;
   },
-  _trace: function (seed) {
+  // sign=+1: ikuti arah B (dari N). sign=-1: telusur mundur (untuk garis masuk ke S).
+  _trace: function (seed, sign) {
     const THREE = this.THREE;
     const ds = 0.012, maxSteps = 600, bound = 0.95, rStop = 0.045;
+    const stopQ = sign > 0 ? -1 : 1;   // maju berhenti di S, mundur berhenti di N
     const pts = [seed.clone()];
     const r = seed.clone();
     const k1 = new THREE.Vector3(), k2 = new THREE.Vector3(), mid = new THREE.Vector3();
     for (let s = 0; s < maxSteps; s++) {
       if (!this._unitField(r, k1)) break;
-      mid.copy(r).addScaledVector(k1, ds * 0.5);
+      mid.copy(r).addScaledVector(k1, sign * ds * 0.5);
       if (!this._unitField(mid, k2)) break;
-      r.addScaledVector(k2, ds);
+      r.addScaledVector(k2, sign * ds);
       if (r.length() > bound) break;
       pts.push(r.clone());
       let done = false;
       for (const pole of this._tracePoles) {
-        if (pole.q < 0 && r.distanceTo(pole.p) < rStop) { done = true; break; }
+        if (pole.q * stopQ > 0 && r.distanceTo(pole.p) < rStop) { done = true; break; }
       }
       if (done) break;
     }
     return pts;
   },
+  // Pola garis dibuat DI BIDANG kartu agar tampak persis seperti diagram foto:
+  // loop bersarang tiap magnet, berkas tengah, dan kipas garis di tepi luar.
   _addFieldLines: function (poles, addSpin, fade, bundle) {
+    const THREE = this.THREE;
     this._tracePoles = poles;
     const r0 = 0.03;
+    // 1) Garis KELUAR dari tiap kutub N — seed melingkar penuh di bidang kartu
+    const n = this.data.seedsPerPole;
     for (const pole of poles) {
       if (pole.q <= 0) continue;
-      for (const dir of this._fibSphere(this.data.seedsPerPole)) {
-        const pts = this._trace(pole.p.clone().addScaledVector(dir, r0));
+      for (let i = 0; i < n; i++) {
+        const th = (i / n) * Math.PI * 2;
+        const dir = new THREE.Vector3(Math.cos(th), Math.sin(th), 0);
+        const pts = this._trace(pole.p.clone().addScaledVector(dir, r0), 1);
         if (pts.length >= 4) this._addLine(pts, addSpin, fade, bundle);
+      }
+    }
+    // 2) Garis MASUK dari tepi luar ke kutub S sisi luar (kipas kiri/kanan foto):
+    //    telusur mundur dari S, lalu dibalik agar aliran/panah menuju S
+    for (const pole of poles) {
+      if (pole.q >= 0 || !pole.outer) continue;
+      const out = Math.sign(pole.p.x) || 1;     // arah menjauhi pusat sistem
+      const fan = 5, spread = Math.PI * 0.66;    // 5 garis dalam kipas ±60°
+      for (let i = 0; i < fan; i++) {
+        const th = (i / (fan - 1) - 0.5) * spread;
+        const dir = new THREE.Vector3(out * Math.cos(th), Math.sin(th), 0);
+        const pts = this._trace(pole.p.clone().addScaledVector(dir, r0), -1);
+        if (pts.length >= 4) { pts.reverse(); this._addLine(pts, addSpin, fade, bundle); }
       }
     }
   },
@@ -297,7 +320,7 @@ AFRAME.registerComponent('magnetic-field', {
     const pGeo = new THREE.BufferGeometry();
     pGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(count * 3), 3));
     const pMat = fade(new THREE.PointsMaterial({
-      color: 0xeaf6ff, size: 0.018, map: this.dotTex,
+      color: 0xeaf6ff, size: 0.021, map: this.dotTex,
       blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true
     }), 0.95);
     const points = new THREE.Points(pGeo, pMat);
@@ -432,17 +455,6 @@ AFRAME.registerComponent('magnetic-field', {
     window.addEventListener('mouseup', this._onUp);
   },
 
-  _fibSphere: function (n) {
-    const THREE = this.THREE;
-    const dirs = [], phi = Math.PI * (3 - Math.sqrt(5));
-    for (let i = 0; i < n; i++) {
-      const y = 1 - (i / Math.max(1, n - 1)) * 2;
-      const rad = Math.sqrt(Math.max(0, 1 - y * y));
-      const th = phi * i;
-      dirs.push(new THREE.Vector3(Math.cos(th) * rad, y, Math.sin(th) * rad));
-    }
-    return dirs;
-  },
   _makeDotTexture: function () {
     const THREE = this.THREE;
     const c = document.createElement('canvas'); c.width = c.height = 64;
