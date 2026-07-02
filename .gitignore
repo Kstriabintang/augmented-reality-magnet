@@ -1,3 +1,6 @@
 .claude/
 .DS_Store
 node_modules/
+
+# Bandul punya repo sendiri (Kstriabintang/chensqy -> chensqy.my.id); jangan ikut di-commit ke sini
+chensqy/

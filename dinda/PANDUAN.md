@@ -59,11 +59,17 @@ Buka URL `https://...` dari tunnel di HP. Desktop tanpa webcam hanya menampilkan
 
 ## Deploy
 
-Sudah tersambung ke GitHub Pages + domain `adindautami.web.id` (file `CNAME`).
-Cukup:
+Repo ini punya **beberapa materi AR** dalam satu situs (lihat struktur di root repo).
+Materi ini disajikan di `https://adindautami.web.id/dinda/`. Halaman hub (daftar
+materi) ada di `index.html` **root repo**.
+
+File `CNAME`, `.nojekyll`, dan `404.html` berada di **root repo** (bukan folder ini) —
+karena GitHub Pages menyajikan situs dari root. **Jangan pindahkan/hapus** ketiganya.
+
+Deploy cukup:
 
 ```bash
 git add -A && git commit -m "..." && git push
 ```
 
-Pages membangun ulang otomatis (~1 menit). Jangan hapus `.nojekyll` dan `CNAME`.
+Pages membangun ulang otomatis (~1 menit).
