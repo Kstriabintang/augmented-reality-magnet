@@ -6,7 +6,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, TABLE, isConfigured } from '/js/config
 const POINTS_PER = 5;
 
 // ---------- diagram SVG (selalu di atas kartu terang) ----------
-import { FIG, QUESTIONS } from '/js/soal.js?v=1';
+import { FIG, QUESTIONS } from '/js/soal.js?v=2';
 
 
 // ---------- util DOM ----------
