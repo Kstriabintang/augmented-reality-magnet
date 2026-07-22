@@ -1,232 +1,291 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>AR Medan Magnet — Media Ajar WebAR 3D</title>
-  <meta name="description" content="Visualisasi medan magnet 3D interaktif lewat Augmented Reality di browser HP. 3 mode kutub: magnet tunggal, tarik-menarik (N–S), tolak-menolak (N–N).">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Media Ajar IPA — Magnet &amp; Listrik | adindautami</title>
+<meta name="description" content="Media ajar IPA interaktif untuk SD/SMP: medan magnet dalam WebAR 3D, rangkaian listrik yang bisa dicoba, dan kuis magnet & listrik dengan nilai otomatis. Karya Adinda Utami.">
+<meta name="theme-color" content="#eaf2ff">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://utamiii.my.id/">
+<meta property="og:title" content="Media Ajar IPA — Magnet & Listrik">
+<meta property="og:description" content="Medan magnet WebAR 3D + rangkaian listrik interaktif + kuis. Media ajar IPA untuk SD/SMP. Karya Adinda Utami.">
+<meta property="og:image" content="https://utamiii.my.id/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --font-d:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --font-b:"Nunito",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --ink:#16233d; --sub:#5b6b85;
+  --bg1:#eaf2ff; --bg2:#dbe7fb; --card:#ffffff;
+  --line:#dbe6f7; --clay-lo:#c4d5ef;
+  --n:#e8462f; --n2:#ff7a5c; --s:#2f6fd0; --s2:#63a0ee;
+  --volt:#f59e0b; --volt2:#ffc655; --quiz:#ec4899; --quiz2:#f9a8d0;
+  --learn:#2563eb;
+  --shadow:0 10px 0 -2px var(--clay-lo),0 20px 36px rgba(31,58,110,.16);
+  --shadow-sm:0 6px 0 -2px var(--clay-lo),0 12px 22px rgba(31,58,110,.14);
+}
+:root[data-theme="gelap"]{
+  --ink:#eaf1fb; --sub:#9fb2d2;
+  --bg1:#13223f; --bg2:#070d18; --card:#152036;
+  --line:#28374f; --clay-lo:#0a1424;
+  --n2:#ff8a6d; --s2:#7ab0f2;
+  --shadow:0 10px 0 -2px var(--clay-lo),0 22px 40px rgba(0,0,0,.5);
+  --shadow-sm:0 6px 0 -2px var(--clay-lo),0 14px 26px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:var(--font-b); color:var(--ink); font-weight:600; min-height:100vh; -webkit-tap-highlight-color:transparent;
+  background:
+    radial-gradient(60% 45% at 88% 6%, rgba(236,72,153,.10), transparent 60%),
+    radial-gradient(55% 40% at 8% 4%, rgba(245,158,11,.12), transparent 60%),
+    radial-gradient(140% 110% at 50% 0%, var(--bg1) 0%, var(--bg2) 74%) fixed;}
+:root[data-theme="gelap"] body{
+  background:
+    radial-gradient(60% 45% at 88% 6%, rgba(236,72,153,.16), transparent 60%),
+    radial-gradient(55% 40% at 8% 4%, rgba(245,158,11,.14), transparent 60%),
+    radial-gradient(140% 110% at 50% 0%, var(--bg1) 0%, var(--bg2) 76%) fixed;}
+.wrap{max-width:1080px; margin:0 auto; padding:20px clamp(16px,4vw,34px) 72px}
 
-  <!-- Ikon situs -->
-  <link rel="icon" href="./favicon.ico" sizes="16x16 32x32 48x48">
-  <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png">
-  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
-  <meta name="theme-color" content="#0e1626">
+/* ---- topbar ---- */
+header{display:flex; align-items:center; justify-content:space-between; gap:12px}
+.brand{display:flex; align-items:center; gap:12px}
+.brand .mk{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;flex:0 0 auto;
+  background:linear-gradient(150deg,var(--n),var(--s)); box-shadow:var(--shadow-sm); border:2px solid rgba(255,255,255,.5)}
+:root[data-theme="gelap"] .brand .mk{border-color:rgba(255,255,255,.14)}
+.brand .mk svg{width:26px;height:26px;fill:#fff}
+.brand-txt{font-family:var(--font-d); font-weight:800; font-size:19px; line-height:1; color:var(--ink)}
+.brand-txt small{display:block; font-family:var(--font-b); font-weight:700; font-size:11.5px; color:var(--sub); margin-top:3px; letter-spacing:.3px}
+.tbtn{width:46px;height:46px;border-radius:15px; border:2px solid var(--line); background:var(--card); color:var(--ink);
+  cursor:pointer; display:grid; place-items:center; box-shadow:var(--shadow-sm); transition:transform .12s}
+.tbtn:active{transform:translateY(2px)} .tbtn svg{width:23px;height:23px;fill:currentColor}
 
-  <!-- Open Graph (pratinjau saat dibagikan di WhatsApp / media sosial) -->
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="AR Medan Magnet">
-  <meta property="og:locale" content="id_ID">
-  <meta property="og:url" content="https://adindautami.web.id/">
-  <meta property="og:title" content="AR Medan Magnet — Media Ajar WebAR 3D">
-  <meta property="og:description" content="Visualisasi medan magnet 3D interaktif lewat AR di browser HP. 3 mode kutub: tunggal, tarik-menarik (N–S), tolak-menolak (N–N).">
-  <meta property="og:image" content="https://adindautami.web.id/og-image.jpg">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="AR Medan Magnet — media ajar WebAR medan magnet 3D">
+/* ---- hero ---- */
+.hero{display:grid; grid-template-columns:1.05fr .95fr; gap:26px; align-items:center; margin:30px 0 8px}
+.eyebrow{display:inline-flex; align-items:center; gap:8px; font-family:var(--font-d); font-weight:700; font-size:13px;
+  color:var(--learn); background:rgba(37,99,235,.10); border:2px solid rgba(37,99,235,.22);
+  padding:6px 14px; border-radius:999px}
+:root[data-theme="gelap"] .eyebrow{color:#8fb4ee; background:rgba(99,160,238,.14); border-color:rgba(99,160,238,.3)}
+.eyebrow .dot{width:8px;height:8px;border-radius:50%;background:var(--volt);box-shadow:0 0 0 4px rgba(245,158,11,.25)}
+.hero h1{font-family:var(--font-d); font-weight:800; letter-spacing:-.4px; margin:16px 0 12px;
+  font-size:clamp(30px,6vw,50px); line-height:1.02}
+.hero h1 .n{color:var(--n)} .hero h1 .s{color:var(--s)}
+.hero p{margin:0; max-width:460px; color:var(--sub); font-size:clamp(15px,2.6vw,17px); line-height:1.6; font-weight:600}
+.chips{display:flex; gap:9px; margin-top:20px; flex-wrap:wrap}
+.chip{display:inline-flex; align-items:center; gap:7px; font-family:var(--font-d); font-weight:700; font-size:13.5px;
+  padding:8px 15px; border-radius:999px; background:var(--card); border:2px solid var(--line); box-shadow:var(--shadow-sm)}
+.chip .cd{width:11px;height:11px;border-radius:50%}
+.chip.mg .cd{background:var(--n)} .chip.el .cd{background:var(--volt)} .chip.ar .cd{background:var(--s)}
 
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="AR Medan Magnet — Media Ajar WebAR 3D">
-  <meta name="twitter:description" content="Visualisasi medan magnet 3D interaktif lewat AR di browser HP.">
-  <meta name="twitter:image" content="https://adindautami.web.id/og-image.jpg">
+/* ---- signature: medan magnet ---- */
+.fieldstage{position:relative; aspect-ratio:1/.82; border-radius:30px; overflow:hidden;
+  background:radial-gradient(120% 120% at 50% 12%, #eef5ff, #d3e2fa);
+  border:3px solid rgba(255,255,255,.65); box-shadow:var(--shadow)}
+:root[data-theme="gelap"] .fieldstage{background:radial-gradient(120% 120% at 50% 12%, #1c2e50, #0b1526); border-color:rgba(255,255,255,.10)}
+.fieldstage svg{position:absolute; inset:0; width:100%; height:100%}
+.flux{fill:none; stroke:url(#fg); stroke-width:2.4; stroke-linecap:round; opacity:.9;
+  stroke-dasharray:7 10; animation:flux 2.4s linear infinite}
+.flux.b{animation-duration:3s} .flux.c{animation-duration:3.6s}
+@keyframes flux{to{stroke-dashoffset:-34}}
+.filing{fill:var(--s); opacity:.5; animation:bob 4s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.magbar rect{stroke:rgba(0,0,0,.12); stroke-width:1}
+.poleN,.poleS{font-family:var(--font-d); font-weight:800; font-size:26px; fill:#fff}
 
-  <!-- A-Frame + MindAR (image tracking) — self-hosted agar tidak bergantung CDN -->
-  <script src="./vendor/aframe-1.5.0.min.js"></script>
-  <script src="./vendor/mindar-image-aframe-1.2.5.prod.js"></script>
+/* ---- section heads ---- */
+.sec-h{font-family:var(--font-d); font-weight:800; letter-spacing:-.3px; margin:44px 0 4px; font-size:clamp(21px,4.4vw,27px)}
+.sec-sub{margin:0 0 18px; color:var(--sub); font-size:14.5px; font-weight:600}
 
-  <!-- Logika garis medan + partikel mengalir -->
-  <script src="./field-lines.js"></script>
+/* ---- module cards ---- */
+.grid{display:grid; grid-template-columns:1fr 1fr; gap:20px}
+.mcard{position:relative; border-radius:26px; overflow:hidden; text-decoration:none; color:inherit;
+  background:var(--card); border:2.5px solid var(--line); box-shadow:var(--shadow);
+  display:flex; flex-direction:column; transition:transform .18s ease, box-shadow .18s ease}
+.mcard:hover{transform:translateY(-5px); box-shadow:0 16px 0 -2px var(--clay-lo),0 30px 48px rgba(31,58,110,.22)}
+.mcard:active{transform:translateY(-1px)}
+.mtop{height:132px; position:relative; overflow:hidden; display:grid; place-items:center}
+.mtop.mg{background:radial-gradient(120% 130% at 30% 10%, #ffe1d8, #ffd0e6)}
+.mtop.el{background:radial-gradient(120% 130% at 70% 10%, #fff0cf, #ffe0a6)}
+:root[data-theme="gelap"] .mtop.mg{background:radial-gradient(120% 130% at 30% 10%, #3a2338, #2a1830)}
+:root[data-theme="gelap"] .mtop.el{background:radial-gradient(120% 130% at 70% 10%, #3a2f18, #251d0d)}
+.mtop svg{width:78px; height:78px; filter:drop-shadow(0 6px 10px rgba(0,0,0,.14))}
+.mbody{padding:18px 20px 20px; display:flex; flex-direction:column; gap:9px; flex:1}
+.tag{align-self:flex-start; font-family:var(--font-d); font-weight:800; font-size:11.5px; letter-spacing:.5px;
+  text-transform:uppercase; padding:5px 12px; border-radius:999px; color:#fff}
+.tag.mg{background:var(--n)} .tag.el{background:var(--volt); color:#4a2c00}
+.mbody h3{font-family:var(--font-d); font-weight:800; font-size:21px; margin:2px 0 0}
+.mbody p{margin:0; color:var(--sub); font-size:14px; line-height:1.55; font-weight:600; flex:1}
+.go{display:inline-flex; align-items:center; justify-content:center; gap:8px; margin-top:6px; font-family:var(--font-d);
+  font-weight:800; font-size:15.5px; padding:13px 18px; border-radius:16px; text-decoration:none; color:#fff;
+  box-shadow:var(--shadow-sm); border:2px solid rgba(255,255,255,.35); transition:transform .12s}
+.go:active{transform:translateY(2px)}
+.go.mg{background:linear-gradient(160deg,var(--n2),var(--n))}
+.go.el{background:linear-gradient(160deg,var(--volt2),var(--volt)); color:#4a2c00}
 
-  <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; font-family: system-ui, -apple-system, sans-serif; overflow: hidden; }
+/* ---- kuis feature ---- */
+.kfeat{display:flex; align-items:center; gap:18px; padding:22px; border-radius:26px; text-decoration:none; color:inherit;
+  background:linear-gradient(120deg, rgba(236,72,153,.10), var(--card) 55%);
+  border:2.5px solid var(--line); box-shadow:var(--shadow); transition:transform .18s ease}
+.kfeat:hover{transform:translateY(-4px)}
+.kic{flex:0 0 auto; width:68px; height:68px; border-radius:20px; display:grid; place-items:center;
+  background:linear-gradient(160deg,var(--quiz2),var(--quiz)); box-shadow:var(--shadow-sm); border:2px solid rgba(255,255,255,.4)}
+.kic svg{width:36px;height:36px;fill:#fff}
+.kfeat h3{font-family:var(--font-d); font-weight:800; font-size:20px; margin:0 0 4px}
+.kfeat p{margin:0; color:var(--sub); font-size:14px; font-weight:600; line-height:1.5}
+.kgo{margin-left:auto; flex:0 0 auto; width:48px; height:48px; border-radius:15px; display:grid; place-items:center;
+  background:var(--quiz); color:#fff; box-shadow:var(--shadow-sm)}
+.kgo svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:520px){.kgo{display:none}}
 
-    #info {
-      position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
-      padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
-      background: linear-gradient(to top, rgba(0,0,0,0.78), rgba(0,0,0,0));
-      color: #fff; text-align: center; font-size: 14px; line-height: 1.4;
-      pointer-events: none;
-    }
-    #info b { color: #7fd2ff; }
+footer{margin-top:50px; text-align:center; color:var(--sub); font-size:13.5px; font-weight:700; line-height:1.8}
+footer a{color:var(--learn); font-weight:800; text-decoration:none}
+:root[data-theme="gelap"] footer a{color:#8fb4ee}
 
-    /* Pesan saat kamera belum menemukan gambar target */
-    .scan-hint {
-      position: fixed; inset: 0; z-index: 9;
-      display: flex; align-items: center; justify-content: center;
-      flex-direction: column; gap: 14px;
-      color: #fff; text-align: center; padding: 24px;
-      pointer-events: none; transition: opacity .4s;
-    }
-    .scan-hint .box {
-      width: 220px; height: 150px; border: 2px dashed rgba(127,210,255,.9);
-      border-radius: 10px; animation: pulse 1.6s ease-in-out infinite;
-    }
-    @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
-    .hidden { opacity: 0; }
+/* ---- reveal motion ---- */
+.reveal{opacity:0; transform:translateY(18px) scale(.97)}
+.in .reveal{opacity:1; transform:none; transition:opacity .5s ease, transform .5s cubic-bezier(.2,1.3,.4,1)}
+.in .reveal:nth-child(2){transition-delay:.07s}
+.in .reveal:nth-child(3){transition-delay:.14s}
 
-    /* Bar pemilih mode kutub */
-    #modebar {
-      position: fixed; top: calc(10px + env(safe-area-inset-top)); left: 0; right: 0;
-      z-index: 11; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
-      padding: 0 10px; pointer-events: none;
-    }
-    #modebar button {
-      pointer-events: auto; cursor: pointer; border: none; outline: none;
-      font: 600 13px/1 system-ui, sans-serif; color: #fff;
-      padding: 10px 14px; border-radius: 999px;
-      background: rgba(20,24,30,.62); backdrop-filter: blur(6px);
-      box-shadow: 0 2px 10px rgba(0,0,0,.3); transition: background .2s, transform .1s;
-    }
-    #modebar button:active { transform: scale(.95); }
-    #modebar button.active { background: #ff9614; box-shadow: 0 2px 14px rgba(255,150,20,.5); }
-    #modebar .title { width: 100%; text-align: center; color: #fff; font-size: 12px;
-      opacity: .85; margin-bottom: 2px; text-shadow: 0 1px 3px rgba(0,0,0,.6); pointer-events: none; }
-
-    /* Layar menu pembuka */
-    #welcome {
-      position: fixed; inset: 0; z-index: 30; display: flex;
-      align-items: center; justify-content: center; padding: 22px;
-      background: radial-gradient(120% 120% at 50% 0%, #1a2740 0%, #0a0f1a 70%);
-      transition: opacity .4s; overflow-y: auto;
-    }
-    #welcome.hidden { opacity: 0; pointer-events: none; }
-    #welcome .card { width: 100%; max-width: 420px; text-align: center; color: #fff; }
-    #welcome h1 { margin: 0 0 6px; font-size: 24px; }
-    #welcome .sub { margin: 0 0 22px; font-size: 14px; line-height: 1.5; color: #b9c6da; }
-    #welcome .choices { display: flex; flex-direction: column; gap: 12px; }
-    #welcome .choices button {
-      cursor: pointer; border: 1px solid rgba(255,255,255,.12); outline: none;
-      border-radius: 16px; padding: 16px 18px; text-align: left; color: #fff;
-      background: rgba(255,255,255,.06); transition: background .15s, transform .1s, border-color .15s;
-      display: flex; flex-direction: column; gap: 3px;
-    }
-    #welcome .choices button:active { transform: scale(.98); }
-    #welcome .choices button:hover { background: rgba(255,150,20,.16); border-color: rgba(255,150,20,.6); }
-    #welcome .choices b { font-size: 16px; }
-    #welcome .choices span { font-size: 12.5px; color: #aab7cc; }
-    #welcome .hint { margin-top: 18px; font-size: 12px; color: #8a98ad; }
-  </style>
+@media (max-width:840px){
+  .hero{grid-template-columns:1fr; gap:20px}
+  .fieldstage{max-width:420px; margin:0 auto; width:100%; aspect-ratio:1/.72}
+}
+@media (max-width:560px){ .grid{grid-template-columns:1fr} }
+@media (prefers-reduced-motion:reduce){
+  .flux,.filing{animation:none}
+  .reveal{opacity:1; transform:none; transition:none}
+  .mcard,.kfeat,.tbtn,.go{transition:none}
+}
+</style>
 </head>
 <body>
-  <div id="welcome">
-    <div class="card">
-      <h1>AR Medan Magnet</h1>
-      <p class="sub">Pilih konfigurasi kutub untuk memulai. Setelah memilih, arahkan kamera ke foto/kartu magnet.</p>
-      <div class="choices">
-        <button data-mode="A"><b>Magnet Tunggal</b><span>Satu batang magnet (N–S) + garis gaya</span></button>
-        <button data-mode="B"><b>N–S · Tarik-menarik</b><span>Dua magnet kutub beda berhadapan</span></button>
-        <button data-mode="C"><b>N–N · Tolak-menolak</b><span>Dua magnet kutub sama berhadapan</span></button>
-      </div>
-      <div class="hint">Mode masih bisa diganti kapan saja lewat tombol di atas layar.</div>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <span class="mk"><svg viewBox="0 0 24 24"><path d="M4 4h5v6a3 3 0 0 0 6 0V4h5v6a8 8 0 0 1-16 0V4z"/><rect x="4" y="4" width="5" height="3.2" fill="#ffdfd6"/><rect x="15" y="4" width="5" height="3.2" fill="#cfe1ff"/></svg></span>
+      <div class="brand-txt">adindautami<small>Media Ajar IPA</small></div>
     </div>
-  </div>
+    <button class="tbtn" id="theme" type="button" aria-label="Mode terang atau gelap"></button>
+  </header>
 
-  <div class="scan-hint" id="scanHint">
-    <div class="box"></div>
-    <div>Arahkan kamera ke <b>foto magnet</b> yang tercetak</div>
-  </div>
+  <section class="hero" id="hero">
+    <div>
+      <span class="eyebrow reveal"><span class="dot"></span> Media Ajar IPA · SD / SMP</span>
+      <h1 class="reveal">Belajar <span class="n">Magnet</span> &amp; <span class="s">Listrik</span> sambil bermain</h1>
+      <p class="reveal">Lihat medan magnet 3D lewat kamera HP, nyalakan rangkaian listrik dengan satu ketukan, lalu uji pemahamanmu di kuis. Semua bisa dicoba langsung.</p>
+      <div class="chips reveal">
+        <span class="chip mg"><span class="cd"></span>Magnet</span>
+        <span class="chip el"><span class="cd"></span>Listrik</span>
+        <span class="chip ar"><span class="cd"></span>WebAR 3D</span>
+      </div>
+    </div>
 
-  <div id="modebar">
-    <div class="title">Pilih konfigurasi kutub</div>
-    <button data-mode="A">Magnet Tunggal</button>
-    <button data-mode="B" class="active">N–S (Tarik)</button>
-    <button data-mode="C">N–N (Tolak)</button>
-  </div>
+    <div class="fieldstage reveal" aria-hidden="true">
+      <svg viewBox="0 0 400 330" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <linearGradient id="fg" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#e8462f"/><stop offset="1" stop-color="#2f6fd0"/>
+          </linearGradient>
+        </defs>
+        <!-- field lines: dipole arcs N(left) <-> S(right) -->
+        <g>
+          <path class="flux"   d="M150 165 C150 60 250 60 250 165"/>
+          <path class="flux b" d="M150 165 C140 20 260 20 250 165"/>
+          <path class="flux c" d="M150 165 C120 -30 280 -30 250 165"/>
+          <path class="flux"   d="M150 165 C150 270 250 270 250 165"/>
+          <path class="flux b" d="M150 165 C140 310 260 310 250 165"/>
+          <path class="flux c" d="M150 165 C120 360 280 360 250 165"/>
+        </g>
+        <!-- iron filings -->
+        <g>
+          <circle class="filing" cx="112" cy="120" r="3"/><circle class="filing" cx="290" cy="120" r="3" style="animation-delay:.6s"/>
+          <circle class="filing" cx="200" cy="70"  r="3" style="animation-delay:1.1s"/><circle class="filing" cx="120" cy="215" r="3" style="animation-delay:.3s"/>
+          <circle class="filing" cx="284" cy="212" r="3" style="animation-delay:.9s"/><circle class="filing" cx="200" cy="256" r="3" style="animation-delay:1.4s"/>
+        </g>
+        <!-- magnet bar -->
+        <g class="magbar">
+          <rect x="150" y="150" width="55" height="30" rx="7" fill="#e8462f"/>
+          <rect x="205" y="150" width="45" height="30" rx="7" fill="#2f6fd0"/>
+          <text class="poleN" x="177" y="172" text-anchor="middle">N</text>
+          <text class="poleS" x="228" y="172" text-anchor="middle">S</text>
+        </g>
+      </svg>
+    </div>
+  </section>
 
-  <div id="info">
-    Objek 3D melayang di atas kartu — <b>gerakkan HP</b> mengelilinginya, atau <b>seret</b> untuk memutar
-  </div>
+  <h2 class="sec-h">Pilih Materi</h2>
+  <p class="sec-sub">Dua media interaktif yang bisa langsung kamu coba.</p>
+  <section class="grid" id="mods">
+    <a class="mcard reveal" href="/magnet/">
+      <div class="mtop mg">
+        <svg viewBox="0 0 24 24"><path d="M5 4h4v6a3 3 0 0 0 6 0V4h4v6a8 8 0 0 1-16 0V4z" fill="#e8462f"/><rect x="5" y="4" width="4" height="3.4" fill="#ffb3a3"/><rect x="15" y="4" width="4" height="3.4" fill="#9cc2f5"/></svg>
+      </div>
+      <div class="mbody">
+        <span class="tag mg">Magnet</span>
+        <h3>Medan Magnet (AR)</h3>
+        <p>Arahkan kamera ke kartu magnet dan lihat garis gaya 3D melayang. Tiga mode kutub: tunggal, tarik-menarik (N–S), dan tolak-menolak (N–N).</p>
+        <span class="go mg">Buka AR
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </div>
+    </a>
 
-  <a-scene
-    mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; uiScanning: no; uiLoading: no; filterMinCF: 0.0005; filterBeta: 0.01"
-    color-space="sRGB"
-    renderer="colorManagement: true, physicallyCorrectLights: true, antialias: true"
-    vr-mode-ui="enabled: false"
-    device-orientation-permission-ui="enabled: false">
+    <a class="mcard reveal" href="/listrik/">
+      <div class="mtop el">
+        <svg viewBox="0 0 24 24"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" fill="#f59e0b" stroke="#c97a00" stroke-width="1"/></svg>
+      </div>
+      <div class="mbody">
+        <span class="tag el">Listrik</span>
+        <h3>Rangkaian Listrik</h3>
+        <p>Nyalakan saklar dan lihat arus mengalir dari kutub + ke − sampai lampu menyala. Pahami beda rangkaian terbuka dan tertutup.</p>
+        <span class="go el">Coba Rangkaian
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4a2c00" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </div>
+    </a>
+  </section>
 
-    <a-assets></a-assets>
+  <h2 class="sec-h">Uji Pemahaman</h2>
+  <p class="sec-sub">Sudah paham? Kerjakan kuisnya dan lihat nilaimu langsung.</p>
+  <a class="kfeat" href="/kuis/">
+    <span class="kic"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4l-2-2-9 9-2-2-1 1zM3 5v14a2 2 0 0 0 2 2h11v-2H5V5h9V3H5a2 2 0 0 0-2 2z"/></svg></span>
+    <div>
+      <h3>Kuis Magnet &amp; Listrik</h3>
+      <p>20 soal pilihan ganda · nilai otomatis (maksimal 100) · lengkap kunci jawaban &amp; pembahasan.</p>
+    </div>
+    <span class="kgo"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+  </a>
 
-    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+  <footer>
+    Media ajar IPA · <a href="https://utamiii.my.id">utamiii.my.id</a><br>
+    © 2026 Adinda Utami
+  </footer>
+</div>
 
-    <!-- Pencahayaan untuk balok magnet 3D (ambient + hemisphere + 2 arah) -->
-    <a-light type="ambient" color="#ffffff" intensity="0.55"></a-light>
-    <a-light type="hemisphere" color="#ffffff" groundColor="#404a5a" intensity="0.6"></a-light>
-    <a-light type="directional" color="#ffffff" intensity="0.85" position="0.6 1 1.5"></a-light>
-    <a-light type="directional" color="#cfe0ff" intensity="0.35" position="-0.8 0.4 0.6"></a-light>
+<script>
+(function(){
+  var KEY='adindautami-theme', root=document.documentElement, btn=document.getElementById('theme');
+  var MOON='<svg viewBox="0 0 24 24"><path d="M20 14a8 8 0 1 1-10-10 8 8 0 0 0 10 10z"/></svg>';
+  var SUN='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><g stroke="currentColor" stroke-width="2" fill="none"><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></g></svg>';
+  function get(){ try{return localStorage.getItem(KEY)||'terang'}catch(e){return 'terang'} }
+  function apply(t){ root.setAttribute('data-theme', t); btn.innerHTML = t==='gelap'?SUN:MOON; }
+  apply(get());
+  btn.addEventListener('click', function(){ var t=get()==='gelap'?'terang':'gelap'; try{localStorage.setItem(KEY,t)}catch(e){} apply(t); });
 
-    <!-- Anchor: muncul saat foto target dikenali -->
-    <a-entity id="target" mindar-image-target="targetIndex: 0">
-
-      <!-- Konten magnet 3D + medan + label (topik saat ini) -->
-      <a-entity magnetic-field></a-entity>
-
-      <!--
-        SLOT MODEL 3D (GLB) — untuk topik lain seperti contoh organ/hewan.
-        Cara pakai:
-          1. Taruh file model.glb di folder ini.
-          2. Hapus komentar blok di bawah (dan boleh nonaktifkan <a-entity magnetic-field> di atas).
-          3. Atur position (z = tinggi melayang), scale, rotation sesuai modelmu.
-
-        <a-gltf-model
-          src="./model.glb"
-          position="0 0 0.12"
-          scale="0.3 0.3 0.3"
-          rotation="0 0 0"
-          animation="property: rotation; to: 0 0 360; loop: true; dur: 12000; easing: linear">
-        </a-gltf-model>
-      -->
-
-    </a-entity>
-  </a-scene>
-
-  <script>
-    // Sembunyikan / tampilkan petunjuk scan sesuai status tracking
-    const sceneEl = document.querySelector('a-scene');
-    const hint = document.getElementById('scanHint');
-    const target = document.getElementById('target');
-    target.addEventListener('targetFound', () => hint.classList.add('hidden'));
-    target.addEventListener('targetLost',  () => hint.classList.remove('hidden'));
-
-    // ---- Pemilihan mode kutub ----
-    const modebar = document.getElementById('modebar');
-    const welcome = document.getElementById('welcome');
-    const fieldEl = document.querySelector('[magnetic-field]');
-
-    function applyMode(mode) {
-      const comp = fieldEl && fieldEl.components && fieldEl.components['magnetic-field'];
-      if (comp) {
-        comp.setMode(mode);                       // sudah init -> rebuild + cross-fade
-      } else {
-        fieldEl.setAttribute('magnetic-field', 'mode', mode);  // belum init -> jadi mode awal
-      }
-      [...modebar.querySelectorAll('button')].forEach((b) =>
-        b.classList.toggle('active', b.dataset.mode === mode));
-    }
-
-    // Tombol mode di dalam AR
-    modebar.addEventListener('click', (e) => {
-      const btn = e.target.closest('button');
-      if (btn) applyMode(btn.dataset.mode);
-    });
-
-    // Mulai kamera AR (dipanggil SETELAH user memilih mode, agar prompt izin
-    // kamera tidak muncul di belakang menu pembuka)
-    function startAR() {
-      const sys = sceneEl.systems['mindar-image-system'];
-      if (sceneEl.hasLoaded) sys.start();
-      else sceneEl.addEventListener('loaded', () => sys.start(), { once: true });
-    }
-
-    // Menu pembuka: pilih mode lalu mulai
-    welcome.addEventListener('click', (e) => {
-      const btn = e.target.closest('button[data-mode]');
-      if (!btn) return;
-      applyMode(btn.dataset.mode);
-      welcome.classList.add('hidden');
-      setTimeout(() => { welcome.style.display = 'none'; }, 400);
-      startAR();
-    });
-  </script>
+  // stagger reveal
+  var hero=document.getElementById('hero'), mods=document.getElementById('mods');
+  requestAnimationFrame(function(){ hero.classList.add('in'); });
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });},{threshold:.15});
+    io.observe(mods);
+  } else { mods.classList.add('in'); }
+})();
+</script>
 </body>
 </html>

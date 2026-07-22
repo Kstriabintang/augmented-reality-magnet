@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kuis Magnet &amp; Listrik | adindautami</title>
+<meta name="description" content="Kuis interaktif magnet & listrik: 20 soal pilihan ganda, skor otomatis (maks 100), lengkap kunci jawaban dan pembahasan.">
+<meta name="theme-color" content="#eaf2ff">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Kuis Magnet & Listrik">
+<meta property="og:description" content="20 soal pilihan ganda, skor otomatis, lengkap kunci & pembahasan.">
+<meta property="og:image" content="https://utamiii.my.id/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --font-d:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --font-b:"Nunito",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --ink:#16233d; --sub:#5b6b85;
+  --bg1:#eaf2ff; --bg2:#dbe7fb; --card:#ffffff;
+  --line:#dbe6f7; --clay-lo:#c4d5ef; --track:#e4ecfb;
+  --quiz:#ec4899; --quiz2:#f9a8d0; --learn:#2563eb;
+  --sel:#fde7f2; --sel-brd:#ec4899;
+  --ok:#16a34a; --ok-bg:rgba(22,163,74,.10); --ok-brd:rgba(22,163,74,.45);
+  --no:#e11d48; --no-bg:rgba(225,29,72,.09); --no-brd:rgba(225,29,72,.4);
+  --shadow:0 10px 0 -2px var(--clay-lo),0 20px 36px rgba(31,58,110,.16);
+  --shadow-sm:0 6px 0 -2px var(--clay-lo),0 12px 22px rgba(31,58,110,.14);
+}
+:root[data-theme="gelap"]{
+  --ink:#eaf1fb; --sub:#9fb2d2;
+  --bg1:#13223f; --bg2:#070d18; --card:#152036;
+  --line:#28374f; --clay-lo:#0a1424; --track:#22314a;
+  --quiz2:#f487bb; --sel:rgba(236,72,153,.20); --sel-brd:#f487bb;
+  --ok-bg:rgba(22,163,74,.16); --ok-brd:rgba(74,222,128,.5);
+  --no-bg:rgba(225,29,72,.16); --no-brd:rgba(255,120,140,.5);
+  --shadow:0 10px 0 -2px var(--clay-lo),0 22px 40px rgba(0,0,0,.5);
+  --shadow-sm:0 6px 0 -2px var(--clay-lo),0 14px 26px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box} html,body{margin:0}
+body{font-family:var(--font-b); font-weight:600; color:var(--ink); min-height:100vh; -webkit-tap-highlight-color:transparent;
+  background:
+    radial-gradient(55% 40% at 90% 4%, rgba(236,72,153,.12), transparent 60%),
+    radial-gradient(140% 110% at 50% 0%, var(--bg1) 0%, var(--bg2) 74%) fixed}
+:root[data-theme="gelap"] body{background:
+  radial-gradient(55% 40% at 90% 4%, rgba(236,72,153,.18), transparent 60%),
+  radial-gradient(140% 110% at 50% 0%, var(--bg1) 0%, var(--bg2) 76%) fixed}
+.topbar{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:max(12px,env(safe-area-inset-top)) clamp(14px,4vw,26px) 10px; max-width:760px; margin:0 auto}
+.brand{display:flex; align-items:center; gap:10px; text-decoration:none}
+.brand .mk{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;flex:0 0 auto;
+  background:linear-gradient(150deg,#e8462f,#2f6fd0); box-shadow:var(--shadow-sm); border:2px solid rgba(255,255,255,.5)}
+:root[data-theme="gelap"] .brand .mk{border-color:rgba(255,255,255,.14)}
+.brand .mk svg{width:23px;height:23px;fill:#fff}
+.brand b{font-family:var(--font-d); font-weight:800; font-size:17px; color:var(--ink)}
+.tbtn{width:44px; height:44px; border-radius:14px; border:2px solid var(--line); background:var(--card); color:var(--ink); cursor:pointer; display:grid; place-items:center; box-shadow:var(--shadow-sm); transition:transform .12s}
+.tbtn:active{transform:translateY(2px)} .tbtn svg{width:22px; height:22px; fill:currentColor}
+.k-wrap{max-width:680px; margin:0 auto; padding:8px clamp(14px,4vw,26px) 64px}
+.k-hero{text-align:center; margin:16px 0 22px}
+.k-badge{display:inline-flex; align-items:center; gap:7px; font-family:var(--font-d); font-weight:700; font-size:13px; color:var(--quiz); background:rgba(236,72,153,.12); border:2px solid rgba(236,72,153,.3); padding:6px 15px; border-radius:999px}
+:root[data-theme="gelap"] .k-badge{color:var(--quiz2)}
+.k-hero h1{font-family:var(--font-d); font-weight:800; margin:14px 0 8px; font-size:clamp(25px,5.6vw,34px); letter-spacing:-.4px}
+.k-hero p{margin:0 auto; max-width:520px; color:var(--sub); font-size:15px; line-height:1.6; font-weight:600}
+.k-card{background:var(--card); border:2.5px solid var(--line); border-radius:24px; box-shadow:var(--shadow); padding:22px}
+.k-form{display:flex; flex-direction:column; gap:16px}
+.k-field{display:flex; flex-direction:column; gap:7px}
+.k-field span{font-family:var(--font-d); font-weight:700; font-size:14px}
+.k-field input{font-family:var(--font-b); font-weight:600; font-size:16px; color:var(--ink); background:var(--card); border:2px solid var(--line); border-radius:14px; padding:13px 15px; outline:none; transition:border-color .15s, box-shadow .15s}
+.k-field input:focus{border-color:var(--sel-brd); box-shadow:0 0 0 4px rgba(236,72,153,.14)}
+.k-err{color:var(--no); font-size:12.5px; font-style:normal; font-weight:700; min-height:14px}
+.k-btn{font-family:var(--font-d); font-weight:800; font-size:16px; border-radius:16px; padding:14px 20px; cursor:pointer; border:2px solid transparent; min-height:52px; display:inline-flex; align-items:center; justify-content:center; gap:8px; text-decoration:none; transition:transform .12s, box-shadow .12s}
+.k-btn-primary{color:#fff; background:linear-gradient(160deg,var(--quiz2),var(--quiz)); box-shadow:0 7px 0 -1px #b4266e,0 14px 22px rgba(236,72,153,.34); border-color:rgba(255,255,255,.35)}
+.k-btn-primary:active{transform:translateY(3px); box-shadow:0 4px 0 -1px #b4266e,0 8px 14px rgba(236,72,153,.3)}
+.k-btn-ghost{color:var(--quiz); background:var(--card); border-color:var(--line); box-shadow:var(--shadow-sm)}
+:root[data-theme="gelap"] .k-btn-ghost{color:var(--quiz2)}
+.k-btn-ghost:active{transform:translateY(2px)}
+.k-btn:disabled{opacity:.45; cursor:not-allowed; box-shadow:none; transform:none}
+.k-back{display:block; text-align:center; margin-top:4px; color:var(--sub); text-decoration:none; font-size:14px; font-weight:700}
+.k-quiztop{margin:6px 0 16px}
+.k-prog{height:12px; border-radius:999px; background:var(--track); overflow:hidden; border:2px solid var(--line)}
+.k-prog-bar{height:100%; border-radius:999px; background:linear-gradient(90deg,var(--quiz2),var(--quiz)); transition:width .3s cubic-bezier(.2,1.2,.4,1)}
+.k-progtext{display:flex; justify-content:space-between; margin-top:9px; font-size:13px; font-weight:700; color:var(--sub)} .k-progtext b{color:var(--ink)}
+.k-qcard{padding:24px 22px}
+.k-qnum{font-family:var(--font-d); font-size:12px; font-weight:800; letter-spacing:.6px; text-transform:uppercase; color:var(--quiz)}
+:root[data-theme="gelap"] .k-qnum{color:var(--quiz2)}
+.k-qtext{font-family:var(--font-d); margin:8px 0 4px; font-size:19px; line-height:1.5; font-weight:700}
+.k-fig{margin:14px 0 4px; background:#fff; border:2px solid var(--line); border-radius:16px; padding:12px; text-align:center}
+.k-fig svg{width:100%; height:auto; max-height:210px} .k-fig-sm svg{max-height:150px}
+.k-opts{display:flex; flex-direction:column; gap:11px; margin-top:16px}
+.k-opt{display:flex; align-items:center; gap:12px; text-align:left; width:100%; min-height:54px; padding:12px 14px; border-radius:16px; border:2px solid var(--line); background:var(--card); color:var(--ink); font-family:var(--font-b); font-weight:600; font-size:15px; line-height:1.4; cursor:pointer; box-shadow:var(--shadow-sm); transition:border-color .12s, background .12s, transform .1s}
+.k-opt:hover{border-color:var(--sel-brd)} .k-opt:active{transform:translateY(2px)}
+.k-opt.is-sel{border-color:var(--sel-brd); background:var(--sel)}
+.k-optl{flex:0 0 auto; width:30px; height:30px; border-radius:10px; display:grid; place-items:center; font-family:var(--font-d); font-weight:800; font-size:14px; background:var(--track); color:var(--ink)}
+.k-opt.is-sel .k-optl{background:var(--sel-brd); color:#fff} .k-optt{flex:1}
+.k-nav{display:flex; gap:12px; margin-top:18px} .k-nav .k-btn{flex:1}
+.k-unans{margin-top:14px; background:var(--no-bg); border:2px solid var(--no-brd); border-radius:16px; padding:13px 15px; font-size:14px; line-height:1.7; font-weight:600; color:var(--ink)}
+.k-unans b{color:var(--no)} :root[data-theme="gelap"] .k-unans b{color:#ff9caf}
+.k-unans-chips{display:inline-flex; flex-wrap:wrap; gap:6px; margin-left:4px; vertical-align:middle}
+.k-unans-chip{width:32px; height:32px; border-radius:10px; border:2px solid var(--no-brd); background:var(--card); color:var(--ink); font-family:var(--font-d); font-weight:800; font-size:13px; cursor:pointer}
+.k-unans-chip:hover{background:var(--no-bg)}
+.k-result{text-align:center}
+.k-rident{font-family:var(--font-d); font-weight:700; font-size:15.5px; color:var(--ink)} .k-rident span{color:var(--sub); font-weight:600}
+.k-score{display:flex; align-items:center; gap:22px; justify-content:center; margin:20px 0; flex-wrap:wrap}
+.k-ring{--v:0; width:138px; height:138px; border-radius:50%; flex:0 0 auto; background:conic-gradient(var(--gc) calc(var(--v)*1%), var(--track) 0); display:grid; place-items:center; box-shadow:var(--shadow-sm)}
+.k-ring-in{width:104px; height:104px; border-radius:50%; background:var(--card); display:grid; place-items:center; line-height:1}
+.k-ring-in b{font-family:var(--font-d); font-size:38px; font-weight:800} .k-ring-in small{font-size:13px; color:var(--sub); font-weight:700}
+.k-scoremeta{text-align:left} .k-grade{font-family:var(--font-d); font-size:22px; font-weight:800}
+.k-benar{margin-top:4px; color:var(--sub); font-size:14.5px; font-weight:600} .k-benar b{color:var(--ink)}
+.k-rule{margin-top:2px; color:var(--sub); font-size:12.5px; font-weight:600}
+.k-save{margin-top:8px; font-size:12.5px; min-height:16px; color:var(--sub); font-weight:700} .k-save-ok{color:var(--ok)} .k-save-no{color:var(--no)}
+.k-ractions{display:flex; gap:12px; margin-top:8px} .k-ractions .k-btn{flex:1}
+@media (max-width:460px){ .k-scoremeta{text-align:center} .k-score{gap:16px} }
+.k-review{margin-top:26px} .k-revh{font-family:var(--font-d); font-weight:800; margin:0 0 4px; font-size:20px} .k-revsub{margin:0 0 14px; color:var(--sub); font-size:14px; font-weight:600}
+.k-ritem{background:var(--card); border:2px solid var(--line); border-left-width:6px; border-radius:18px; padding:16px; margin-bottom:12px; box-shadow:var(--shadow-sm)}
+.k-ritem.is-ok{border-left-color:var(--ok)} .k-ritem.is-no{border-left-color:var(--no)}
+.k-rq{display:flex; gap:10px; font-size:15px; line-height:1.5; align-items:flex-start; font-weight:700}
+.k-rmark{flex:0 0 auto; width:26px; height:26px; border-radius:50%; display:grid; place-items:center; font-weight:800; font-size:14px; color:#fff}
+.is-ok .k-rmark{background:var(--ok)} .is-no .k-rmark{background:var(--no)}
+.k-ropts{list-style:none; margin:12px 0 0; padding:0; display:flex; flex-direction:column; gap:6px}
+.k-ropts li{display:flex; gap:9px; align-items:flex-start; font-size:14px; line-height:1.45; padding:9px 11px; border-radius:11px; color:var(--sub); font-weight:600}
+.k-ropts li .k-optl{width:24px; height:24px; font-size:12px; border-radius:8px}
+.k-ropts li.k-correct{background:var(--ok-bg); border:2px solid var(--ok-brd); color:var(--ink); font-weight:700}
+.k-ropts li.k-wrong{background:var(--no-bg); border:2px solid var(--no-brd); color:var(--ink)}
+.k-ropts li em{font-style:normal; font-weight:800; font-size:12px; opacity:.85}
+.k-note{margin-top:12px; font-size:14px; line-height:1.55; font-weight:600; color:var(--sub); background:rgba(236,72,153,.08); border:2px solid rgba(236,72,153,.24); border-radius:12px; padding:10px 13px}
+.k-note b{color:var(--ink)} .k-note-empty{background:var(--no-bg); border-color:var(--no-brd)}
+@media (prefers-reduced-motion:reduce){ .k-btn,.k-opt,.k-tbtn,.k-prog-bar{transition:none} }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <a class="brand" href="/"><span class="mk"><svg viewBox="0 0 24 24"><path d="M5 4h4v6a3 3 0 0 0 6 0V4h4v6a8 8 0 0 1-16 0V4z"/><rect x="5" y="4" width="4" height="3.2" fill="#ffdfd6"/><rect x="15" y="4" width="4" height="3.2" fill="#cfe1ff"/></svg></span> <b>adindautami</b></a>
+    <button class="tbtn" id="theme" type="button" aria-label="Mode terang atau gelap"></button>
+  </div>
+  <div id="app"></div>
+<script>
+(function(){
+  var KEY='adindautami-theme', root=document.documentElement, btn=document.getElementById('theme');
+  var MOON='<svg viewBox="0 0 24 24"><path d="M20 14a8 8 0 1 1-10-10 8 8 0 0 0 10 10z"/></svg>';
+  var SUN='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><g stroke="currentColor" stroke-width="2" fill="none"><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></g></svg>';
+  function get(){ try{return localStorage.getItem(KEY)||'terang'}catch(e){return 'terang'} }
+  function apply(t){ root.setAttribute('data-theme', t); btn.innerHTML = t==='gelap'?SUN:MOON; }
+  apply(get());
+  btn.addEventListener('click', function(){ var t=get()==='gelap'?'terang':'gelap'; try{localStorage.setItem(KEY,t)}catch(e){} apply(t); });
+})();
+</script>
+<script type="module" src="/js/kuis.js?v=1"></script>
+</body>
+</html>

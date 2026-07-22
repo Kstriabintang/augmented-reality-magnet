@@ -1,22 +1,24 @@
-<h1 align="center">🧲 AR Medan Magnet</h1>
+<h1 align="center">🧲⚡ Media Ajar IPA — Magnet &amp; Listrik</h1>
 
 <p align="center">
-  <b>Media ajar berbasis Augmented Reality — memvisualisasikan medan magnet dalam 3D,
-  langsung dari browser HP tanpa instal aplikasi.</b>
+  <b>Media pembelajaran IPA interaktif untuk SD/SMP: medan magnet dalam WebAR 3D,
+  simulasi rangkaian listrik, dan kuis bernilai otomatis — langsung dari browser HP tanpa instal aplikasi.</b>
 </p>
 
 <p align="center">
-  <a href="https://adindautami.web.id/"><b>🚀 Buka Situs AR</b></a> &nbsp;·&nbsp;
-  <a href="#-media-3d-untuk-assemblr-edu"><b>📦 Unduh Model 3D (.glb)</b></a>
+  <a href="https://utamiii.my.id/"><b>🚀 Buka Situs</b></a> &nbsp;·&nbsp;
+  <a href="https://utamiii.my.id/magnet/"><b>🧲 AR Magnet</b></a> &nbsp;·&nbsp;
+  <a href="https://utamiii.my.id/listrik/"><b>⚡ Rangkaian Listrik</b></a> &nbsp;·&nbsp;
+  <a href="https://utamiii.my.id/kuis/"><b>📝 Kuis</b></a>
 </p>
 
 <p align="center">
   <img alt="A-Frame" src="https://img.shields.io/badge/A--Frame-1.5-ef2d5e">
   <img alt="MindAR"  src="https://img.shields.io/badge/MindAR-image%20tracking-1f8fff">
-  <img alt="Three.js" src="https://img.shields.io/badge/Three.js-3D-000000">
+  <img alt="Supabase" src="https://img.shields.io/badge/Supabase-quiz%20results-3ecf8e">
   <img alt="WebAR"   src="https://img.shields.io/badge/WebAR-tanpa%20instal%20app-22c55e">
   <img alt="Lisensi" src="https://img.shields.io/badge/Lisensi-MIT-blue">
-  <a href="https://adindautami.web.id/"><img alt="Live" src="https://img.shields.io/badge/status-live-brightgreen"></a>
+  <a href="https://utamiii.my.id/"><img alt="Live" src="https://img.shields.io/badge/status-live-brightgreen"></a>
 </p>
 
 <p align="center">
@@ -29,45 +31,37 @@
 ## 📑 Daftar Isi
 
 - [Tentang](#tentang)
-- [Visualisasi Medan Magnet](#-visualisasi-medan-magnet)
+- [Modul](#-modul)
+- [Kuis &amp; Supabase](#-kuis--supabase)
 - [Media 3D untuk Assemblr EDU](#-media-3d-untuk-assemblr-edu)
 - [Cara pakai (AR di HP)](#-cara-pakai-ar-di-hp)
-- [Fisika singkat](#-fisika-singkat)
 - [Struktur repo](#-struktur-repo)
 - [Lisensi](#lisensi)
 
 ## Tentang
 
-Media pembelajaran **Augmented Reality** untuk materi **Medan Magnet**. Pengguna memindai sebuah
-**marker cetak**, lalu muncul magnet batang 3D beserta **garis-garis medan** yang dihitung dari fisika
-sungguhan (*field-line tracing* dari kutub), langsung di atas kartu. Cocok untuk presentasi, praktikum,
-dan tugas kuliah. Berjalan penuh di browser HP — **tanpa instal aplikasi**.
+Portal **media ajar IPA** untuk topik **Magnet** dan **Listrik**, dirancang untuk siswa SD/SMP.
+Semua materi berjalan penuh di browser HP — **tanpa instal aplikasi**. Desain memakai gaya
+*claymorphism* yang ramah anak dengan mode terang/gelap.
 
-## 🧲 Visualisasi Medan Magnet
+## 🧩 Modul
 
-Tiga konfigurasi kutub yang bisa diganti saat AR berjalan — garis medan dihitung otomatis dari
-tanda kutub, jadi efek **tarik** & **tolak** muncul apa adanya sesuai fisika:
+| Modul | Isi | Tautan |
+|---|---|---|
+| 🧲 **Medan Magnet (AR)** | Visualisasi garis gaya magnet 3D lewat kamera HP (A-Frame + MindAR image tracking). 3 mode kutub: tunggal, tarik-menarik (N–S), tolak-menolak (N–N). | [`/magnet/`](https://utamiii.my.id/magnet/) |
+| ⚡ **Rangkaian Listrik** | Simulasi SVG interaktif: nyalakan saklar → arus mengalir dari + ke − → lampu menyala. Rangkaian terbuka vs tertutup. | [`/listrik/`](https://utamiii.my.id/listrik/) |
+| 📝 **Kuis Magnet &amp; Listrik** | 20 soal pilihan ganda, nilai otomatis (maks 100), kunci &amp; pembahasan. Hasil tersimpan ke Supabase. | [`/kuis/`](https://utamiii.my.id/kuis/) |
 
-<table>
-<tr>
-  <td width="33%" align="center"><img src="./assemblr/preview/magnet-tunggal.png" alt="Magnet tunggal"></td>
-  <td width="33%" align="center"><img src="./assemblr/preview/magnet-tarik.png" alt="Tarik-menarik"></td>
-  <td width="33%" align="center"><img src="./assemblr/preview/magnet-tolak.png" alt="Tolak-menolak"></td>
-</tr>
-<tr>
-  <td align="center"><b>Magnet Tunggal</b><br><sub>dipol batang — garis N → S</sub></td>
-  <td align="center"><b>Tarik-menarik (N–S)</b><br><sub>garis menyambung antar magnet</sub></td>
-  <td align="center"><b>Tolak-menolak (N–N)</b><br><sub>garis memancar menjauhi celah</sub></td>
-</tr>
-</table>
+## 📝 Kuis &amp; Supabase
 
-**Konvensi warna:** kutub **Utara = merah**, **Selatan = biru**. Garis medan selalu keluar dari **N**
-dan masuk ke **S**; butiran mengalir menunjukkan arah medan.
+Kuis menyimpan hasil (nama, kelas, sekolah, jawaban, nilai, durasi) ke tabel `hasil_kuis_utami`
+di Supabase. Keamanan dijaga **Row Level Security**: siswa (anon) hanya boleh **menyimpan** (INSERT),
+tidak bisa membaca data siswa lain; hanya admin yang login yang bisa membaca. `js/config.js` hanya
+memuat **anon key** (aman untuk publik) — service key tidak pernah ada di repo.
 
 ## 📦 Media 3D untuk Assemblr EDU
 
-Model 3D siap-pakai (`.glb`, sudah beranimasi aliran medan) untuk di-**import ke Assemblr EDU** atau
-platform AR/3D lain. Tinggal unduh dan upload:
+Model 3D siap-pakai (`.glb`, sudah beranimasi aliran medan) untuk di-**import ke Assemblr EDU**:
 
 | Model | Konsep | Unduh |
 |---|---|---|
@@ -76,38 +70,34 @@ platform AR/3D lain. Tinggal unduh dan upload:
 | 🧲🧲 **Tolak-menolak** | Dua magnet N–N berhadapan | [`magnet-tolak.glb`](./assemblr/magnet-tolak.glb) |
 
 > **Cara di Assemblr EDU:** *Add Object → Import 3D Model* → pilih file `.glb` → pada panel **Animation**
-> pilih klip `MedanMagnet` → aktifkan **loop/autoplay**. Model tampil tegak (Y-up) dan siap diskalakan.
+> pilih klip `MedanMagnet` → aktifkan **loop/autoplay**.
 
 ## 📱 Cara pakai (AR di HP)
 
 1. **Cetak marker** — gunakan `photo_2026-06-09_22-04-47.jpg` di repo ini; cetak / tempel di karton.
-2. Buka [**situs AR**](https://adindautami.web.id/) di **browser HP** (Chrome/Safari), izinkan kamera.
-3. Pilih konfigurasi kutub di menu pembuka → arahkan kamera ke marker → magnet 3D + garis medan muncul.
+2. Buka [**situs**](https://utamiii.my.id/) di **browser HP** (Chrome/Safari), pilih **Medan Magnet (AR)**, izinkan kamera.
+3. Pilih konfigurasi kutub → arahkan kamera ke marker → magnet 3D + garis medan muncul.
 4. Gerakkan HP mengelilingi marker untuk melihat dari berbagai sudut.
 
-> Kamera web butuh **HTTPS** — otomatis aktif di GitHub Pages. Detail teknis di [`PANDUAN.md`](./PANDUAN.md).
-
-## 🔬 Fisika singkat
-
-Garis medan magnet **selalu membentuk lintasan tertutup**: keluar dari kutub **Utara (N)**, melengkung
-di luar magnet, lalu masuk ke kutub **Selatan (S)**, dan menyambung di dalam magnet.
-
-- **Kutub sejenis** (N–N atau S–S) → **tolak-menolak**; garis medan saling menjauh, ada titik netral.
-- **Kutub tak sejenis** (N–S) → **tarik-menarik**; garis medan menyambung dari satu magnet ke magnet lain.
-- Kerapatan garis ∝ **kuat medan** — makin rapat garis, makin kuat medannya (dekat kutub).
+> Kamera web butuh **HTTPS** — otomatis aktif di GitHub Pages / Cloudflare.
 
 ## 🗂️ Struktur repo
 
 ```
-/                     ← publishing root GitHub Pages (situs = medan magnet)
-├── index.html          scene A-Frame + MindAR (menu pilih mode + AR)
-├── field-lines.js      komponen garis medan (field-line tracing, Three.js)
+/                     ← publishing root (GitHub Pages), hosting via Cloudflare (utamiii.my.id)
+├── index.html          hub / beranda (pilih materi)
+├── magnet/index.html   AR medan magnet (A-Frame + MindAR)
+├── listrik/index.html  simulasi rangkaian listrik (SVG interaktif)
+├── kuis/index.html     kuis (memuat js/kuis.js)
+├── js/
+│   ├── kuis.js         logika kuis + simpan ke Supabase
+│   ├── soal.js         20 soal + diagram SVG (bersama)
+│   └── config.js       konfigurasi Supabase (anon key saja)
+├── field-lines.js      komponen garis medan (Three.js) — dipakai /magnet/
 ├── targets.mind        target image-tracking
-├── photo_2026-06-09_22-04-47.jpg   contoh marker untuk dicetak
-├── CNAME .nojekyll 404.html        wajib di root (GitHub Pages)
+├── CNAME .nojekyll 404.html   wajib di root (GitHub Pages)
 ├── favicon*, og-image.jpg
-├── PANDUAN.md          dokumentasi teknis
-├── vendor/             A-Frame + MindAR (self-hosted)
+├── vendor/             A-Frame + MindAR (self-hosted, tanpa CDN)
 └── assemblr/           📦 model 3D .glb untuk Assemblr EDU + preview
 ```
 
