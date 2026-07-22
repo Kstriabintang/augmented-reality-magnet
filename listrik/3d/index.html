@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rangkaian Listrik 3D — Media Ajar IPA | adindautami</title>
+<meta name="description" content="Penampil 3D rangkaian listrik: putar bebas, ketuk saklar, lihat arus mengalir dan lampu menyala. Media ajar IPA interaktif.">
+<meta name="theme-color" content="#eaf2ff">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Rangkaian Listrik 3D — Media Ajar IPA">
+<meta property="og:description" content="Putar rangkaian listrik dalam 3D, nyalakan saklar, lihat arus & lampu.">
+<meta property="og:image" content="https://utamiii.my.id/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --font-d:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --font-b:"Nunito",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --ink:#16233d; --sub:#5b6b85; --bg1:#eaf2ff; --bg2:#dbe7fb; --card:#ffffff;
+  --line:#dbe6f7; --clay-lo:#c4d5ef; --volt:#f59e0b; --volt2:#ffc655; --ok:#22c55e; --red:#e11d48;
+  --stage1:#dfeafd; --stage2:#bcd2f2;
+  --shadow:0 10px 0 -2px var(--clay-lo),0 20px 36px rgba(31,58,110,.16);
+  --shadow-sm:0 6px 0 -2px var(--clay-lo),0 12px 22px rgba(31,58,110,.14);
+}
+:root[data-theme="gelap"]{
+  --ink:#eaf1fb; --sub:#9fb2d2; --bg1:#13223f; --bg2:#070d18; --card:#152036;
+  --line:#28374f; --clay-lo:#0a1424; --stage1:#16294a; --stage2:#0a1324;
+  --shadow:0 10px 0 -2px var(--clay-lo),0 22px 40px rgba(0,0,0,.5);
+  --shadow-sm:0 6px 0 -2px var(--clay-lo),0 14px 26px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box} html,body{margin:0}
+body{font-family:var(--font-b); font-weight:600; color:var(--ink); min-height:100vh; -webkit-tap-highlight-color:transparent;
+  background:radial-gradient(55% 40% at 90% 4%, rgba(245,158,11,.14), transparent 60%), radial-gradient(140% 110% at 50% 0%, var(--bg1), var(--bg2) 74%) fixed}
+.bar{display:flex; align-items:center; gap:12px; max-width:900px; margin:0 auto; padding:max(12px,env(safe-area-inset-top)) clamp(14px,4vw,26px) 8px}
+.ic,.tbtn{width:44px;height:44px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;display:grid;place-items:center;text-decoration:none;box-shadow:var(--shadow-sm);transition:transform .12s}
+.ic:active,.tbtn:active{transform:translateY(2px)}
+.ic svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.tbtn svg{width:22px;height:22px;fill:currentColor}
+.title{font-family:var(--font-d); font-weight:800; font-size:18px; display:flex; align-items:center; gap:9px}
+.title .b{width:26px;height:26px;border-radius:9px;display:grid;place-items:center;background:linear-gradient(160deg,var(--volt2),var(--volt))}
+.title .b svg{width:16px;height:16px;fill:#4a2c00}
+.title .tag{font-family:var(--font-d);font-weight:800;font-size:11px;letter-spacing:.5px;color:#2f6fd0;background:rgba(47,111,208,.12);border:2px solid rgba(47,111,208,.28);padding:2px 9px;border-radius:999px}
+.spacer{flex:1}
+.wrap{max-width:900px; margin:0 auto; padding:4px clamp(14px,4vw,26px) 64px}
+.stage{position:relative; height:min(64vh,560px); border-radius:24px; overflow:hidden; border:3px solid rgba(255,255,255,.5);
+  box-shadow:var(--shadow); background:radial-gradient(120% 100% at 50% 0%, var(--stage1), var(--stage2)); touch-action:none; cursor:grab}
+:root[data-theme="gelap"] .stage{border-color:rgba(255,255,255,.1)}
+.stage:active{cursor:grabbing}
+.stage canvas{display:block}
+.hint{position:absolute; left:0; right:0; bottom:10px; text-align:center; font-size:12.5px; font-weight:700; color:var(--sub); pointer-events:none; text-shadow:0 1px 2px rgba(255,255,255,.5)}
+:root[data-theme="gelap"] .hint{text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.clabel{font-family:var(--font-d); font-weight:800; font-size:12px; color:var(--ink); background:var(--card); border:2px solid var(--line); border-radius:9px; padding:3px 9px; box-shadow:var(--shadow-sm); white-space:nowrap; transform:translateY(-4px); opacity:.96}
+.tools{position:absolute; top:10px; right:10px; display:flex; flex-direction:column; gap:8px}
+.tbtn.mini{width:40px;height:40px;border-radius:12px}
+.tbtn.mini svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.tbtn.mini.on{color:#fff;background:linear-gradient(160deg,#63a0ee,#2f6fd0);border-color:transparent}
+.controls{display:flex; align-items:center; gap:14px; margin-top:16px; flex-wrap:wrap}
+.status{flex:1; min-width:210px; padding:14px 17px; border-radius:18px; border:2.5px solid var(--line); background:var(--card); box-shadow:var(--shadow-sm); font-size:14.5px; font-weight:600}
+.status b{font-family:var(--font-d); display:block; font-size:15.5px; margin-bottom:2px}
+.status.on b{color:var(--ok)} .status.off b{color:var(--red)}
+.bigbtn{display:inline-flex; align-items:center; gap:10px; padding:15px 26px; border-radius:18px; border:2px solid rgba(255,255,255,.35); cursor:pointer;
+  font:800 16.5px var(--font-d); color:#4a2c00; background:linear-gradient(160deg,var(--volt2),var(--volt)); box-shadow:0 7px 0 -1px #c97a00,0 14px 22px rgba(245,158,11,.36); transition:transform .12s, box-shadow .12s}
+.bigbtn.on{color:#08351a; background:linear-gradient(160deg,#5be08e,#22a758); box-shadow:0 7px 0 -1px #157a3d,0 14px 22px rgba(34,167,88,.4)}
+.bigbtn:active{transform:translateY(3px)}
+.speedrow{display:flex; align-items:center; gap:10px; margin-top:14px; background:var(--card); border:2px solid var(--line); border-radius:14px; padding:10px 14px; box-shadow:var(--shadow-sm); max-width:320px}
+.speedrow label{font-family:var(--font-d); font-weight:700; font-size:13px; white-space:nowrap}
+.speedrow input{flex:1; accent-color:var(--volt)}
+.speedrow b{font-family:var(--font-d); min-width:40px; text-align:right; color:var(--volt)}
+:root[data-theme="gelap"] .speedrow b{color:var(--volt2)}
+.panel{margin-top:20px; background:var(--card); border:2.5px solid var(--line); border-radius:24px; box-shadow:var(--shadow); padding:20px 22px}
+.panel h2{font-family:var(--font-d); font-weight:800; margin:0 0 4px; font-size:18px}
+.panel .lead{margin:0 0 14px; color:var(--sub); font-size:14px; line-height:1.6; font-weight:600}
+.komp{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:11px}
+.komp div{background:var(--bg1); border:2px solid var(--line); border-radius:14px; padding:11px 13px; font-size:13px; line-height:1.45; font-weight:600}
+:root[data-theme="gelap"] .komp div{background:rgba(255,255,255,.03)}
+.komp b{font-family:var(--font-d); color:var(--volt)}
+@media (prefers-reduced-motion:reduce){ .bigbtn,.ic,.tbtn{transition:none} }
+</style>
+<script type="importmap">
+{ "imports": { "three": "/vendor/three.module.js", "three/addons/": "/vendor/jsm/" } }
+</script>
+</head>
+<body>
+  <div class="bar">
+    <a class="ic" href="/listrik/" aria-label="Kembali"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></a>
+    <div class="title"><span class="b"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg></span> Rangkaian Listrik <span class="tag">3D</span></div>
+    <div class="spacer"></div>
+    <button class="tbtn" id="theme" type="button" aria-label="Mode terang atau gelap"></button>
+  </div>
+
+  <div class="wrap">
+    <div class="stage" id="stage">
+      <div class="tools">
+        <button class="tbtn mini" id="rot" type="button" title="Putar otomatis" aria-label="Putar otomatis"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></button>
+      </div>
+      <div class="hint">Seret untuk memutar · cubit/scroll untuk zoom · ketuk untuk nyalakan saklar</div>
+    </div>
+
+    <div class="controls">
+      <div class="status off" id="status"><b>Rangkaian Terbuka</b>Saklar terbuka, arus tidak mengalir, lampu mati.</div>
+      <button class="bigbtn" id="toggle" type="button">Nyalakan Saklar</button>
+    </div>
+
+    <div class="speedrow">
+      <label>Kecepatan arus</label>
+      <input id="speed" type="range" min="0.25" max="2" step="0.05" value="1">
+      <b id="speedv">1×</b>
+    </div>
+
+    <div class="panel">
+      <h2>Keterangan</h2>
+      <p class="lead">Ini rangkaian listrik sederhana dalam <b>3 dimensi</b>. Putar untuk melihat dari segala sudut, lalu <b>ketuk objek</b> atau tombol untuk menutup saklar. Saat rangkaian <b>tertutup</b>, arus mengalir dari kutub <b style="color:var(--volt)">positif (+)</b> ke <b style="color:var(--red)">negatif (−)</b> dan lampu menyala.</p>
+      <div class="komp">
+        <div><b>Baterai</b> — sumber energi listrik (kutub + merah, − biru).</div>
+        <div><b>Kabel</b> — penghantar tempat arus mengalir.</div>
+        <div><b>Saklar</b> — menutup/membuka jalur rangkaian.</div>
+        <div><b>Lampu</b> — menyala saat dialiri arus.</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){ var KEY='adindautami-theme',t='terang'; try{t=localStorage.getItem(KEY)||'terang'}catch(e){} document.documentElement.setAttribute('data-theme',t); })();
+</script>
+<script type="module" src="/js/listrik3d.js?v=1"></script>
+</body>
+</html>
