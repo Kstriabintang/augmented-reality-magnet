@@ -101,15 +101,15 @@ Arahkan kamera HP ke **kartu magnet** yang tercetak, lalu magnet batang 3D beser
 
 <img src="./docs/preview/listrik.png" width="300" align="right" alt="Simulasi rangkaian listrik saat saklar ON">
 
-Simulasi **SVG interaktif** untuk memahami cara kerja rangkaian sederhana. Ketuk **saklar** (di gambar atau lewat tombol), lalu:
+Satu materi, tiga cara belajar — dari halaman `/listrik/` siswa memilih mode:
 
-- **arus kuning beranimasi** mengalir mengelilingi rangkaian,
-- **panah arah** menunjukkan aliran dari kutub **+** ke **−**,
-- **lampu menyala** dengan pancaran cahaya.
+- **Simulasi 2D** — diagram SVG interaktif: ketuk **saklar**, **arus kuning beranimasi** mengalir, **panah arah** menunjukkan aliran dari kutub **+** ke **−**, dan **lampu menyala**.
+- **Lihat 3D** — rangkaian tiga dimensi (Three.js) yang bisa **diputar bebas**, dengan label menempel di tiap komponen, arus partikel, dan lampu menyala saat saklar ditutup.
+- **AR Kamera** — rangkaian 3D muncul lewat kamera HP dalam dua mode: **Tanpa Marker** (melayang — seret memutar, cubit zoom, ketuk saklar) atau **Marker** — pindai **[Kartu Listrik](https://utamiii.my.id/listrik/ar/kartu/)** yang dicetak, dan rangkaian muncul menempel di atas kartu (image-tracking MindAR).
 
 Panel keterangan menjelaskan tiap komponen (baterai, kabel, saklar, lampu) dan membedakan **rangkaian tertutup** (arus mengalir) dari **rangkaian terbuka** (arus terputus).
 
-> Murni SVG + CSS + JS — ringan, tanpa dependensi eksternal.
+> Semua dependensi (Three.js, MindAR) di-vendor lokal — tanpa CDN.
 
 <br clear="right">
 

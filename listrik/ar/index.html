@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <title>AR Rangkaian Listrik — adindautami</title>
-<meta name="description" content="Munculkan rangkaian listrik 3D lewat kamera HP, tanpa marker. Seret memutar, ketuk menyalakan.">
+<meta name="description" content="Munculkan rangkaian listrik 3D lewat kamera HP — tanpa marker, atau pindai Kartu Listrik cetak (mode marker).">
 <meta name="theme-color" content="#0a0f1a">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -43,6 +43,26 @@ body{font-family:var(--font-b);font-weight:700;background:#0a0f1a;overflow:hidde
   font:800 16.5px var(--font-d);color:#4a2c00;background:linear-gradient(160deg,var(--volt2),var(--volt));box-shadow:0 8px 22px rgba(245,158,11,.4)}
 .dockbtn.on{color:#08351a;background:linear-gradient(160deg,#5be08e,#22a758);box-shadow:0 8px 22px rgba(34,167,88,.44)}
 .dockbtn svg{width:22px;height:22px}
+
+/* ---- mode marker ---- */
+#mstage{position:fixed;inset:0;z-index:1;display:none;background:#0a0f1a;overflow:hidden;touch-action:none}
+body[data-mode="marker"] #mstage{display:block}
+body[data-mode="marker"] #cam,body[data-mode="marker"] #stage{display:none}
+body[data-mode="marker"] #reset{display:none}
+.pillkartu{display:none;position:absolute;left:50%;transform:translateX(-50%);top:calc(74px + env(safe-area-inset-top));
+  pointer-events:auto;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;text-decoration:none;
+  font:800 14px var(--font-d);color:#4a2c00;background:linear-gradient(160deg,var(--volt2),var(--volt));
+  border:2px solid rgba(255,255,255,.35);box-shadow:0 6px 16px rgba(245,158,11,.4)}
+.pillkartu svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+body[data-mode="marker"] .pillkartu{display:inline-flex}
+.scanbox{display:none;position:absolute;left:50%;top:50%;width:min(66vw,340px);aspect-ratio:4/3;transform:translate(-50%,-52%);pointer-events:none}
+.scanbox i{position:absolute;width:44px;height:44px;border:5px solid var(--volt2);opacity:.95;border-radius:6px;animation:pulse 1.6s ease-in-out infinite}
+.scanbox i:nth-child(1){top:0;left:0;border-right:0;border-bottom:0;border-top-left-radius:18px}
+.scanbox i:nth-child(2){top:0;right:0;border-left:0;border-bottom:0;border-top-right-radius:18px}
+.scanbox i:nth-child(3){bottom:0;left:0;border-right:0;border-top:0;border-bottom-left-radius:18px}
+.scanbox i:nth-child(4){bottom:0;right:0;border-left:0;border-top:0;border-bottom-right-radius:18px}
+@keyframes pulse{0%,100%{opacity:.95;transform:scale(1)}50%{opacity:.45;transform:scale(.94)}}
+body[data-mode="marker"]:not(.found) .scanbox{display:block}
 </style>
 <script type="importmap">
 { "imports": { "three": "/vendor/three.module.js", "three/addons/": "/vendor/jsm/" } }
@@ -51,6 +71,7 @@ body{font-family:var(--font-b);font-weight:700;background:#0a0f1a;overflow:hidde
 <body>
   <video id="cam" playsinline muted autoplay></video>
   <div id="stage"></div>
+  <div id="mstage"></div>
 
   <div class="perm" id="perm">
     <div class="spin"></div>
@@ -62,13 +83,17 @@ body{font-family:var(--font-b);font-weight:700;background:#0a0f1a;overflow:hidde
     <div class="topbar">
       <a class="ic" href="/listrik/" aria-label="Kembali"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></a>
       <div class="seg">
-        <button class="on" type="button">Tanpa Marker</button>
-        <button type="button" id="markerbtn">Marker</button>
+        <button class="on" type="button" id="btnfree">Tanpa Marker</button>
+        <button type="button" id="btnmarker">Marker</button>
       </div>
       <span class="title">AR Listrik</span>
     </div>
 
-    <div class="hint">Seret untuk memutar · cubit untuk zoom · ketuk untuk nyalakan saklar</div>
+    <a class="pillkartu" href="/listrik/ar/kartu/"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 10h18"/></svg>Lihat Kartu Marker</a>
+
+    <div class="scanbox"><i></i><i></i><i></i><i></i></div>
+
+    <div class="hint" id="hint">Seret untuk memutar · cubit untuk zoom · ketuk untuk nyalakan saklar</div>
 
     <div class="dock">
       <button class="round" id="reset" type="button" title="Taruh ulang" aria-label="Taruh ulang"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></button>
@@ -77,13 +102,6 @@ body{font-family:var(--font-b);font-weight:700;background:#0a0f1a;overflow:hidde
     </div>
   </div>
 
-<script>
-document.getElementById('markerbtn').addEventListener('click', function(){
-  var h=document.querySelector('.hint');
-  h.textContent='Mode marker (kartu cetak) segera hadir — gunakan “Tanpa Marker” dulu.';
-  clearTimeout(window.__mt); window.__mt=setTimeout(function(){ h.textContent='Seret untuk memutar · cubit untuk zoom · ketuk untuk nyalakan saklar'; }, 3200);
-});
-</script>
-<script type="module" src="/js/listrikAR.js?v=1"></script>
+<script type="module" src="/js/listrikAR.js?v=2"></script>
 </body>
 </html>
