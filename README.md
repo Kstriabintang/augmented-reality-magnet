@@ -105,7 +105,9 @@ Satu materi, tiga cara belajar — dari halaman `/listrik/` siswa memilih mode:
 
 - **Simulasi 2D** — diagram SVG interaktif: ketuk **saklar**, **arus kuning beranimasi** mengalir, **panah arah** menunjukkan aliran dari kutub **+** ke **−**, dan **lampu menyala**.
 - **Lihat 3D** — rangkaian tiga dimensi (Three.js) yang bisa **diputar bebas**, dengan label menempel di tiap komponen, arus partikel, dan lampu menyala saat saklar ditutup.
-- **AR Kamera** — rangkaian 3D muncul lewat kamera HP dalam dua mode: **Tanpa Marker** (melayang — seret memutar, cubit zoom, ketuk saklar) atau **Marker** — pindai **[Kartu Listrik](https://utamiii.my.id/listrik/ar/kartu/)** yang dicetak, dan rangkaian muncul menempel di atas kartu (image-tracking MindAR).
+- **AR Kamera** — **perjalanan transformasi energi** interaktif dalam 3 tahap: ① *Energi Kimia* — baterai tampil **cutaway** (anoda −, katoda +, elektrolit, zat kimia yang bereaksi), ② *Aliran Listrik* — **elektron** (bola bercahaya) bergerak **di dalam kabel semi-transparan** dari kutub − ke +, dan **lampu baru mulai menyala saat elektron tiba**, ③ *Transformasi Energi* — lampu terang penuh: **Energi Kimia → Energi Listrik → Energi Cahaya**. Setiap tahap punya narasi teks + **narasi suara** (Web Speech, bisa dibisukan). Dua mode kamera: **Tanpa Marker** (melayang — seret memutar, cubit zoom) atau **Marker** — pindai **[Kartu Listrik](https://utamiii.my.id/listrik/ar/kartu/)** yang dicetak, dan rangkaian muncul menempel di atas kartu (image-tracking MindAR).
+
+> Fokus AR: *“Visualisasi transformasi energi kimia menjadi energi listrik dan energi listrik menjadi energi cahaya melalui simulasi interaktif baterai dan rangkaian lampu.”*
 
 Panel keterangan menjelaskan tiap komponen (baterai, kabel, saklar, lampu) dan membedakan **rangkaian tertutup** (arus mengalir) dari **rangkaian terbuka** (arus terputus).
 

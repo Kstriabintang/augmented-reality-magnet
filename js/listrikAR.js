@@ -1,8 +1,10 @@
-// AR rangkaian listrik — dua mode:
-//   "bebas"  : markerless (kamera + rangkaian melayang, seret putar, cubit zoom)
-//   "marker" : image-tracking MindAR ke Kartu Listrik cetak (/listrik/ar/kartu/)
+// AR rangkaian listrik — dua mode (bebas/markerless & marker/MindAR) + ALUR TRANSFORMASI ENERGI.
+// Permintaan dosen (2026-08-24): perjalanan energi bertahap & interaktif —
+//   ① Energi Kimia   : baterai cutaway, reaksi kimia terlihat
+//   ② Aliran Listrik : elektron bergerak DI DALAM kabel dari kutub − ke +, lampu menyala saat elektron tiba
+//   ③ Transformasi   : lampu terang penuh — Energi Kimia → Energi Listrik → Energi Cahaya
 import * as THREE from 'three';
-import { makeCircuit } from '/js/circuit3d.js?v=1';
+import { makeCircuit } from '/js/circuit3d.js?v=2';
 import { MindARThree } from '/vendor/mindar/mindar-image-three.prod.js';
 
 const MARKER_SRC = '/listrik/ar/listrik.mind?v=1'; // naikkan ?v bila .mind dikompilasi ulang
@@ -14,18 +16,92 @@ const perm = document.getElementById('perm');
 const hintEl = document.getElementById('hint');
 const btnFree = document.getElementById('btnfree');
 const btnMarker = document.getElementById('btnmarker');
-const btnToggle = document.getElementById('toggle');
 const btnReset = document.getElementById('reset');
 const btnSnap = document.getElementById('snap');
+const stBtns = [...document.querySelectorAll('.stbtn')];
+const narEl = document.getElementById('narasi');
+const narTitle = document.getElementById('nartitle');
+const narText = document.getElementById('nartext');
+const narSub = document.getElementById('narsub');
+const narSpeak = document.getElementById('narspeak');
+const narClose = document.getElementById('narclose');
 
 const HINT = {
-  bebas: 'Seret untuk memutar · cubit untuk zoom · ketuk untuk nyalakan saklar',
+  bebas: 'Seret memutar · cubit zoom · <b>ketuk layar</b> untuk memulai perjalanan energi',
   cari: 'Arahkan kamera ke <b>Kartu Listrik</b> sampai terdeteksi',
-  dapat: 'Kartu terdeteksi! Ketuk layar untuk menyalakan saklar',
+  dapat: 'Kartu terdeteksi! <b>Ketuk layar</b> atau pilih tahap ① ② ③',
 };
 function setHint(html) { hintEl.innerHTML = html; }
 
 let mode = 'bebas'; // 'bebas' | 'marker'
+
+// ================= ALUR TRANSFORMASI ENERGI (3 tahap dosen) =================
+const STAGES = {
+  kimia: {
+    title: '① Energi Kimia — di dalam baterai',
+    text: '“Baterai menyimpan energi dalam bentuk energi kimia. Ketika baterai digunakan, reaksi kimia di dalamnya membuat elektron dapat bergerak.”',
+    sub: 'Lihat ke dalam baterai: Anoda (−) melepaskan elektron · Katoda (+) menerima elektron · Elektrolit mengalirkan ion.',
+  },
+  listrik: {
+    title: '② Energi Kimia → Energi Listrik',
+    text: '“Energi kimia dalam baterai diubah menjadi energi listrik. Energi listrik digunakan untuk menggerakkan elektron dalam rangkaian.”',
+    sub: 'Perhatikan kabelnya: elektron (bola biru bercahaya) bergerak dari kutub − menuju kutub +. Saat elektron sampai di lampu… lampu mulai menyala!',
+  },
+  transformasi: {
+    title: '③ Energi Listrik → Energi Cahaya',
+    text: '“Ketika energi listrik sampai pada lampu, energi tersebut diubah menjadi energi cahaya. Akibatnya, lampu menyala.”',
+    sub: 'Energi Kimia → Energi Listrik → Energi Cahaya. (Sebagian kecil energi juga berubah menjadi energi panas.)',
+  },
+};
+const ORDER = [null, 'kimia', 'listrik', 'transformasi'];
+let curStage = null;
+
+// narasi suara (Web Speech, id-ID) — bisa dibisukan, tersimpan
+const NARKEY = 'adindautami-nar';
+let narOn = true;
+try { narOn = (localStorage.getItem(NARKEY) ?? '1') === '1'; } catch (e) { }
+function speak(txt) {
+  if (!narOn || !('speechSynthesis' in window)) return;
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(txt.replace(/[“”]/g, ''));
+    u.lang = 'id-ID'; u.rate = 0.95;
+    speechSynthesis.speak(u);
+  } catch (e) { }
+}
+function renderSpeakBtn() { narSpeak.classList.toggle('off', !narOn); }
+narSpeak.addEventListener('click', () => {
+  narOn = !narOn;
+  try { localStorage.setItem(NARKEY, narOn ? '1' : '0'); } catch (e) { }
+  renderSpeakBtn();
+  if (narOn && curStage) speak(STAGES[curStage].text);
+  else { try { speechSynthesis.cancel(); } catch (e) { } }
+});
+narClose.addEventListener('click', () => { narEl.classList.remove('show'); });
+
+function setStage(s) {
+  curStage = s;
+  circuit.setStage(s);
+  if (circuitM) circuitM.setStage(s);
+  document.body.dataset.stage = s || '';
+  stBtns.forEach(b => b.classList.toggle('on', b.dataset.stage === s));
+  if (s) {
+    const d = STAGES[s];
+    narTitle.textContent = d.title;
+    narText.textContent = d.text;
+    narSub.textContent = d.sub;
+    narEl.classList.add('show');
+    hintEl.style.display = 'none';
+    speak(d.text);
+  } else {
+    narEl.classList.remove('show');
+    hintEl.style.display = '';
+    setHint(mode === 'marker' ? (markerFound ? HINT.dapat : HINT.cari) : HINT.bebas);
+    try { speechSynthesis.cancel(); } catch (e) { }
+  }
+}
+function advanceStage() { setStage(ORDER[(ORDER.indexOf(curStage) + 1) % ORDER.length]); }
+stBtns.forEach(b => b.addEventListener('click', () => setStage(curStage === b.dataset.stage ? null : b.dataset.stage)));
 
 // ================= MODE BEBAS (markerless) =================
 const scene = new THREE.Scene();
@@ -43,7 +119,8 @@ const dir2 = new THREE.DirectionalLight(0xbcd4ff, .4); dir2.position.set(-4, 2, 
 const circuit = makeCircuit();
 const holder = new THREE.Group();
 holder.add(circuit.group);
-const HOME = { scale: 0.46, rot: [-0.6, 0.6, 0], pos: [0, 0.1, 0] };
+// sudut awal: dari atas-depan serong (rx positif = sisi atas papan menghadap kamera)
+const HOME = { scale: 0.46, rot: [0.5, 0.55, 0], pos: [0, 0.1, 0] };
 holder.scale.setScalar(HOME.scale);
 holder.rotation.set(...HOME.rot);
 holder.position.set(...HOME.pos);
@@ -60,7 +137,7 @@ async function startCam() {
   }
 }
 
-// ---------- interaksi bebas: seret putar, cubit zoom, ketuk toggle ----------
+// ---------- interaksi bebas: seret putar, cubit zoom, ketuk = tahap berikutnya ----------
 let pts = new Map(), last = null, pinchD = 0, moved = 0, downT = 0;
 function pd(e) { pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); if (pts.size === 1) { last = { x: e.clientX, y: e.clientY }; moved = 0; downT = performance.now(); } if (pts.size === 2) pinchD = dist(); }
 function pm(e) {
@@ -78,7 +155,7 @@ function pm(e) {
 function pu(e) {
   const wasTap = pts.size === 1 && moved < 8 && (performance.now() - downT) < 400;
   pts.delete(e.pointerId); if (pts.size < 2) pinchD = 0; if (pts.size === 0) last = null;
-  if (wasTap) setOn(!activeCircuit().isOn);
+  if (wasTap) advanceStage();
 }
 function dist() { const a = [...pts.values()]; return Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); }
 stage.addEventListener('pointerdown', pd); stage.addEventListener('pointermove', pm);
@@ -108,6 +185,7 @@ function initMarker() {
   const md = new THREE.DirectionalLight(0xffffff, 1.2); md.position.set(1.2, 2.4, 1.6); ms.add(md);
 
   circuitM = makeCircuit();
+  if (curStage) circuitM.setStage(curStage);
   markerHolder = new THREE.Group();
   markerHolder.add(circuitM.group);
   // pas-kan lebar rangkaian ke lebar kartu (marker MindAR lebarnya 1 unit)
@@ -125,13 +203,13 @@ function initMarker() {
     if (mode !== 'marker') return;
     markerFound = true; popK = 0; // pop-in kecil
     document.body.classList.add('found');
-    setHint(HINT.dapat);
+    if (!curStage) setHint(HINT.dapat);
   };
   anchor.onTargetLost = () => {
     if (mode !== 'marker') return;
     markerFound = false;
     document.body.classList.remove('found');
-    setHint(HINT.cari);
+    if (!curStage) setHint(HINT.cari);
   };
 }
 
@@ -173,16 +251,16 @@ async function startMarker() {
   sizeMarker(); setTimeout(sizeMarker, 300); setTimeout(sizeMarker, 900);
   clockM.getDelta();
   mindar.renderer.setAnimationLoop(markerLoop);
-  setHint(markerFound ? HINT.dapat : HINT.cari);
+  if (!curStage) setHint(markerFound ? HINT.dapat : HINT.cari);
 }
 
-// ketuk di mode marker = toggle saklar
+// ketuk di mode marker = tahap berikutnya
 let mDown = null;
 mstage.addEventListener('pointerdown', e => { mDown = { x: e.clientX, y: e.clientY, t: performance.now() }; });
 mstage.addEventListener('pointerup', e => {
   if (!mDown) return;
   const dm = Math.hypot(e.clientX - mDown.x, e.clientY - mDown.y);
-  if (dm < 10 && performance.now() - mDown.t < 450) setOn(!activeCircuit().isOn);
+  if (dm < 10 && performance.now() - mDown.t < 450) advanceStage();
   mDown = null;
 });
 
@@ -199,17 +277,6 @@ btnFree.addEventListener('click', () => setMode('bebas'));
 btnMarker.addEventListener('click', () => setMode('marker'));
 
 // ================= UI BERSAMA =================
-function setOn(v) {
-  activeCircuit().setOn(v);
-  syncToggle();
-}
-function syncToggle() {
-  const v = activeCircuit().isOn;
-  btnToggle.className = 'dockbtn' + (v ? ' on' : '');
-  btnToggle.querySelector('span').textContent = v ? 'Matikan' : 'Nyalakan';
-}
-btnToggle.addEventListener('click', () => setOn(!activeCircuit().isOn));
-
 btnReset.addEventListener('click', () => {
   holder.rotation.set(...HOME.rot); holder.scale.setScalar(HOME.scale); holder.position.set(...HOME.pos);
 });
@@ -231,7 +298,7 @@ btnSnap.addEventListener('click', () => {
     renderer.render(scene, camera);
     ctx.drawImage(renderer.domElement, 0, 0, w, h);
   }
-  const a = document.createElement('a'); a.href = c.toDataURL('image/png'); a.download = 'rangkaian-listrik-ar.png'; a.click();
+  const a = document.createElement('a'); a.href = c.toDataURL('image/png'); a.download = 'transformasi-energi-ar.png'; a.click();
 });
 
 // tema (untuk chrome overlay)
@@ -248,13 +315,15 @@ tick();
 // status utk QA headless / diagnosis di perangkat
 window.__AR = {
   get mode() { return mode; }, get found() { return markerFound; }, get fail() { return markerFail; },
-  get on() { const c = activeCircuit(); return !!(c && c.isOn); },
+  get stage() { return curStage; },
+  get lit() { const c = activeCircuit(); return c ? c.lit : 0; },
   get proc() { return !!(mindar && mindar.controller && mindar.controller.processingVideo); },
+  get pose() { return { rx: +holder.rotation.x.toFixed(3), ry: +holder.rotation.y.toFixed(3), s: +holder.scale.x.toFixed(3) }; },
   get mindar() { return mindar; },
 };
 
 // mulai — mode ditentukan deep-link (?mode=marker, atau #marker dari QR kartu)
-syncToggle();
+renderSpeakBtn();
 if (new URLSearchParams(location.search).get('mode') === 'marker' || location.hash === '#marker') {
   mode = 'marker';
   document.body.dataset.mode = 'marker';
@@ -264,5 +333,6 @@ if (new URLSearchParams(location.search).get('mode') === 'marker' || location.ha
   startMarker();
 } else {
   document.body.dataset.mode = 'bebas';
+  setHint(HINT.bebas);
   startCam();
 }

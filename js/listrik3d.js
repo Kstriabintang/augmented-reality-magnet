@@ -2,7 +2,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
-import { makeCircuit } from '/js/circuit3d.js?v=1';
+import { makeCircuit } from '/js/circuit3d.js?v=2';
 
 const stage = document.getElementById('stage');
 const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
