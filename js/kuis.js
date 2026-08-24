@@ -1,13 +1,14 @@
 // Kuis Magnet & Listrik — utamiii.my.id
-// Pilih paket (utama / topik × tingkat) · isi identitas · 20 soal · tiap benar = 5 poin (maks 100).
+// Pilih paket (utama 20 / Mudah 20 / Sedang 25 / Sulit 30) · isi identitas · nilai skala 0–100.
 // Wajib jawab semua sebelum mengumpulkan. Hasil disimpan ke Supabase (tabel hasil_kuis_utami) + kolom paket.
 import { SUPABASE_URL, SUPABASE_ANON_KEY, TABLE, isConfigured } from '/js/config.js?v=1';
 
-const POINTS_PER = 5;
+// Nilai = jumlah benar ÷ jumlah soal × 100 (maksimal 100, berapa pun jumlah soal paketnya).
+const nilaiDari = (benar, total) => total ? Math.round(benar / total * 100) : 0;
 
 // ---------- soal: paket utama (kisi-kisi, dengan diagram) + bank per topik/tingkat ----------
 import { FIG, QUESTIONS } from '/js/soal.js?v=2';
-import { BANK } from '/js/bank.js?v=1';
+import { BANK } from '/js/bank.js?v=2';
 
 const PAKET = {
   utama: { label: 'Paket Utama', topik: 'Magnet & Listrik', level: 'Ujian', sub: 'Paket ujian sesuai kisi-kisi — campuran magnet & listrik', soal: QUESTIONS },
@@ -44,15 +45,16 @@ function screenStart() {
     <div class="k-hero">
       <div class="k-badge">📝 Kuis</div>
       <h1>Kuis Magnet &amp; Listrik</h1>
-      <p>Pilih paket soal, lalu isi identitasmu. Setiap paket berisi <b>20 soal</b>; tiap jawaban benar bernilai <b>${POINTS_PER} poin</b> (maksimal <b>100</b>).</p>
+      <p>Pilih paket soal, lalu isi identitasmu. Jumlah soal sesuai tingkat: <b>Mudah 20</b> · <b>Sedang 25</b> · <b>Sulit 30</b>. Nilai dihitung dari jawaban benar (skala <b>0–100</b>).</p>
     </div>
     <div class="k-card k-paket">
-      <div class="k-pakh">Pilih Paket Soal <span class="k-pakn">7 paket · 140 soal</span></div>
+      <div class="k-pakh">Pilih Paket Soal <span class="k-pakn">7 paket · 170 soal</span></div>
       <div class="k-pgrid">
         ${Object.entries(PAKET).map(([k, p]) => `
         <button type="button" class="k-pkt ${paketClass(k, p)} ${k === paketKey ? 'is-sel' : ''}" data-paket="${k}">
           <span class="k-pkt-top"><b>${escapeHtml(p.topik)}</b><i>${escapeHtml(p.level)}</i></span>
           <span class="k-pkt-sub">${escapeHtml(p.sub)}</span>
+          <span class="k-pkt-n">${p.soal.length} soal</span>
         </button>`).join('')}
       </div>
     </div>
@@ -135,7 +137,7 @@ async function screenResult() {
   const SOAL = soalAktif();
   const total = SOAL.length;
   let benar = 0; SOAL.forEach((Q, i) => { if (state.answers[i] === Q.correct) benar++; });
-  const nilai = benar * POINTS_PER, salah = total - benar;
+  const nilai = nilaiDari(benar, total), salah = total - benar;
   const durasi = state.startedAt ? Math.round((Date.now() - state.startedAt) / 1000) : null;
   const grade = nilai >= 85 ? { t: "Sangat Baik", c: "#1f9c4d" } : nilai >= 70 ? { t: "Baik", c: "#2f6fd0" } : nilai >= 55 ? { t: "Cukup", c: "#c78a00" } : { t: "Perlu Belajar Lagi", c: "#e23c3c" };
   const row = { nama: state.nama, kelas: state.kelas, sekolah: state.sekolah, jawaban: state.answers, benar, salah, nilai, jumlah_soal: total, durasi_detik: durasi, paket: paketKey };
@@ -158,7 +160,7 @@ async function screenResult() {
       <div class="k-ring" style="--v:${nilai};--gc:${grade.c}"><div class="k-ring-in"><b>${nilai}</b><small>/100</small></div></div>
       <div class="k-scoremeta"><div class="k-grade" style="color:${grade.c}">${grade.t}</div>
         <div class="k-benar">Benar <b>${benar}</b> dari ${total} · Salah <b>${salah}</b></div>
-        <div class="k-rule">Tiap soal benar = ${POINTS_PER} poin</div><div class="k-save" id="k-save">Menyimpan hasil…</div></div>
+        <div class="k-rule">Nilai = benar ÷ ${total} soal × 100</div><div class="k-save" id="k-save">Menyimpan hasil…</div></div>
     </div>
     <div class="k-ractions"><button class="k-btn k-btn-primary" id="k-again" type="button">Ulangi Kuis</button><a class="k-btn k-btn-ghost" href="/">Beranda</a></div>`;
   wrap.appendChild(head);
