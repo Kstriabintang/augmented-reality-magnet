@@ -49,13 +49,14 @@ header{display:flex; align-items:center; gap:12px}
 .hero h1 .n{color:var(--n)} .hero h1 .s{color:var(--s)}
 .hero p{margin:0 auto; max-width:520px; color:var(--sub); font-size:15px; line-height:1.6; font-weight:600}
 /* signature magnet mini */
-.mfield{width:min(260px,72vw); margin:18px auto 0; aspect-ratio:1/.62; position:relative}
-.mfield svg{width:100%;height:100%}
-.flux{fill:none; stroke:url(#fg); stroke-width:2.4; stroke-linecap:round; opacity:.9; stroke-dasharray:7 10; animation:flux 2.4s linear infinite}
-.flux.b{animation-duration:3s} .flux.c{animation-duration:3.6s}
-@keyframes flux{to{stroke-dashoffset:-34}}
-.poleN,.poleS{font-family:var(--font-d); font-weight:800; font-size:22px; fill:#fff}
-@media (prefers-reduced-motion:reduce){.flux{animation:none}}
+.mfield{width:min(320px,84vw); margin:18px auto 0; aspect-ratio:1/.56; position:relative; animation:floaty 5s ease-in-out infinite}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.mfield svg{width:100%;height:100%; overflow:visible}
+.flux{fill:none; stroke:url(#fg); stroke-width:2.6; stroke-linecap:round; opacity:.9; stroke-dasharray:7 11; animation:flux 2.4s linear infinite}
+.flux.b{animation-duration:3s} .flux.c{animation-duration:3.6s} .flux.d{animation-duration:4.2s}
+@keyframes flux{to{stroke-dashoffset:-36}}
+.poleN,.poleS{font-family:var(--font-d); font-weight:800; font-size:26px; fill:#fff}
+@media (prefers-reduced-motion:reduce){.flux{animation:none}.mfield{animation:none}}
 .grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-top:26px}
 @media (max-width:680px){.grid{grid-template-columns:1fr}}
 .mode{position:relative; display:flex; flex-direction:column; gap:10px; text-decoration:none; color:inherit;
@@ -88,18 +89,22 @@ footer a{color:var(--n); font-weight:800; text-decoration:none}
     <h1>Pilih Cara Belajar</h1>
     <p>Satu materi medan magnet, tiga cara menjelajah: simulasi 2D interaktif, penampil 3D yang bisa diputar, dan AR lewat kamera HP.</p>
     <div class="mfield" aria-hidden="true">
-      <svg viewBox="0 0 260 162" preserveAspectRatio="xMidYMid meet">
+      <svg viewBox="0 0 300 168" preserveAspectRatio="xMidYMid meet">
         <defs><linearGradient id="fg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e8462f"/><stop offset="1" stop-color="#2f6fd0"/></linearGradient></defs>
-        <path class="flux"   d="M100 81 C100 34 160 34 160 81"/>
-        <path class="flux b" d="M100 81 C92 8 168 8 160 81"/>
-        <path class="flux c" d="M100 81 C80 -18 180 -18 160 81"/>
-        <path class="flux"   d="M100 81 C100 128 160 128 160 81"/>
-        <path class="flux b" d="M100 81 C92 154 168 154 160 81"/>
-        <path class="flux c" d="M100 81 C80 180 180 180 160 81"/>
-        <rect x="100" y="67" width="30" height="28" rx="6" fill="#e8462f"/>
-        <rect x="130" y="67" width="30" height="28" rx="6" fill="#2f6fd0"/>
-        <text class="poleN" x="115" y="88" text-anchor="middle">N</text>
-        <text class="poleS" x="145" y="88" text-anchor="middle">S</text>
+        <!-- garis gaya loop dari ujung N (kiri) ke ujung S (kanan), atas & bawah -->
+        <path class="flux"   d="M96 84 C96 52 204 52 204 84"/>
+        <path class="flux b" d="M96 84 C86 22 214 22 204 84"/>
+        <path class="flux c" d="M96 84 C70 -12 230 -12 204 84"/>
+        <path class="flux d" d="M96 84 C48 -44 252 -44 204 84"/>
+        <path class="flux"   d="M96 84 C96 116 204 116 204 84"/>
+        <path class="flux b" d="M96 84 C86 146 214 146 204 84"/>
+        <path class="flux c" d="M96 84 C70 180 230 180 204 84"/>
+        <path class="flux d" d="M96 84 C48 212 252 212 204 84"/>
+        <!-- batang magnet lebih panjang -->
+        <rect x="96" y="69" width="54" height="30" rx="7" fill="#e8462f"/>
+        <rect x="150" y="69" width="54" height="30" rx="7" fill="#2f6fd0"/>
+        <text class="poleN" x="123" y="91" text-anchor="middle">N</text>
+        <text class="poleS" x="177" y="91" text-anchor="middle">S</text>
       </svg>
     </div>
   </section>
