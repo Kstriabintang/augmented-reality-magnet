@@ -26,7 +26,7 @@ document.getElementById('ttl').textContent = materi.short;
 const HINT = {
   bebas: 'Seret memutar · cubit zoom · <b>ketuk layar</b> untuk memulai perjalanan energi',
   cari: `Arahkan kamera ke <b>Kartu ${materi.short}</b> sampai terdeteksi`,
-  dapat: 'Kartu terdeteksi! <b>Ketuk layar</b> atau pilih tahap di bawah',
+  dapat: 'Kartu terdeteksi! Seret memutar · cubit zoom · <b>ketuk</b> = tahap berikutnya',
 };
 function setHint(html) { hintEl.innerHTML = html; }
 
@@ -154,8 +154,8 @@ stageEl.addEventListener('pointerup', pu);
 stageEl.addEventListener('pointercancel', pu);
 
 // ================= MODE MARKER (MindAR image-tracking) =================
-let mindar = null, markerHolder = null, markerFound = false, markerFail = false;
-let bobT = 0, popK = 1, baseScale = 1;
+let mindar = null, markerHolder = null, userRig = null, markerFound = false, markerFail = false;
+let bobT = 0, popK = 1, baseScale = 1, uScale = 1;
 const clockM = new THREE.Clock();
 
 function initMarker() {
@@ -169,24 +169,28 @@ function initMarker() {
     if (e.message && e.message.indexOf('getProjectionMatrix') !== -1) e.preventDefault();
   });
   const ms = mindar.scene;
-  ms.add(new THREE.HemisphereLight(0xffffff, 0x8393a7, 1.2));
-  const md = new THREE.DirectionalLight(0xffffff, 1.2); md.position.set(1.2, 2.4, 1.6); ms.add(md);
+  ms.add(new THREE.HemisphereLight(0xffffff, 0x8393a7, 1.15));
+  const md = new THREE.DirectionalLight(0xffffff, 1.25); md.position.set(1, 3, 2); ms.add(md);
 
   const api = materi.make();
   sceneApis.push(api);
   labelUis.push(buildLabels(api, materi));
   if (cur) api.setStage(cur);
+  // DIORAMA BERDIRI DI ATAS KARTU (tabletop): rotasi +90° memetakan sumbu-Y adegan
+  // → keluar dari kartu ke arah kamera, dasar papan duduk di permukaan kartu.
+  // (Bug lama: -90°+0.5 membuat kamera melihat BAWAH papan = lempengan gelap.)
+  userRig = new THREE.Group();          // lapisan interaksi: seret memutar + cubit zoom
+  userRig.add(api.group);
   markerHolder = new THREE.Group();
-  markerHolder.add(api.group);
-  // pas-kan lebar adegan ke lebar kartu (marker MindAR = 1 unit)
+  markerHolder.add(userRig);
   const bb = new THREE.Box3().setFromObject(api.group);
   const size = bb.getSize(new THREE.Vector3());
-  baseScale = .92 / Math.max(size.x, .001);
-  markerHolder.scale.setScalar(baseScale);
   const center = bb.getCenter(new THREE.Vector3());
-  api.group.position.sub(center);
-  markerHolder.position.set(0, 0, .3);
-  markerHolder.rotation.x = -Math.PI / 2 + .5; // papan agak berdiri menghadap pemindai
+  baseScale = .92 / Math.max(size.x, .001); // pas lebar kartu (lebar marker = 1 unit)
+  api.group.position.set(-center.x, -bb.min.y, -center.z); // pusatkan & dudukkan di dasar
+  markerHolder.scale.setScalar(baseScale);
+  markerHolder.rotation.x = Math.PI / 2;
+  markerHolder.position.set(0, 0, .02);
 
   const anchor = mindar.addAnchor(0);
   anchor.group.add(markerHolder);
@@ -241,23 +245,43 @@ async function startMarker() {
     bobT += dt;
     if (popK < 1) popK = Math.min(1, popK + dt * 2.4);
     const pop = 1 - Math.pow(1 - popK, 3);
-    markerHolder.scale.setScalar(baseScale * (.6 + .4 * pop));
-    markerHolder.position.z = .3 + Math.sin(bobT * 1.5) * .03;
+    markerHolder.scale.setScalar(baseScale * (.6 + .4 * pop) * uScale);
+    markerHolder.position.z = .02 + Math.sin(bobT * 1.6) * .012;
     mindar.renderer.render(mindar.scene, mindar.camera);
     labelRenderer.render(mindar.scene, mindar.camera);
   });
   if (!cur) setHint(markerFound ? HINT.dapat : HINT.cari);
 }
 
-// ketuk di mode marker = tahap berikutnya
-let mDown = null;
-mstage.addEventListener('pointerdown', e => { mDown = { x: e.clientX, y: e.clientY, t: performance.now() }; });
-mstage.addEventListener('pointerup', e => {
-  if (!mDown) return;
-  const dm = Math.hypot(e.clientX - mDown.x, e.clientY - mDown.y);
-  if (dm < 10 && performance.now() - mDown.t < 450) advance();
-  mDown = null;
+// interaksi mode marker: seret memutar diorama, cubit zoom, ketuk = tahap berikutnya
+let mpts = new Map(), mLast = null, mPinch = 0, mMoved = 0, mDownT = 0;
+const mDist = () => { const a = [...mpts.values()]; return Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); };
+mstage.addEventListener('pointerdown', e => {
+  mpts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (mpts.size === 1) { mLast = { x: e.clientX, y: e.clientY }; mMoved = 0; mDownT = performance.now(); }
+  if (mpts.size === 2) mPinch = mDist();
 });
+mstage.addEventListener('pointermove', e => {
+  if (!mpts.has(e.pointerId) || !userRig) return;
+  mpts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (mpts.size === 1 && mLast) {
+    const dx = e.clientX - mLast.x, dy = e.clientY - mLast.y; mMoved += Math.abs(dx) + Math.abs(dy);
+    userRig.rotation.y += dx * .009;                                     // yaw keliling diorama
+    userRig.rotation.x = Math.max(-.5, Math.min(1.1, userRig.rotation.x + dy * .008)); // tilt lihat atas/bawah
+    mLast = { x: e.clientX, y: e.clientY };
+  } else if (mpts.size === 2) {
+    const d = mDist();
+    if (mPinch) uScale = Math.max(.45, Math.min(2.4, uScale * (d / mPinch)));
+    mPinch = d; mMoved += 10;
+  }
+});
+const mUp = e => {
+  const wasTap = mpts.size === 1 && mMoved < 8 && (performance.now() - mDownT) < 400;
+  mpts.delete(e.pointerId); if (mpts.size < 2) mPinch = 0; if (mpts.size === 0) mLast = null;
+  if (wasTap) advance();
+};
+mstage.addEventListener('pointerup', mUp);
+mstage.addEventListener('pointercancel', mUp);
 
 // ================= GANTI MODE = NAVIGASI PENUH =================
 document.getElementById('btnfree').addEventListener('click', () => {
@@ -270,6 +294,7 @@ document.getElementById('btnmarker').addEventListener('click', () => {
 // ---------- tombol bersama ----------
 document.getElementById('reset').addEventListener('click', () => {
   if (holder) { holder.rotation.set(...HOME.rot); holder.scale.setScalar(HOME.s); holder.position.set(0, HOME.y, 0); }
+  if (userRig) { userRig.rotation.set(0, 0, 0); uScale = 1; }
 });
 document.getElementById('snap').addEventListener('click', () => {
   const w = innerWidth, h = innerHeight;
@@ -300,7 +325,11 @@ window.__AR = {
   get found() { return markerFound; },
   get fail() { return markerFail; },
   get proc() { return !!(mindar && mindar.controller && mindar.controller.processingVideo); },
-  get pose() { return holder ? { rx: +holder.rotation.x.toFixed(3), ry: +holder.rotation.y.toFixed(3), s: +holder.scale.x.toFixed(3) } : null; },
+  get pose() {
+    if (holder) return { rx: +holder.rotation.x.toFixed(3), ry: +holder.rotation.y.toFixed(3), s: +holder.scale.x.toFixed(3) };
+    if (userRig) return { rx: +userRig.rotation.x.toFixed(3), ry: +userRig.rotation.y.toFixed(3), s: +uScale.toFixed(3) };
+    return null;
+  },
   probe() { return sceneApis[0] ? sceneApis[0].debug() : null; },
   set(k) { setStage(k); },
   next() { advance(); },
