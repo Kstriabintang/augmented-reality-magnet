@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Media Ajar IPA — Magnet &amp; Listrik | adindautami</title>
-<meta name="description" content="Media ajar IPA interaktif untuk SD/SMP: perjalanan transformasi energi (kimia → listrik → cahaya) dalam AR 3 tahap, medan magnet WebAR 3D, dan kuis bernilai otomatis. Karya Adinda Utami.">
+<meta name="description" content="Media ajar IPA interaktif untuk SD/SMP: transformasi energi 6 konteks (baterai & HP, panel surya, kendaraan, fotosintesis, PLTA, PLTU) dalam AR & 3D, medan magnet WebAR, rangkaian listrik, dan kuis bernilai otomatis. Karya Adinda Utami.">
 <meta name="theme-color" content="#eaf2ff">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" href="/favicon-32.png">
@@ -12,7 +12,7 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://utamiii.my.id/">
 <meta property="og:title" content="Media Ajar IPA — Magnet & Listrik">
-<meta property="og:description" content="AR transformasi energi (kimia → listrik → cahaya) + medan magnet WebAR 3D + kuis otomatis. Media ajar IPA untuk SD/SMP. Karya Adinda Utami.">
+<meta property="og:description" content="Transformasi energi 6 konteks dalam AR & 3D + medan magnet WebAR + rangkaian listrik + kuis otomatis. Media ajar IPA untuk SD/SMP. Karya Adinda Utami.">
 <meta property="og:image" content="https://utamiii.my.id/og-image.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -92,6 +92,7 @@ header{display:flex; align-items:center; justify-content:space-between; gap:12px
 .cta:active{transform:translateY(2px)}
 .cta svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 .cta.el{color:#4a2c00; background:linear-gradient(160deg,var(--volt2),var(--volt))}
+.cta.en{color:#fff; background:linear-gradient(160deg,#5ad48d,#1c8a4b)}
 .cta.ghost{color:var(--ink); background:var(--card); border-color:var(--line)}
 
 /* ---- signature: perjalanan energi + magnet ---- */
@@ -180,7 +181,8 @@ header{display:flex; align-items:center; justify-content:space-between; gap:12px
 .sec-sub{margin:0 0 18px; color:var(--sub); font-size:14.5px; font-weight:600}
 
 /* ---- module cards ---- */
-.grid{display:grid; grid-template-columns:1fr 1fr; gap:20px}
+.grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px}
+@media (max-width:860px){.grid{grid-template-columns:1fr 1fr}}
 .mcard{position:relative; border-radius:26px; overflow:hidden; text-decoration:none; color:inherit;
   background:var(--card); border:2.5px solid var(--line); box-shadow:var(--shadow);
   display:flex; flex-direction:column; transition:transform .18s ease, box-shadow .18s ease}
@@ -189,13 +191,15 @@ header{display:flex; align-items:center; justify-content:space-between; gap:12px
 .mtop{height:132px; position:relative; overflow:hidden; display:grid; place-items:center}
 .mtop.mg{background:radial-gradient(120% 130% at 30% 10%, #ffe1d8, #ffd0e6)}
 .mtop.el{background:radial-gradient(120% 130% at 70% 10%, #fff0cf, #ffe0a6)}
+.mtop.en{background:radial-gradient(120% 130% at 50% 10%, #d8f7e2, #b9ecc9)}
 :root[data-theme="gelap"] .mtop.mg{background:radial-gradient(120% 130% at 30% 10%, #3a2338, #2a1830)}
 :root[data-theme="gelap"] .mtop.el{background:radial-gradient(120% 130% at 70% 10%, #3a2f18, #251d0d)}
+:root[data-theme="gelap"] .mtop.en{background:radial-gradient(120% 130% at 50% 10%, #17331f, #0d2113)}
 .mtop svg{width:78px; height:78px; filter:drop-shadow(0 6px 10px rgba(0,0,0,.14))}
 .mbody{padding:18px 20px 20px; display:flex; flex-direction:column; gap:9px; flex:1}
 .tag{align-self:flex-start; font-family:var(--font-d); font-weight:800; font-size:11.5px; letter-spacing:.5px;
   text-transform:uppercase; padding:5px 12px; border-radius:999px; color:#fff}
-.tag.mg{background:var(--n)} .tag.el{background:var(--volt); color:#4a2c00}
+.tag.mg{background:var(--n)} .tag.el{background:var(--volt); color:#4a2c00} .tag.en{background:#1c8a4b}
 .mbody h3{font-family:var(--font-d); font-weight:800; font-size:21px; margin:2px 0 0}
 .mbody p{margin:0; color:var(--sub); font-size:14px; line-height:1.55; font-weight:600; flex:1}
 .go{display:inline-flex; align-items:center; justify-content:center; gap:8px; margin-top:6px; font-family:var(--font-d);
@@ -204,6 +208,7 @@ header{display:flex; align-items:center; justify-content:space-between; gap:12px
 .go:active{transform:translateY(2px)}
 .go.mg{background:linear-gradient(160deg,var(--n2),var(--n))}
 .go.el{background:linear-gradient(160deg,var(--volt2),var(--volt)); color:#4a2c00}
+.go.en{background:linear-gradient(160deg,#5ad48d,#1c8a4b)}
 
 /* ---- kuis feature ---- */
 .kfeat{display:flex; align-items:center; gap:18px; padding:22px; border-radius:26px; text-decoration:none; color:inherit;
@@ -268,7 +273,7 @@ footer{margin-top:54px; background:var(--card); border:2.5px solid var(--line); 
     <div>
       <span class="eyebrow reveal"><span class="dot"></span> Media Ajar IPA · SD / SMP</span>
       <h1 class="reveal">Belajar <span class="n">Magnet</span> &amp; <span class="s">Listrik</span> sambil bermain</h1>
-      <p class="reveal">Ikuti <b>perjalanan transformasi energi</b> — dari reaksi kimia di baterai, elektron yang mengalir di dalam kabel, sampai lampu menyala — lewat AR 3 tahap di kamera HP. Lengkap dengan medan magnet 3D dan kuis bernilai otomatis.</p>
+      <p class="reveal">Ikuti <b>perjalanan transformasi energi</b> dalam 6 konteks nyata — baterai &amp; smartphone, panel surya, kendaraan, fotosintesis, PLTA, dan PLTU — lewat AR &amp; 3D di kamera HP. Lengkap dengan medan magnet, rangkaian listrik, dan kuis bernilai otomatis.</p>
       <div class="chips reveal">
         <span class="chip mg"><span class="cd"></span>Magnet</span>
         <span class="chip el"><span class="cd"></span>Listrik</span>
@@ -276,7 +281,7 @@ footer{margin-top:54px; background:var(--card); border:2.5px solid var(--line); 
         <span class="chip el"><span class="cd"></span>Transformasi Energi</span>
       </div>
       <div class="cta-row reveal">
-        <a class="cta el" href="/listrik/ar/"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg>Coba AR Energi</a>
+        <a class="cta el" href="/energi/"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg>Coba AR Energi</a>
         <a class="cta ghost" href="#mods">Jelajahi Materi<svg viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a>
       </div>
     </div>
@@ -365,7 +370,7 @@ footer{margin-top:54px; background:var(--card); border:2.5px solid var(--line); 
   </section>
 
   <h2 class="sec-h">Perjalanan Transformasi Energi</h2>
-  <p class="sec-sub">Fitur utama AR listrik — ikuti energinya tahap demi tahap, bukan sekadar “baterai lalu lampu”.</p>
+  <p class="sec-sub">Ikuti energinya tahap demi tahap — kini dalam <b>6 konteks kehidupan nyata</b>: baterai &amp; HP, panel surya, kendaraan bermotor, fotosintesis, PLTA, dan PLTU.</p>
   <section id="energi">
     <div class="echain reveal">
       <span class="ep k"><svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v5l-5 9a3 3 0 0 0 2.6 4.5h8.8A3 3 0 0 0 19 17l-5-9V3"/></svg>Energi Kimia</span>
@@ -395,6 +400,7 @@ footer{margin-top:54px; background:var(--card); border:2.5px solid var(--line); 
       </div>
     </div>
     <div class="ecta">
+      <a class="cta en" href="/energi/"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.6-6.3M21 3v5h-5"/></svg>Jelajahi 6 Konteks Energi</a>
       <a class="cta el" href="/listrik/ar/"><svg viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3.2"/></svg>Buka AR Listrik</a>
       <a class="cta ghost" href="/listrik/ar/kartu/"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 10h18"/></svg>Kartu Marker</a>
     </div>
@@ -402,7 +408,7 @@ footer{margin-top:54px; background:var(--card); border:2.5px solid var(--line); 
   </section>
 
   <h2 class="sec-h">Pilih Materi</h2>
-  <p class="sec-sub">Dua media interaktif yang bisa langsung kamu coba.</p>
+  <p class="sec-sub">Tiga materi interaktif yang bisa langsung kamu coba.</p>
   <section class="grid" id="mods">
     <a class="mcard reveal" href="/magnet/">
       <div class="mtop mg">
@@ -428,6 +434,20 @@ footer{margin-top:54px; background:var(--card); border:2.5px solid var(--line); 
         <p>Ikuti perjalanan energi: reaksi kimia → elektron mengalir → lampu menyala. Tersedia <b>simulasi 2D</b>, <b>penampil 3D</b>, dan <b>AR kamera</b> (marker &amp; tanpa marker).</p>
         <span class="go el">Coba Rangkaian
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4a2c00" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      </div>
+    </a>
+
+    <a class="mcard reveal" href="/energi/">
+      <div class="mtop en">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#1c8a4b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.3"/><path d="M21 3v5h-5"/><path d="M12.8 7.5L9 12.6h2.6L10.8 17l4-5.3h-2.7l.7-4.2z" fill="#1c8a4b" stroke="none"/></svg>
+      </div>
+      <div class="mbody">
+        <span class="tag en">Energi</span>
+        <h3>Transformasi Energi</h3>
+        <p>6 konteks perubahan bentuk energi dalam <b>3D</b> &amp; <b>AR</b>: baterai &amp; HP, panel surya, kendaraan bermotor, fotosintesis, PLTA, dan PLTU — dengan label, panah energi, dan narasi suara.</p>
+        <span class="go en">Jelajahi Energi
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </span>
       </div>
     </a>
@@ -463,13 +483,15 @@ footer{margin-top:54px; background:var(--card); border:2.5px solid var(--line); 
         <ul>
           <li><a href="/magnet/">Medan Magnet (AR)</a></li>
           <li><a href="/listrik/">Rangkaian Listrik</a></li>
+          <li><a href="/energi/">Transformasi Energi</a></li>
           <li><a href="/kuis/">Kuis &amp; Nilai</a></li>
         </ul>
       </div>
       <div>
-        <h4>AR Listrik</h4>
+        <h4>AR &amp; 3D</h4>
         <ul>
-          <li><a href="/listrik/ar/">AR Kamera</a></li>
+          <li><a href="/energi/ar/">AR Energi (6 konteks)</a></li>
+          <li><a href="/listrik/ar/">AR Listrik</a></li>
           <li><a href="/listrik/ar/kartu/">Kartu Marker</a></li>
           <li><a href="/listrik/3d/">Penampil 3D</a></li>
           <li><a href="/listrik/2d/">Simulasi 2D</a></li>

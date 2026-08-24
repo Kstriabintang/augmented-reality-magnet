@@ -10,6 +10,7 @@
   <a href="https://utamiii.my.id/"><b>🌐 Buka Situs</b></a> &nbsp;·&nbsp;
   <a href="https://utamiii.my.id/magnet/"><b>🧲 AR Magnet</b></a> &nbsp;·&nbsp;
   <a href="https://utamiii.my.id/listrik/"><b>⚡ Rangkaian Listrik</b></a> &nbsp;·&nbsp;
+  <a href="https://utamiii.my.id/energi/"><b>🔄 Transformasi Energi</b></a> &nbsp;·&nbsp;
   <a href="https://utamiii.my.id/kuis/"><b>📝 Kuis</b></a>
 </p>
 
@@ -37,6 +38,7 @@
 - [Modul](#-modul)
   - [🧲 Medan Magnet (AR)](#-medan-magnet-ar)
   - [⚡ Rangkaian Listrik](#-rangkaian-listrik)
+  - [🔄 Transformasi Energi — 6 Konteks](#-transformasi-energi--6-konteks)
   - [📝 Kuis Magnet &amp; Listrik](#-kuis-magnet--listrik)
 - [Mode Terang &amp; Gelap](#-mode-terang--gelap)
 - [Teknologi](#-teknologi)
@@ -115,6 +117,29 @@ Panel keterangan menjelaskan tiap komponen (baterai, kabel, saklar, lampu) dan m
 
 <br clear="right">
 
+### 🔄 Transformasi Energi — 6 Konteks
+
+**Enam contoh perubahan bentuk energi** dalam kehidupan sehari-hari, masing-masing tersedia sebagai **penampil 3D** (`/energi/3d/`) dan **AR kamera markerless** (`/energi/ar/`), dipilih dari menu `/energi/`:
+
+| Konteks | Urutan perubahan energi |
+|---|---|
+| 🔋 **Baterai → Smartphone** | Kimia → Listrik → Cahaya + Suara + Panas |
+| ☀️ **Panel Surya → Rumah** | Cahaya → Listrik → Cahaya (lampu) · Gerak (kipas) · Panas (setrika) |
+| 🚗 **Kendaraan Bermotor** | Kimia (bensin) → Panas (pembakaran) → Mekanik (piston) → Kinetik |
+| 🌱 **Fotosintesis** | Cahaya + H₂O + CO₂ → Glukosa (Kimia) + O₂ → Pertumbuhan |
+| 💧 **PLTA** | Potensial (waduk) → Kinetik (air) → Mekanik (turbin) → Listrik |
+| 🏭 **PLTU** | Kimia (batu bara) → Panas → Uap (kinetik) → Mekanik → Listrik |
+
+Setiap adegan mengikuti **template seragam** dan menjawab tiga pertanyaan kunci — *energi dari mana? berubah jadi apa? dipakai untuk apa?* — lewat:
+
+- **Objek utama 3D** prosedural (Three.js) di atas papan claymorphism, bisa diputar bebas / dilihat lewat kamera.
+- **Tahap interaktif** (3–5 tahap per konteks) — ketuk layar atau tombol tahap untuk mengikuti energi selangkah demi selangkah; **rantai energi** di atas menyala mengikuti tahap.
+- **Label menempel berwarna per bentuk energi** (kimia hijau, listrik amber, panas merah, mekanik ungu, kinetik biru, dst.) yang berganti sesuai tahap.
+- **Panah & partikel aliran** — elektron, foton, air, uap, bahan bakar — bergerak menyusuri jalurnya; efek **sebab-akibat** dijaga (mis. lampu rumah baru menyala setelah arus *tiba*).
+- **Narasi teks + suara** (Web Speech id-ID) per tahap.
+
+Ketepatan konsep dijaga sesuai kaidah IPA: **ion bergerak di dalam baterai, elektron di rangkaian luar** (bukan "ion mengalir ke HP"); kendaraan memakai urutan **kimia → panas → mekanik → kinetik** (bukan "kinetik → gerak"); dan pada fotosintesis **matahari tidak "memasak" buah** — buah tumbuh dari energi kimia hasil fotosintesis.
+
 ### 📝 Kuis Magnet &amp; Listrik
 
 <table>
@@ -169,11 +194,18 @@ Setiap halaman mendukung tema terang dan gelap; pilihan pengguna disimpan otomat
 ├── index.html               🏠 beranda / hub (pilih materi)
 ├── magnet/index.html        🧲 AR medan magnet (A-Frame + MindAR)
 ├── listrik/index.html       ⚡ simulasi rangkaian listrik (SVG interaktif)
+├── energi/                  🔄 transformasi energi — 6 konteks
+│   ├── index.html             menu pilih konteks
+│   ├── 3d/index.html          penampil 3D (?m=slug)
+│   └── ar/index.html          AR kamera markerless (?m=slug)
 ├── kuis/index.html          📝 kuis (memuat js/kuis.js)
 ├── js/
 │   ├── kuis.js                logika kuis + simpan hasil ke Supabase
 │   ├── soal.js                20 soal + diagram SVG (modul bersama)
-│   └── config.js              konfigurasi Supabase (hanya anon key — aman)
+│   ├── config.js              konfigurasi Supabase (hanya anon key — aman)
+│   ├── energi3d.js · energiAR.js   driver halaman 3D & AR transformasi energi
+│   └── energi/                mesin adegan: core.js + registry.js + ui.js + 6 adegan
+│       (baterai · surya · motor · fotosintesis · plta · pltu)
 ├── field-lines.js           komponen garis medan (Three.js) — dipakai /magnet/
 ├── targets.mind             target image-tracking MindAR
 ├── vendor/                  A-Frame + MindAR (self-hosted, tanpa CDN)

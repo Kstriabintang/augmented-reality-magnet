@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Transformasi Energi — Media Ajar IPA | adindautami</title>
+<meta name="description" content="6 konteks perubahan bentuk energi dalam AR & 3D interaktif: baterai → smartphone, panel surya, kendaraan bermotor, fotosintesis, PLTA, dan PLTU. Setiap materi menjawab: energi dari mana, berubah jadi apa, dipakai untuk apa.">
+<meta name="theme-color" content="#eaf2ff">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://utamiii.my.id/energi/">
+<meta property="og:title" content="Transformasi Energi — Media Ajar IPA">
+<meta property="og:description" content="6 konteks perubahan bentuk energi dalam AR & 3D: baterai & HP, panel surya, kendaraan, fotosintesis, PLTA, PLTU.">
+<meta property="og:image" content="https://utamiii.my.id/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --font-d:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --font-b:"Nunito",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --ink:#16233d; --sub:#5b6b85; --bg1:#eaf2ff; --bg2:#dbe7fb; --card:#ffffff;
+  --line:#dbe6f7; --clay-lo:#c4d5ef; --en:#1c8a4b; --en2:#5ad48d; --volt:#f59e0b; --volt2:#ffc655;
+  --shadow:0 10px 0 -2px var(--clay-lo),0 20px 36px rgba(31,58,110,.16);
+  --shadow-sm:0 6px 0 -2px var(--clay-lo),0 12px 22px rgba(31,58,110,.14);
+}
+:root[data-theme="gelap"]{
+  --ink:#eaf1fb; --sub:#9fb2d2; --bg1:#13223f; --bg2:#070d18; --card:#152036;
+  --line:#28374f; --clay-lo:#0a1424;
+  --shadow:0 10px 0 -2px var(--clay-lo),0 22px 40px rgba(0,0,0,.5);
+  --shadow-sm:0 6px 0 -2px var(--clay-lo),0 14px 26px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box} html,body{margin:0}
+body{font-family:var(--font-b); font-weight:600; color:var(--ink); min-height:100vh; -webkit-tap-highlight-color:transparent;
+  background:radial-gradient(55% 40% at 88% 6%, rgba(28,138,75,.12), transparent 60%), radial-gradient(140% 110% at 50% 0%, var(--bg1), var(--bg2) 74%) fixed}
+.wrap{max-width:980px; margin:0 auto; padding:20px clamp(16px,4vw,30px) 64px}
+header{display:flex; align-items:center; gap:12px}
+.ic,.tbtn{width:44px;height:44px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;display:grid;place-items:center;text-decoration:none;box-shadow:var(--shadow-sm);transition:transform .12s}
+.ic:active,.tbtn:active{transform:translateY(2px)}
+.ic svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.tbtn svg{width:22px;height:22px;fill:currentColor}
+.spacer{flex:1}
+.hero{margin:26px 0 6px; text-align:center}
+.badge{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-d);font-weight:700;font-size:13px;color:#0d5c30;background:rgba(28,138,75,.13);border:2px solid rgba(28,138,75,.38);padding:6px 15px;border-radius:999px}
+:root[data-theme="gelap"] .badge{color:var(--en2)}
+.hero h1{font-family:var(--font-d); font-weight:800; margin:14px 0 8px; font-size:clamp(26px,6vw,40px); letter-spacing:-.4px}
+.hero p{margin:0 auto; max-width:560px; color:var(--sub); font-size:15px; line-height:1.6; font-weight:600}
+/* strip 3 pertanyaan kunci */
+.qrow{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:18px}
+.q{display:flex; align-items:center; gap:9px; background:var(--card); border:2px solid var(--line); border-radius:16px; box-shadow:var(--shadow-sm); padding:10px 14px; font-size:12.5px; font-weight:700; text-align:left}
+.q b{display:grid;place-items:center;width:26px;height:26px;border-radius:9px;color:#fff;background:linear-gradient(160deg,var(--en2),var(--en));font-family:var(--font-d);font-size:13px;flex:0 0 auto}
+.grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-top:26px}
+@media (max-width:840px){.grid{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.grid{grid-template-columns:1fr}}
+.mat{position:relative; display:flex; flex-direction:column; gap:9px; background:var(--card); border:2.5px solid var(--line); border-radius:22px; box-shadow:var(--shadow); padding:18px; transition:transform .16s}
+.mat:hover{transform:translateY(-5px)}
+.mat .ico{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;font-size:29px;box-shadow:var(--shadow-sm);border:2px solid rgba(255,255,255,.4)}
+.mat h3{font-family:var(--font-d); font-weight:800; font-size:17.5px; margin:2px 0 0}
+.mat .chain{font-family:var(--font-d); font-weight:800; font-size:11px; line-height:1.7; color:var(--sub); letter-spacing:.2px}
+.mat .chain b{padding:2px 7px; border-radius:999px; color:#fff; white-space:nowrap}
+.mat p{margin:0; color:var(--sub); font-size:12.5px; line-height:1.5; font-weight:600; flex:1}
+.rowbtn{display:flex; gap:8px; margin-top:4px}
+.b3,.bar{flex:1; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-family:var(--font-d); font-weight:800; font-size:13px; padding:10px 8px; border-radius:13px; text-decoration:none; border:2px solid rgba(255,255,255,.35); box-shadow:var(--shadow-sm); transition:transform .12s}
+.b3:active,.bar:active{transform:translateY(2px)}
+.b3{color:var(--ink); background:var(--card); border-color:var(--line)}
+.bar{color:#08351a; background:linear-gradient(160deg,#7ef0b0,#22a758)}
+.b3 svg,.bar svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+/* aksen per materi */
+.mat.bat .ico{background:linear-gradient(160deg,var(--volt2),var(--volt))}
+.mat.sur .ico{background:linear-gradient(160deg,#ffe98a,#f2c40f)}
+.mat.mot .ico{background:linear-gradient(160deg,#ff8a6d,#e8462f)}
+.mat.fot .ico{background:linear-gradient(160deg,#86efac,#16a34a)}
+.mat.pla .ico{background:linear-gradient(160deg,#67e8f9,#0891b2)}
+.mat.plu .ico{background:linear-gradient(160deg,#cbd5e1,#64748b)}
+.tagr{position:absolute; top:14px; right:14px; font-family:var(--font-d); font-weight:800; font-size:10px; letter-spacing:.5px; padding:3px 9px; border-radius:999px; color:#fff; background:var(--en)}
+footer{margin-top:40px; text-align:center; color:var(--sub); font-size:13px; font-weight:700}
+footer a{color:var(--en); font-weight:800; text-decoration:none}
+:root[data-theme="gelap"] footer a{color:var(--en2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="ic" href="/" aria-label="Kembali ke beranda"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></a>
+    <div class="spacer"></div>
+    <button class="tbtn" id="theme" type="button" aria-label="Mode terang atau gelap"></button>
+  </header>
+
+  <section class="hero">
+    <span class="badge">🔄 Transformasi Energi</span>
+    <h1>Perubahan Bentuk Energi</h1>
+    <p>Enam contoh perubahan bentuk energi dalam kehidupan sehari-hari — divisualisasikan dalam <b>3D</b> dan <b>AR kamera</b>, tahap demi tahap dengan label, panah aliran energi, dan narasi suara.</p>
+    <div class="qrow" aria-label="Tiga pertanyaan kunci">
+      <span class="q"><b>1</b>Energi awalnya berasal dari mana?</span>
+      <span class="q"><b>2</b>Energi tersebut berubah menjadi apa?</span>
+      <span class="q"><b>3</b>Energi akhirnya digunakan untuk apa?</span>
+    </div>
+  </section>
+
+  <section class="grid">
+    <div class="mat bat">
+      <span class="tagr">3D · AR</span>
+      <div class="ico">🔋</div>
+      <h3>Baterai → Smartphone</h3>
+      <div class="chain"><b style="background:#22a758">Kimia</b> → <b style="background:#f59e0b;color:#4a2c00">Listrik</b> → <b style="background:#ec4899">Cahaya·Suara·Panas</b></div>
+      <p>Lihat ke dalam baterai: ion bergerak di dalamnya, elektron mengalir di kabel, lalu layar HP menyala, bersuara, dan menghangat.</p>
+      <div class="rowbtn">
+        <a class="b3" href="/energi/3d/?m=baterai"><svg viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M12 12l9-5M12 12v10M12 12L3 7"/></svg>3D</a>
+        <a class="bar" href="/energi/ar/?m=baterai"><svg viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3.2"/></svg>AR</a>
+      </div>
+    </div>
+
+    <div class="mat sur">
+      <span class="tagr">3D · AR</span>
+      <div class="ico">☀️</div>
+      <h3>Panel Surya → Rumah</h3>
+      <div class="chain"><b style="background:#ffd23e;color:#4a3a00">Cahaya</b> → <b style="background:#f59e0b;color:#4a2c00">Listrik</b> → <b style="background:#ec4899">Alat Rumah</b></div>
+      <p>Sinar matahari mengenai panel di atap, berubah jadi listrik, lalu lampu, kipas, dan setrika menyala satu per satu.</p>
+      <div class="rowbtn">
+        <a class="b3" href="/energi/3d/?m=surya"><svg viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M12 12l9-5M12 12v10M12 12L3 7"/></svg>3D</a>
+        <a class="bar" href="/energi/ar/?m=surya"><svg viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3.2"/></svg>AR</a>
+      </div>
+    </div>
+
+    <div class="mat mot">
+      <span class="tagr">3D · AR</span>
+      <div class="ico">🚗</div>
+      <h3>Kendaraan: Bensin → Gerak</h3>
+      <div class="chain"><b style="background:#22a758">Kimia</b> → <b style="background:#ef4444">Panas</b> → <b style="background:#8b5cf6">Mekanik</b> → <b style="background:#2f6fd0">Kinetik</b></div>
+      <p>Bensin dibakar di mesin: piston bergerak, roda berputar, mobil melaju — plus panas &amp; suara yang terbuang.</p>
+      <div class="rowbtn">
+        <a class="b3" href="/energi/3d/?m=motor"><svg viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M12 12l9-5M12 12v10M12 12L3 7"/></svg>3D</a>
+        <a class="bar" href="/energi/ar/?m=motor"><svg viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3.2"/></svg>AR</a>
+      </div>
+    </div>
+
+    <div class="mat fot">
+      <span class="tagr">3D · AR</span>
+      <div class="ico">🌱</div>
+      <h3>Fotosintesis</h3>
+      <div class="chain"><b style="background:#ffd23e;color:#4a3a00">Cahaya</b> + H₂O + CO₂ → <b style="background:#16a34a">Fotosintesis</b> → <b style="background:#22a758">Glukosa</b> + O₂</div>
+      <p>Daun menyerap cahaya, air naik dari akar, CO₂ masuk — jadilah glukosa &amp; oksigen, lalu tanaman tumbuh berbunga dan berbuah.</p>
+      <div class="rowbtn">
+        <a class="b3" href="/energi/3d/?m=fotosintesis"><svg viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M12 12l9-5M12 12v10M12 12L3 7"/></svg>3D</a>
+        <a class="bar" href="/energi/ar/?m=fotosintesis"><svg viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3.2"/></svg>AR</a>
+      </div>
+    </div>
+
+    <div class="mat pla">
+      <span class="tagr">3D · AR</span>
+      <div class="ico">💧</div>
+      <h3>PLTA — Tenaga Air</h3>
+      <div class="chain"><b style="background:#0891b2">Potensial</b> → <b style="background:#2f6fd0">Kinetik</b> → <b style="background:#8b5cf6">Mekanik</b> → <b style="background:#f59e0b;color:#4a2c00">Listrik</b></div>
+      <p>Air waduk yang tinggi mengalir deras lewat pipa pesat, memutar turbin &amp; generator, listriknya menyalakan rumah.</p>
+      <div class="rowbtn">
+        <a class="b3" href="/energi/3d/?m=plta"><svg viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M12 12l9-5M12 12v10M12 12L3 7"/></svg>3D</a>
+        <a class="bar" href="/energi/ar/?m=plta"><svg viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3.2"/></svg>AR</a>
+      </div>
+    </div>
+
+    <div class="mat plu">
+      <span class="tagr">3D · AR</span>
+      <div class="ico">🏭</div>
+      <h3>PLTU — Tenaga Uap</h3>
+      <div class="chain"><b style="background:#22a758">Kimia</b> → <b style="background:#ef4444">Panas</b> → <b style="background:#94a3b8;color:#16233d">Uap</b> → <b style="background:#8b5cf6">Mekanik</b> → <b style="background:#f59e0b;color:#4a2c00">Listrik</b></div>
+      <p>Batu bara dibakar memanaskan air jadi uap bertekanan tinggi yang memutar turbin &amp; generator penghasil listrik.</p>
+      <div class="rowbtn">
+        <a class="b3" href="/energi/3d/?m=pltu"><svg viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M12 12l9-5M12 12v10M12 12L3 7"/></svg>3D</a>
+        <a class="bar" href="/energi/ar/?m=pltu"><svg viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3.2"/></svg>AR</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>Media ajar IPA · <a href="/">Beranda</a> · <a href="/listrik/">Rangkaian Listrik</a> · <a href="/kuis/">Kuis</a></footer>
+</div>
+<script>
+(function(){
+  var KEY='adindautami-theme', root=document.documentElement, btn=document.getElementById('theme');
+  var MOON='<svg viewBox="0 0 24 24"><path d="M20 14a8 8 0 1 1-10-10 8 8 0 0 0 10 10z"/></svg>';
+  var SUN='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><g stroke="currentColor" stroke-width="2" fill="none"><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></g></svg>';
+  function get(){ try{return localStorage.getItem(KEY)||'terang'}catch(e){return 'terang'} }
+  function apply(t){ root.setAttribute('data-theme', t); btn.innerHTML = t==='gelap'?SUN:MOON; }
+  apply(get());
+  btn.addEventListener('click', function(){ var t=get()==='gelap'?'terang':'gelap'; try{localStorage.setItem(KEY,t)}catch(e){} apply(t); });
+})();
+</script>
+</body>
+</html>
