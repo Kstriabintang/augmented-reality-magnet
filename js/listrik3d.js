@@ -7,11 +7,29 @@ import { makeCircuit } from '/js/circuit3d.js?v=2';
 const stage = document.getElementById('stage');
 const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
 
+// Pesan jika WebGL tidak tersedia (mis. akselerasi grafis dimatikan di browser desktop).
+function showNoWebGL() {
+  stage.innerHTML = `<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:26px;color:var(--ink)">
+    <div style="font-size:40px">🧩</div>
+    <div style="font-family:var(--font-d,inherit);font-weight:800;font-size:18px">Penampil 3D butuh WebGL</div>
+    <div style="max-width:340px;color:var(--sub);font-size:13.5px;line-height:1.6;font-weight:600">Browser ini belum mengaktifkan akselerasi grafis (WebGL), jadi model 3D tidak bisa tampil. Aktifkan <b>hardware acceleration</b> di pengaturan browser, atau coba <b>Simulasi 2D</b> yang berjalan di semua perangkat.</div>
+    <a href="/listrik/2d/" style="display:inline-flex;align-items:center;gap:8px;font-family:var(--font-d,inherit);font-weight:800;font-size:14.5px;color:#fff;background:linear-gradient(160deg,#7fd0ff,#2f6fd0);padding:12px 20px;border-radius:14px;text-decoration:none">Buka Simulasi 2D →</a>
+  </div>`;
+}
+function webglOK() {
+  try { const c = document.createElement('canvas'); return !!(window.WebGLRenderingContext && (c.getContext('webgl') || c.getContext('experimental-webgl'))); }
+  catch (e) { return false; }
+}
+
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(44, 1, 0.1, 100);
 camera.position.set(4.8, 3.8, 5.6);
 
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+let renderer;
+try {
+  if (!webglOK()) throw new Error('no-webgl');
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+} catch (e) { showNoWebGL(); throw e; }
 renderer.setPixelRatio(Math.min(2, devicePixelRatio || 1));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 stage.appendChild(renderer.domElement);
@@ -31,8 +49,11 @@ scene.add(circuit.group);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true; controls.dampingFactor = .08;
-controls.minDistance = 3.6; controls.maxDistance = 13; controls.maxPolarAngle = Math.PI * 0.52;
+controls.enablePan = false; // matikan geser — cegah objek "melayang" saat cubit-zoom di HP
+controls.minDistance = 3.6; controls.maxDistance = 11; controls.maxPolarAngle = Math.PI * 0.52;
 controls.target.set(0, 0.4, 0);
+// dua jari = putar + zoom (bukan geser), supaya objek tetap terpusat
+controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_ROTATE };
 let autoRotate = !reduce;
 controls.autoRotate = autoRotate; controls.autoRotateSpeed = 0.9;
 
@@ -85,8 +106,10 @@ applyTheme(getT());
 document.getElementById('theme').addEventListener('click', () => { const t = getT() === 'gelap' ? 'terang' : 'gelap'; try { localStorage.setItem(KEY, t); } catch (e) { } applyTheme(t); });
 
 // resize + loop
-function resize() { const w = stage.clientWidth, h = stage.clientHeight; camera.aspect = w / h; camera.updateProjectionMatrix(); renderer.setSize(w, h); labelRenderer.setSize(w, h); }
+function resize() { const w = stage.clientWidth, h = stage.clientHeight; if (!w || !h) return; camera.aspect = w / h; camera.updateProjectionMatrix(); renderer.setSize(w, h); labelRenderer.setSize(w, h); }
 resize(); addEventListener('resize', resize);
+if (window.ResizeObserver) new ResizeObserver(resize).observe(stage); // tangguh: ukuran benar walau layout telat
+addEventListener('load', resize); setTimeout(resize, 250);
 const clock = new THREE.Clock();
 let running = true; document.addEventListener('visibilitychange', () => { running = !document.hidden; if (running) clock.getDelta(); });
 function tick() { requestAnimationFrame(tick); if (!running) return; const dt = clock.getDelta(); controls.update(); circuit.update(dt); renderer.render(scene, camera); labelRenderer.render(scene, camera); }
