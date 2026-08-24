@@ -3,8 +3,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
-import { MATERI, ORDER, getMateri } from '/js/energi/registry.js?v=1';
-import { buildStages, buildChain, buildChips, buildLabels, makeNarator } from '/js/energi/ui.js?v=1';
+import { MATERI, ORDER, getMateri } from '/js/energi/registry.js?v=2';
+import { buildStages, buildChain, buildChips, buildLabels, makeNarator } from '/js/energi/ui.js?v=2';
 
 const slug = getMateri(new URLSearchParams(location.search).get('m'));
 const materi = MATERI[slug];

@@ -4,7 +4,7 @@
 import { makeBaterai } from '/js/energi/baterai.js?v=1';
 import { makeSurya } from '/js/energi/surya.js?v=1';
 import { makeMotor } from '/js/energi/motor.js?v=1';
-import { makeFotosintesis } from '/js/energi/fotosintesis.js?v=1';
+import { makeFotosintesis } from '/js/energi/fotosintesis.js?v=2';
 import { makePLTA } from '/js/energi/plta.js?v=1';
 import { makePLTU } from '/js/energi/pltu.js?v=1';
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Kuis Magnet &amp; Listrik | adindautami</title>
+<title>Kuis Magnet, Listrik &amp; Energi | adindautami</title>
 <meta name="description" content="Kuis interaktif magnet & listrik: 7 paket soal (utama + Magnet/Listrik × Mudah 20/Sedang 25/Sulit 30), skor otomatis, lengkap kunci jawaban dan pembahasan.">
 <meta name="theme-color" content="#eaf2ff">
 <link rel="icon" href="/favicon.ico" sizes="any">
@@ -95,9 +95,11 @@ body{font-family:var(--font-b); font-weight:600; color:var(--ink); min-height:10
 .k-pkt.pk-utama .k-pkt-top i{background:#7c3aed}
 .k-pkt.pk-mg .k-pkt-top i{background:#e8462f}
 .k-pkt.pk-el .k-pkt-top i{background:#f59e0b; color:#4a2c00}
+.k-pkt.pk-en .k-pkt-top i{background:#1c8a4b}
 .k-pkt.is-sel{border-color:#7c3aed; box-shadow:0 0 0 3px rgba(124,58,237,.18)}
 .k-pkt.pk-mg.is-sel{border-color:#e8462f; box-shadow:0 0 0 3px rgba(232,70,47,.16)}
 .k-pkt.pk-el.is-sel{border-color:#f59e0b; box-shadow:0 0 0 3px rgba(245,158,11,.2)}
+.k-pkt.pk-en.is-sel{border-color:#1c8a4b; box-shadow:0 0 0 3px rgba(28,138,75,.18)}
 .k-formpaket{font-size:13px; font-weight:700; color:var(--sub)}
 .k-formpaket b{color:var(--ink)}
 .k-rpaket{display:inline-block; margin-left:8px; font-size:11.5px; font-weight:800; color:#7c3aed; background:rgba(124,58,237,.12); padding:3px 10px; border-radius:999px}
@@ -169,6 +171,6 @@ body{font-family:var(--font-b); font-weight:600; color:var(--ink); min-height:10
   btn.addEventListener('click', function(){ var t=get()==='gelap'?'terang':'gelap'; try{localStorage.setItem(KEY,t)}catch(e){} apply(t); });
 })();
 </script>
-<script type="module" src="/js/kuis.js?v=4"></script>
+<script type="module" src="/js/kuis.js?v=5"></script>
 </body>
 </html>

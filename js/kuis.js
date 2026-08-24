@@ -8,7 +8,7 @@ const nilaiDari = (benar, total) => total ? Math.round(benar / total * 100) : 0;
 
 // ---------- soal: paket utama (kisi-kisi, dengan diagram) + bank per topik/tingkat ----------
 import { FIG, QUESTIONS } from '/js/soal.js?v=2';
-import { BANK } from '/js/bank.js?v=2';
+import { BANK } from '/js/bank.js?v=3';
 
 const PAKET = {
   utama: { label: 'Paket Utama', topik: 'Magnet & Listrik', level: 'Ujian', sub: 'Paket ujian sesuai kisi-kisi — campuran magnet & listrik', soal: QUESTIONS },
@@ -37,18 +37,18 @@ async function saveResult(row) {
   } catch (e) { return { ok: false, error: e.message }; }
 }
 
-function paketClass(k, p) { return k === 'utama' ? 'pk-utama' : (p.topik === 'Magnet' ? 'pk-mg' : 'pk-el'); }
+function paketClass(k, p) { return k === 'utama' ? 'pk-utama' : (p.topik === 'Magnet' ? 'pk-mg' : (p.topik === 'Energi' ? 'pk-en' : 'pk-el')); }
 function screenStart() {
   app.innerHTML = "";
   const wrap = el('div', 'k-wrap');
   wrap.innerHTML = `
     <div class="k-hero">
       <div class="k-badge">📝 Kuis</div>
-      <h1>Kuis Magnet &amp; Listrik</h1>
+      <h1>Kuis Magnet, Listrik &amp; Energi</h1>
       <p>Pilih paket soal, lalu isi identitasmu. Jumlah soal sesuai tingkat: <b>Mudah 20</b> · <b>Sedang 25</b> · <b>Sulit 30</b>. Nilai dihitung dari jawaban benar (skala <b>0–100</b>).</p>
     </div>
     <div class="k-card k-paket">
-      <div class="k-pakh">Pilih Paket Soal <span class="k-pakn">7 paket · 170 soal</span></div>
+      <div class="k-pakh">Pilih Paket Soal <span class="k-pakn">${Object.keys(PAKET).length} paket · ${Object.values(PAKET).reduce((a, p) => a + p.soal.length, 0)} soal</span></div>
       <div class="k-pgrid">
         ${Object.entries(PAKET).map(([k, p]) => `
         <button type="button" class="k-pkt ${paketClass(k, p)} ${k === paketKey ? 'is-sel' : ''}" data-paket="${k}">

@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kartu Marker AR — Transformasi Energi | adindautami</title>
+<meta name="description" content="6 kartu marker AR Transformasi Energi siap cetak: baterai & smartphone, panel surya, kendaraan, fotosintesis, PLTA, PLTU. Cetak kartunya, scan QR, arahkan kamera — model 3D muncul di atas kartu.">
+<meta name="theme-color" content="#eaf2ff">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Kartu Marker AR — Transformasi Energi">
+<meta property="og:description" content="6 kartu siap cetak untuk AR image-tracking materi transformasi energi.">
+<meta property="og:image" content="https://utamiii.my.id/energi/ar/kartu-baterai.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --font-d:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --font-b:"Nunito",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --ink:#16233d; --sub:#5b6b85; --bg1:#eaf2ff; --bg2:#dbe7fb; --card:#ffffff;
+  --line:#dbe6f7; --clay-lo:#c4d5ef; --en:#1c8a4b; --en2:#5ad48d;
+  --shadow:0 10px 0 -2px var(--clay-lo),0 20px 36px rgba(31,58,110,.16);
+  --shadow-sm:0 6px 0 -2px var(--clay-lo),0 12px 22px rgba(31,58,110,.14);
+}
+:root[data-theme="gelap"]{
+  --ink:#eaf1fb; --sub:#9fb2d2; --bg1:#13223f; --bg2:#070d18; --card:#152036;
+  --line:#28374f; --clay-lo:#0a1424;
+  --shadow:0 10px 0 -2px var(--clay-lo),0 22px 40px rgba(0,0,0,.5);
+  --shadow-sm:0 6px 0 -2px var(--clay-lo),0 14px 26px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box} html,body{margin:0}
+body{font-family:var(--font-b); font-weight:600; color:var(--ink); min-height:100vh; -webkit-tap-highlight-color:transparent;
+  background:radial-gradient(55% 40% at 88% 6%, rgba(28,138,75,.12), transparent 60%), radial-gradient(140% 110% at 50% 0%, var(--bg1), var(--bg2) 74%) fixed}
+.wrap{max-width:900px; margin:0 auto; padding:20px clamp(16px,4vw,30px) 64px}
+header{display:flex; align-items:center; gap:12px}
+.ic,.tbtn{width:44px;height:44px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;display:grid;place-items:center;text-decoration:none;box-shadow:var(--shadow-sm)}
+.ic svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.tbtn svg{width:22px;height:22px;fill:currentColor}
+.spacer{flex:1}
+.hero{margin:24px 0 8px; text-align:center}
+.badge{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-d);font-weight:700;font-size:13px;color:#0d5c30;background:rgba(28,138,75,.13);border:2px solid rgba(28,138,75,.38);padding:6px 15px;border-radius:999px}
+:root[data-theme="gelap"] .badge{color:var(--en2)}
+.hero h1{font-family:var(--font-d); font-weight:800; margin:12px 0 8px; font-size:clamp(24px,5.6vw,36px)}
+.hero p{margin:0 auto; max-width:560px; color:var(--sub); font-size:14.5px; line-height:1.6}
+.printbtn{display:inline-flex; align-items:center; gap:9px; margin-top:16px; font-family:var(--font-d); font-weight:800; font-size:15px;
+  color:#08351a; background:linear-gradient(160deg,var(--en2),#22a758); border:2px solid rgba(255,255,255,.4); padding:13px 24px; border-radius:16px; cursor:pointer; box-shadow:var(--shadow-sm)}
+.printbtn svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.steps{display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:11px; margin:22px 0 8px}
+.step{display:flex; gap:11px; align-items:flex-start; background:var(--card); border:2px solid var(--line); border-radius:16px; box-shadow:var(--shadow-sm); padding:12px 14px; font-size:13px; line-height:1.5}
+.step b.n{flex:0 0 28px; width:28px; height:28px; border-radius:10px; display:grid; place-items:center; font-family:var(--font-d); color:#fff; background:linear-gradient(160deg,var(--en2),#1c8a4b)}
+.grid{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:22px}
+@media (max-width:640px){.grid{grid-template-columns:1fr}}
+.kartu{background:var(--card); border:2.5px solid var(--line); border-radius:20px; box-shadow:var(--shadow); padding:14px; display:flex; flex-direction:column; gap:10px}
+.kartu img{width:100%; border-radius:12px; border:2px solid var(--line)}
+.krow{display:flex; gap:8px}
+.kbtn{flex:1; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-family:var(--font-d); font-weight:800; font-size:12.5px; padding:10px 8px; border-radius:12px; text-decoration:none; border:2px solid var(--line); color:var(--ink); background:var(--card); box-shadow:var(--shadow-sm)}
+.kbtn.ar{color:#08351a; background:linear-gradient(160deg,#7ef0b0,#22a758); border-color:rgba(255,255,255,.35)}
+.kbtn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+footer{margin-top:36px; text-align:center; color:var(--sub); font-size:13px; font-weight:700}
+footer a{color:var(--en); font-weight:800; text-decoration:none}
+@media print{
+  body{background:#fff}
+  header,.hero,.steps,.krow,footer{display:none!important}
+  .wrap{max-width:none; padding:0}
+  .grid{display:block}
+  .kartu{border:0; box-shadow:none; padding:0; page-break-after:always}
+  .kartu img{border:0; border-radius:0; width:100%}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="ic" href="/energi/ar/" aria-label="Kembali ke AR"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></a>
+    <div class="spacer"></div>
+    <button class="tbtn" id="theme" type="button" aria-label="Mode terang atau gelap"></button>
+  </header>
+
+  <section class="hero">
+    <span class="badge">🖨️ Kartu Marker AR</span>
+    <h1>Cetak · Scan · Muncul 3D</h1>
+    <p>Enam kartu marker <b>Transformasi Energi</b> — cetak (kertas A4/A5, warna lebih baik), lalu pindai QR di kartu: kamera terbuka dan model 3D muncul <b>menempel di atas kartu</b>.</p>
+    <button class="printbtn" onclick="print()"><svg viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Cetak Semua Kartu</button>
+  </section>
+
+  <div class="steps">
+    <div class="step"><b class="n">1</b><span><b>Cetak</b> kartu yang diinginkan — satu kartu satu halaman, posisi mendatar.</span></div>
+    <div class="step"><b class="n">2</b><span><b>Scan QR</b> di kartu dengan kamera HP → halaman AR mode Marker terbuka.</span></div>
+    <div class="step"><b class="n">3</b><span><b>Arahkan kamera kembali ke kartu</b> — tahan stabil ± 30 cm, cahaya cukup — model 3D muncul. Ketuk layar untuk ganti tahap energi.</span></div>
+  </div>
+
+  <section class="grid" id="grid"></section>
+
+  <footer>Media ajar IPA · <a href="/energi/">Transformasi Energi</a> · <a href="/">Beranda</a></footer>
+</div>
+<script>
+(function(){
+  var M=[
+    ['baterai','Baterai → Smartphone'],
+    ['surya','Panel Surya → Rumah'],
+    ['motor','Kendaraan: Bensin → Gerak'],
+    ['fotosintesis','Fotosintesis'],
+    ['plta','PLTA — Tenaga Air'],
+    ['pltu','PLTU — Tenaga Uap']
+  ];
+  document.getElementById('grid').innerHTML = M.map(function(m){
+    return '<div class="kartu">'
+      + '<img src="/energi/ar/kartu-'+m[0]+'.png" alt="Kartu marker '+m[1]+'" loading="lazy">'
+      + '<div class="krow">'
+      + '<a class="kbtn" href="/energi/ar/kartu-'+m[0]+'.png" download="kartu-'+m[0]+'.png"><svg viewBox="0 0 24 24"><path d="M12 3v12M6 11l6 6 6-6M4 21h16"/></svg>Unduh PNG</a>'
+      + '<a class="kbtn ar" href="/energi/ar/?m='+m[0]+'&mode=marker"><svg viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3.2"/></svg>Buka AR Marker</a>'
+      + '</div></div>';
+  }).join('');
+  var KEY='adindautami-theme', root=document.documentElement, btn=document.getElementById('theme');
+  var MOON='<svg viewBox="0 0 24 24"><path d="M20 14a8 8 0 1 1-10-10 8 8 0 0 0 10 10z"/></svg>';
+  var SUN='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><g stroke="currentColor" stroke-width="2" fill="none"><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></g></svg>';
+  function get(){ try{return localStorage.getItem(KEY)||'terang'}catch(e){return 'terang'} }
+  function apply(t){ root.setAttribute('data-theme', t); btn.innerHTML = t==='gelap'?SUN:MOON; }
+  apply(get());
+  btn.addEventListener('click', function(){ var t=get()==='gelap'?'terang':'gelap'; try{localStorage.setItem(KEY,t)}catch(e){} apply(t); });
+})();
+</script>
+</body>
+</html>

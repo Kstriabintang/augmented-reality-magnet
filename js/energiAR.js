@@ -1,52 +1,39 @@
-// AR Transformasi Energi — markerless: kamera HP + adegan 3D melayang, 6 materi (?m=slug).
-// Seret memutar · cubit zoom · ketuk = tahap berikutnya. Label menempel (CSS2D),
-// rantai energi, narasi teks + suara. Ganti materi = navigasi URL (adegan selalu bersih).
+// AR Transformasi Energi — DUA MODE per materi (?m=slug):
+//   • Tanpa Marker (markerless): kamera + adegan melayang, seret/cubit/ketuk.
+//   • Marker (?mode=marker / #marker dari QR): image-tracking MindAR ke kartu cetak
+//     /energi/ar/kartu-<slug>.png (target /energi/ar/<slug>.mind).
+// Ganti mode/materi = NAVIGASI URL penuh — MindAR tidak aman di-stop/start dalam satu halaman.
 import * as THREE from 'three';
 import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
-import { MATERI, ORDER, getMateri } from '/js/energi/registry.js?v=1';
-import { buildStages, buildChain, buildChips, buildLabels, makeNarator } from '/js/energi/ui.js?v=1';
+import { MindARThree } from '/vendor/mindar/mindar-image-three.prod.js';
+import { MATERI, ORDER, getMateri } from '/js/energi/registry.js?v=2';
+import { buildStages, buildChain, buildChips, buildLabels, makeNarator } from '/js/energi/ui.js?v=2';
 
-const slug = getMateri(new URLSearchParams(location.search).get('m'));
+const qs = new URLSearchParams(location.search);
+const slug = getMateri(qs.get('m'));
 const materi = MATERI[slug];
+const mode = (qs.get('mode') === 'marker' || location.hash === '#marker') ? 'marker' : 'bebas';
 document.title = `AR ${materi.title} — Transformasi Energi | adindautami`;
+document.body.dataset.mode = mode;
 
 const stageEl = document.getElementById('stage');
+const mstage = document.getElementById('mstage');
 const video = document.getElementById('cam');
 const perm = document.getElementById('perm');
 const hintEl = document.getElementById('hint');
 document.getElementById('ttl').textContent = materi.short;
 
-// ---------- three: kamera video di belakang, kanvas transparan di depan ----------
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(50, 1, .1, 100);
-camera.position.set(0, 0, 5);
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-renderer.setPixelRatio(Math.min(2, devicePixelRatio || 1));
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-stageEl.appendChild(renderer.domElement);
+const HINT = {
+  bebas: 'Seret memutar · cubit zoom · <b>ketuk layar</b> untuk memulai perjalanan energi',
+  cari: `Arahkan kamera ke <b>Kartu ${materi.short}</b> sampai terdeteksi`,
+  dapat: 'Kartu terdeteksi! <b>Ketuk layar</b> atau pilih tahap di bawah',
+};
+function setHint(html) { hintEl.innerHTML = html; }
 
-const labelRenderer = new CSS2DRenderer();
-Object.assign(labelRenderer.domElement.style, { position: 'absolute', inset: '0', pointerEvents: 'none' });
-stageEl.appendChild(labelRenderer.domElement);
-
-scene.add(new THREE.AmbientLight(0xffffff, .8));
-const dir = new THREE.DirectionalLight(0xffffff, 1.2); dir.position.set(3, 6, 4); scene.add(dir);
-const dir2 = new THREE.DirectionalLight(0xbcd4ff, .4); dir2.position.set(-4, 2, -2); scene.add(dir2);
-
-const sceneApi = materi.make();
-const holder = new THREE.Group();
-holder.add(sceneApi.group);
-const HOME = materi.home;
-holder.scale.setScalar(HOME.s);
-holder.rotation.set(...HOME.rot);
-holder.position.set(0, HOME.y, 0);
-scene.add(holder);
-
-// ---------- UI dinamis ----------
-const chips = document.getElementById('chips');
-buildChips(chips, ORDER, MATERI, slug, s => `/energi/ar/?m=${s}`);
+// ---------- UI dinamis bersama ----------
+buildChips(document.getElementById('chips'), ORDER, MATERI, slug,
+  s => `/energi/ar/?m=${s}${mode === 'marker' ? '&mode=marker' : ''}`);
 const chainUi = buildChain(document.getElementById('chain'), materi);
-const labelUi = buildLabels(sceneApi, materi);
 const narUi = makeNarator({
   panelEl: document.getElementById('narasi'),
   titleEl: document.getElementById('nartitle'),
@@ -60,21 +47,72 @@ document.getElementById('info').textContent = materi.info;
 const FLOW = [null, ...materi.stages.map(s => s.key)];
 let cur = null;
 const stagesUi = buildStages(document.getElementById('stgroup'), materi, k => setStage(cur === k ? null : k));
+const sceneApis = [], labelUis = [];
 
 function setStage(k) {
   cur = k;
-  sceneApi.setStage(k);
+  sceneApis.forEach(s => s.setStage(k));
   stagesUi.set(k);
-  labelUi.set(k);
+  labelUis.forEach(l => l.set(k));
   const stg = materi.stages.find(s => s.key === k);
   chainUi.set(stg ? stg.lit : 0);
   narUi.show(stg || null);
   document.body.dataset.stage = k || '';
   hintEl.style.display = k ? 'none' : '';
+  if (!k) setHint(mode === 'marker' ? (markerFound ? HINT.dapat : HINT.cari) : HINT.bebas);
 }
 function advance() { setStage(FLOW[(FLOW.indexOf(cur) + 1) % FLOW.length]); }
 
-// ---------- kamera perangkat ----------
+// ================= MODE BEBAS (markerless) =================
+let holder = null, renderer = null, camera = null, scene = null, labelRenderer = null;
+const HOME = materi.home;
+function initBebas() {
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(50, 1, .1, 100);
+  camera.position.set(0, 0, 5);
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(2, devicePixelRatio || 1));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  stageEl.appendChild(renderer.domElement);
+  labelRenderer = new CSS2DRenderer();
+  Object.assign(labelRenderer.domElement.style, { position: 'absolute', inset: '0', pointerEvents: 'none' });
+  stageEl.appendChild(labelRenderer.domElement);
+
+  scene.add(new THREE.AmbientLight(0xffffff, .8));
+  const dir = new THREE.DirectionalLight(0xffffff, 1.2); dir.position.set(3, 6, 4); scene.add(dir);
+  const dir2 = new THREE.DirectionalLight(0xbcd4ff, .4); dir2.position.set(-4, 2, -2); scene.add(dir2);
+
+  const api = materi.make();
+  sceneApis.push(api);
+  labelUis.push(buildLabels(api, materi));
+  holder = new THREE.Group();
+  holder.add(api.group);
+  holder.scale.setScalar(HOME.s);
+  holder.rotation.set(...HOME.rot);
+  holder.position.set(0, HOME.y, 0);
+  scene.add(holder);
+
+  const resize = () => {
+    const w = stageEl.clientWidth, h = stageEl.clientHeight; if (!w || !h) return;
+    camera.aspect = w / h; camera.updateProjectionMatrix();
+    renderer.setSize(w, h); labelRenderer.setSize(w, h);
+  };
+  resize(); addEventListener('resize', resize);
+  if (window.ResizeObserver) new ResizeObserver(resize).observe(stageEl);
+
+  const clock = new THREE.Clock();
+  let running = true;
+  document.addEventListener('visibilitychange', () => { running = !document.hidden; if (running) clock.getDelta(); });
+  (function tick() {
+    requestAnimationFrame(tick);
+    if (!running) return;
+    api.update(clock.getDelta());
+    renderer.render(scene, camera);
+    labelRenderer.render(scene, camera);
+  })();
+  startCam();
+}
+
 async function startCam() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false });
@@ -85,7 +123,7 @@ async function startCam() {
   }
 }
 
-// ---------- interaksi: seret putar, cubit zoom, ketuk = tahap berikutnya ----------
+// interaksi bebas: seret putar, cubit zoom, ketuk = tahap berikutnya
 let pts = new Map(), last = null, pinchD = 0, moved = 0, downT = 0;
 const dist = () => { const a = [...pts.values()]; return Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); };
 stageEl.addEventListener('pointerdown', e => {
@@ -94,7 +132,7 @@ stageEl.addEventListener('pointerdown', e => {
   if (pts.size === 2) pinchD = dist();
 });
 stageEl.addEventListener('pointermove', e => {
-  if (!pts.has(e.pointerId)) return;
+  if (!pts.has(e.pointerId) || !holder) return;
   pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
   if (pts.size === 1 && last) {
     const dx = e.clientX - last.x, dy = e.clientY - last.y; moved += Math.abs(dx) + Math.abs(dy);
@@ -115,56 +153,166 @@ const pu = e => {
 stageEl.addEventListener('pointerup', pu);
 stageEl.addEventListener('pointercancel', pu);
 
-// ---------- tombol ----------
+// ================= MODE MARKER (MindAR image-tracking) =================
+let mindar = null, markerHolder = null, markerFound = false, markerFail = false;
+let bobT = 0, popK = 1, baseScale = 1;
+const clockM = new THREE.Clock();
+
+function initMarker() {
+  mindar = new MindARThree({
+    container: mstage,
+    imageTargetSrc: `/energi/ar/${slug}.mind?v=1`,
+    uiScanning: false, uiLoading: false, maxTrack: 1,
+  });
+  // vendor: resize() di sela start() bisa melempar getProjectionMatrix (listener internal) — redam.
+  addEventListener('error', (e) => {
+    if (e.message && e.message.indexOf('getProjectionMatrix') !== -1) e.preventDefault();
+  });
+  const ms = mindar.scene;
+  ms.add(new THREE.HemisphereLight(0xffffff, 0x8393a7, 1.2));
+  const md = new THREE.DirectionalLight(0xffffff, 1.2); md.position.set(1.2, 2.4, 1.6); ms.add(md);
+
+  const api = materi.make();
+  sceneApis.push(api);
+  labelUis.push(buildLabels(api, materi));
+  if (cur) api.setStage(cur);
+  markerHolder = new THREE.Group();
+  markerHolder.add(api.group);
+  // pas-kan lebar adegan ke lebar kartu (marker MindAR = 1 unit)
+  const bb = new THREE.Box3().setFromObject(api.group);
+  const size = bb.getSize(new THREE.Vector3());
+  baseScale = .92 / Math.max(size.x, .001);
+  markerHolder.scale.setScalar(baseScale);
+  const center = bb.getCenter(new THREE.Vector3());
+  api.group.position.sub(center);
+  markerHolder.position.set(0, 0, .3);
+  markerHolder.rotation.x = -Math.PI / 2 + .5; // papan agak berdiri menghadap pemindai
+
+  const anchor = mindar.addAnchor(0);
+  anchor.group.add(markerHolder);
+  anchor.onTargetFound = () => {
+    markerFound = true; popK = 0;
+    document.body.classList.add('found');
+    if (!cur) setHint(HINT.dapat);
+  };
+  anchor.onTargetLost = () => {
+    markerFound = false;
+    document.body.classList.remove('found');
+    if (!cur) setHint(HINT.cari);
+  };
+
+  // label menempel di mode marker
+  labelRenderer = new CSS2DRenderer();
+  Object.assign(labelRenderer.domElement.style, { position: 'absolute', inset: '0', pointerEvents: 'none' });
+  mstage.appendChild(labelRenderer.domElement);
+  return api;
+}
+
+function coverEl(elm) { // video+kanvas MindAR menutupi layar (anti letterbox iOS)
+  if (!elm) return;
+  const s = elm.style;
+  s.setProperty('position', 'absolute', 'important');
+  s.setProperty('top', '0', 'important'); s.setProperty('left', '0', 'important');
+  s.setProperty('width', '100%', 'important'); s.setProperty('height', '100%', 'important');
+  s.setProperty('object-fit', 'cover', 'important');
+  s.setProperty('margin', '0', 'important'); s.setProperty('transform', 'none', 'important');
+}
+function sizeMarker() { if (!mindar) return; coverEl(mindar.video); coverEl(mindar.renderer && mindar.renderer.domElement); if (labelRenderer) labelRenderer.setSize(mstage.clientWidth, mstage.clientHeight); }
+addEventListener('resize', () => { if (mode === 'marker') sizeMarker(); });
+addEventListener('orientationchange', () => setTimeout(() => { if (mode === 'marker') sizeMarker(); }, 250));
+
+async function startMarker() {
+  setHint('Memuat marker…');
+  const api = initMarker();
+  try { await mindar.start(); }
+  catch (e) {
+    markerFail = true;
+    setHint('Kamera tidak bisa dibuka — izinkan akses kamera lalu muat ulang.');
+    if (perm) perm.style.display = 'none';
+    return;
+  }
+  markerFail = false;
+  if (perm) perm.style.display = 'none';
+  sizeMarker(); setTimeout(sizeMarker, 300); setTimeout(sizeMarker, 900);
+  clockM.getDelta();
+  mindar.renderer.setAnimationLoop(() => {
+    const dt = clockM.getDelta();
+    api.update(dt);
+    bobT += dt;
+    if (popK < 1) popK = Math.min(1, popK + dt * 2.4);
+    const pop = 1 - Math.pow(1 - popK, 3);
+    markerHolder.scale.setScalar(baseScale * (.6 + .4 * pop));
+    markerHolder.position.z = .3 + Math.sin(bobT * 1.5) * .03;
+    mindar.renderer.render(mindar.scene, mindar.camera);
+    labelRenderer.render(mindar.scene, mindar.camera);
+  });
+  if (!cur) setHint(markerFound ? HINT.dapat : HINT.cari);
+}
+
+// ketuk di mode marker = tahap berikutnya
+let mDown = null;
+mstage.addEventListener('pointerdown', e => { mDown = { x: e.clientX, y: e.clientY, t: performance.now() }; });
+mstage.addEventListener('pointerup', e => {
+  if (!mDown) return;
+  const dm = Math.hypot(e.clientX - mDown.x, e.clientY - mDown.y);
+  if (dm < 10 && performance.now() - mDown.t < 450) advance();
+  mDown = null;
+});
+
+// ================= GANTI MODE = NAVIGASI PENUH =================
+document.getElementById('btnfree').addEventListener('click', () => {
+  if (mode !== 'bebas') location.href = `${location.pathname}?m=${slug}`;
+});
+document.getElementById('btnmarker').addEventListener('click', () => {
+  if (mode !== 'marker') location.href = `${location.pathname}?m=${slug}&mode=marker`;
+});
+
+// ---------- tombol bersama ----------
 document.getElementById('reset').addEventListener('click', () => {
-  holder.rotation.set(...HOME.rot); holder.scale.setScalar(HOME.s); holder.position.set(0, HOME.y, 0);
+  if (holder) { holder.rotation.set(...HOME.rot); holder.scale.setScalar(HOME.s); holder.position.set(0, HOME.y, 0); }
 });
 document.getElementById('snap').addEventListener('click', () => {
   const w = innerWidth, h = innerHeight;
   const c = document.createElement('canvas'); c.width = w; c.height = h; const ctx = c.getContext('2d');
-  if (video.videoWidth) {
-    const s = Math.max(w / video.videoWidth, h / video.videoHeight);
-    const dw = video.videoWidth * s, dh = video.videoHeight * s;
-    ctx.drawImage(video, (w - dw) / 2, (h - dh) / 2, dw, dh);
+  const v = mode === 'marker' ? (mindar && mindar.video) : video;
+  if (v && v.videoWidth) {
+    const s = Math.max(w / v.videoWidth, h / v.videoHeight);
+    const dw = v.videoWidth * s, dh = v.videoHeight * s;
+    ctx.drawImage(v, (w - dw) / 2, (h - dh) / 2, dw, dh);
   }
-  renderer.render(scene, camera);
-  ctx.drawImage(renderer.domElement, 0, 0, w, h);
+  if (mode === 'marker' && mindar) {
+    mindar.renderer.render(mindar.scene, mindar.camera);
+    ctx.drawImage(mindar.renderer.domElement, 0, 0, w, h);
+  } else if (renderer) {
+    renderer.render(scene, camera);
+    ctx.drawImage(renderer.domElement, 0, 0, w, h);
+  }
   const a = document.createElement('a'); a.href = c.toDataURL('image/png'); a.download = `ar-energi-${slug}.png`; a.click();
 });
 
-// tema chrome overlay
 try { document.documentElement.setAttribute('data-theme', localStorage.getItem('adindautami-theme') || 'terang'); } catch (e) { }
 
-// ---------- resize + loop ----------
-function resize() {
-  const w = stageEl.clientWidth, h = stageEl.clientHeight; if (!w || !h) return;
-  camera.aspect = w / h; camera.updateProjectionMatrix();
-  renderer.setSize(w, h); labelRenderer.setSize(w, h);
-}
-resize(); addEventListener('resize', resize);
-if (window.ResizeObserver) new ResizeObserver(resize).observe(stageEl);
-
-const clock = new THREE.Clock();
-let running = true;
-document.addEventListener('visibilitychange', () => { running = !document.hidden; if (running) clock.getDelta(); });
-function tick() {
-  requestAnimationFrame(tick);
-  if (!running) return;
-  sceneApi.update(clock.getDelta());
-  renderer.render(scene, camera);
-  labelRenderer.render(scene, camera);
-}
-tick();
-
-// status untuk QA headless / diagnosis di perangkat
+// status untuk QA headless / diagnosis
 window.__AR = {
   get materi() { return slug; },
+  get mode() { return mode; },
   get stage() { return cur; },
-  get pose() { return { rx: +holder.rotation.x.toFixed(3), ry: +holder.rotation.y.toFixed(3), s: +holder.scale.x.toFixed(3) }; },
-  probe() { return sceneApi.debug(); },
+  get found() { return markerFound; },
+  get fail() { return markerFail; },
+  get proc() { return !!(mindar && mindar.controller && mindar.controller.processingVideo); },
+  get pose() { return holder ? { rx: +holder.rotation.x.toFixed(3), ry: +holder.rotation.y.toFixed(3), s: +holder.scale.x.toFixed(3) } : null; },
+  probe() { return sceneApis[0] ? sceneApis[0].debug() : null; },
   set(k) { setStage(k); },
   next() { advance(); },
 };
 
-setStage(null);
-startCam();
+// ---------- mulai ----------
+if (mode === 'marker') {
+  document.getElementById('btnfree').classList.remove('on');
+  document.getElementById('btnmarker').classList.add('on');
+  setStage(null);
+  startMarker();
+} else {
+  setStage(null);
+  initBebas();
+}

@@ -1,7 +1,7 @@
 // UI bersama halaman /energi/3d/ & /energi/ar/ — tombol tahap dinamis, pill rantai energi,
 // label 3D (CSS2D) berwarna per bentuk energi, chips pemilih materi, narasi teks + suara.
 import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
-import { ETYPE, ICON } from '/js/energi/registry.js?v=1';
+import { ETYPE, ICON } from '/js/energi/registry.js?v=2';
 
 export const typeColors = t => ETYPE[t] || ETYPE.listrik;
 

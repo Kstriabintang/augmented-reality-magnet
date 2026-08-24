@@ -32,11 +32,47 @@ export function makeFotosintesis() {
   const leafGeo1 = new THREE.SphereGeometry(.58, 18, 14); S.disposables.push(leafGeo1);
   const leafGeo2 = new THREE.SphereGeometry(.4, 16, 12); S.disposables.push(leafGeo2);
   canopy.add(new THREE.Mesh(leafGeo1, leafMat));
+  const blobs = [[0, 0, 0, .58]];
   [[.52, -.18, .12], [-.5, -.14, .15], [.1, .28, -.3], [-.15, .12, .38]].forEach(p => {
     const m = new THREE.Mesh(leafGeo2, leafMat); m.position.set(...p); canopy.add(m);
+    blobs.push([...p, .4]);
   });
   // pendar fotosintesis di tajuk
   const leafGlow = S.sprite(0xa7f3d0, 2.0, 0); canopy.add(leafGlow);
+
+  // ---------- DAUN DETAIL yang MENYERAP sinar matahari (permintaan Dinda 2026-08-25) ----------
+  // Helai-helai daun kecil di permukaan tajuk; sisi yang menghadap matahari berkilau
+  // bergantian saat foton tiba — terlihat "menangkap/menyerap" energi cahaya.
+  const SUNDIR = new THREE.Vector3(2.2, .9, -.65).normalize(); // arah tajuk → matahari (lokal)
+  const leafDetGeo = new THREE.SphereGeometry(.075, 6, 5); S.disposables.push(leafDetGeo);
+  const leaves = [];
+  const NL = 30;
+  const v = new THREE.Vector3();
+  for (let i = 0; i < NL; i++) {
+    // 2/3 daun ditabur condong ke sisi matahari, sisanya merata
+    if (i % 3 !== 2) {
+      v.set(SUNDIR.x + (Math.random() - .5) * 1.4, SUNDIR.y + (Math.random() - .5) * 1.4, SUNDIR.z + (Math.random() - .5) * 1.4);
+    } else {
+      v.set(Math.random() - .5, Math.random() - .3, Math.random() - .5);
+    }
+    v.normalize();
+    const [bx, by, bz, br] = blobs[i % blobs.length];
+    const m = new THREE.MeshStandardMaterial({ color: 0x54b465, roughness: .65, emissive: 0x0c2b12, emissiveIntensity: .35 });
+    S.disposables.push(m);
+    const leaf = new THREE.Mesh(leafDetGeo, m);
+    leaf.scale.set(1, .32, 1.55);
+    leaf.position.set(bx + v.x * br * .99, by + v.y * br * .99, bz + v.z * br * .99);
+    leaf.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), v);
+    leaf.rotateZ(Math.random() * Math.PI);
+    leaf.userData = { sun: Math.max(0, v.dot(SUNDIR)), ph: i * .9, base: leaf.scale.clone() };
+    canopy.add(leaf); leaves.push(leaf);
+  }
+  // ✨ kilau serap di 3 daun paling menghadap matahari
+  const glintLeaves = [...leaves].sort((a, b) => b.userData.sun - a.userData.sun).slice(0, 3);
+  const glints = glintLeaves.map((lf, i) => {
+    const sp = S.sprite(0xfff3b0, .34, 0); sp.position.copy(lf.position).multiplyScalar(1.06);
+    sp.userData = { ph: i * 2.1 }; canopy.add(sp); return sp;
+  });
 
   // bunga & buah (muncul saat tumbuh)
   const fruitMat = std(0xe8462f, { roughness: .5, emissive: 0x3a0e08, emissiveIntensity: .3 }); S.disposables.push(fruitMat);
@@ -119,9 +155,23 @@ export function makeFotosintesis() {
     sun.halo.material.opacity = .55 + .2 * Math.sin(t * 1.8);
     const hs = 1.7 * (1 + .06 * Math.sin(t * 2.3)); sun.halo.scale.set(hs, hs, 1);
 
-    // ① cahaya menuju daun
+    // ① cahaya menuju daun — helai daun sisi matahari berkilau bergantian (menyerap energi)
     rays.setActive(S.at('cahaya'));
     rays.update(dt, state.speed);
+    const absorb = S.at('cahaya') ? 1 : 0;
+    for (const lf of leaves) {
+      const u = lf.userData;
+      const wave = .5 + .5 * Math.sin(t * 2.4 * state.speed - u.ph);
+      const k = absorb * u.sun * wave;
+      lf.material.emissive.setHex(k > .35 ? 0x9fe6a0 : 0x0c2b12);
+      lf.material.emissiveIntensity = .35 + k * 1.35;
+      const s = 1 + k * .12;
+      lf.scale.set(u.base.x * s, u.base.y * s, u.base.z * s);
+    }
+    for (const sp of glints) {
+      sp.material.opacity = absorb * (.25 + .45 * (0.5 + 0.5 * Math.sin(t * 3 + sp.userData.ph)));
+      const gs = .34 * (1 + .25 * Math.sin(t * 3.4 + sp.userData.ph)); sp.scale.set(gs, gs, 1);
+    }
 
     // ② bahan baku: air naik dari akar + CO₂ masuk daun
     water.setActive(S.at('bahan'));
@@ -156,6 +206,6 @@ export function makeFotosintesis() {
   return {
     group, update,
     setStage: S.setStage, setSpeed: S.setSpeed, anchors: S.anchors, dispose: S.dispose,
-    debug: () => ({ stage: state.stage, rays: rays.active, water: water.active, co2: co2.active, o2: o2.active, grow: +grow.toFixed(2), fruit: +fruits[0].scale.x.toFixed(2) }),
+    debug: () => ({ stage: state.stage, rays: rays.active, water: water.active, co2: co2.active, o2: o2.active, grow: +grow.toFixed(2), fruit: +fruits[0].scale.x.toFixed(2), daun: leaves.length, serap: +leaves[0].material.emissiveIntensity.toFixed(2) }),
   };
 }

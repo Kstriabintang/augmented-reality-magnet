@@ -4,7 +4,7 @@
 
 # 🧲⚡ adindautami — Media Ajar IPA
 
-### Magnet &amp; Listrik yang bisa **dilihat, disentuh, dan diuji** — langsung dari browser HP, tanpa instal aplikasi.
+### Magnet, Listrik &amp; Transformasi Energi yang bisa **dilihat, disentuh, dan diuji** — langsung dari browser HP, tanpa instal aplikasi.
 
 <p>
   <a href="https://utamiii.my.id/"><b>🌐 Buka Situs</b></a> &nbsp;·&nbsp;
@@ -54,11 +54,12 @@
 
 ## 🎯 Tentang
 
-**adindautami** adalah portal **media ajar IPA** untuk topik **Magnet** dan **Listrik**, dirancang khusus untuk siswa **SD/SMP**. Alih-alih hanya membaca teori, siswa bisa **berinteraksi langsung**:
+**adindautami** adalah portal **media ajar IPA** untuk topik **Magnet**, **Listrik**, dan **Transformasi Energi**, dirancang khusus untuk siswa **SD/SMP**. Alih-alih hanya membaca teori, siswa bisa **berinteraksi langsung**:
 
 - melihat **garis-gaya magnet 3D** melayang di atas kartu lewat kamera HP (Augmented Reality),
 - **menyalakan rangkaian listrik** dan mengamati arus mengalir sampai lampu menyala,
-- lalu **menguji pemahaman** lewat kuis 20 soal yang otomatis dinilai, lengkap dengan pembahasan.
+- mengikuti **perjalanan transformasi energi** dalam 6 konteks nyata (baterai &amp; HP, panel surya, kendaraan, fotosintesis, PLTA, PLTU) — dalam 3D dan AR dengan **kartu marker cetak**,
+- lalu **menguji pemahaman** lewat kuis **10 paket · 245 soal** yang otomatis dinilai, lengkap dengan pembahasan.
 
 Semuanya berjalan **100% di browser** — tanpa instal aplikasi, tanpa login untuk siswa. Cukup buka tautan.
 
@@ -72,7 +73,8 @@ Semuanya berjalan **100% di browser** — tanpa instal aplikasi, tanpa login unt
 |---|---|
 | 🧲 **AR Medan Magnet** | Visualisasi garis gaya 3D lewat kamera HP, 3 konfigurasi kutub |
 | ⚡ **Simulasi Rangkaian** | Saklar interaktif, arus beranimasi, rangkaian terbuka vs tertutup |
-| 📝 **Kuis Otomatis** | 20 soal, skor real-time (maks 100), kunci &amp; pembahasan tiap soal |
+| 🔄 **Transformasi Energi** | 6 konteks perubahan energi dalam 3D &amp; AR — markerless maupun **kartu marker cetak** |
+| 📝 **Kuis Otomatis** | 10 paket · 245 soal, nilai 0–100 adaptif, kunci &amp; pembahasan tiap soal |
 | ☁️ **Rekap ke Cloud** | Hasil kuis tersimpan aman ke Supabase (dilindungi Row Level Security) |
 | 🌗 **Mode Terang/Gelap** | Tema tersimpan otomatis, nyaman di segala kondisi cahaya |
 | 📱 **Mobile-first** | Responsif mulus dari 320px, target sentuh besar, ramah HP |
@@ -119,7 +121,9 @@ Panel keterangan menjelaskan tiap komponen (baterai, kabel, saklar, lampu) dan m
 
 ### 🔄 Transformasi Energi — 6 Konteks
 
-**Enam contoh perubahan bentuk energi** dalam kehidupan sehari-hari, masing-masing tersedia sebagai **penampil 3D** (`/energi/3d/`) dan **AR kamera markerless** (`/energi/ar/`), dipilih dari menu `/energi/`:
+<img src="./docs/preview/energi.png" width="300" align="right" alt="Penampil 3D fotosintesis dengan daun menyerap cahaya">
+
+**Enam contoh perubahan bentuk energi** dalam kehidupan sehari-hari, masing-masing tersedia sebagai **penampil 3D** (`/energi/3d/`) dan **AR kamera** (`/energi/ar/`) dalam dua mode — **Tanpa Marker** (model melayang) dan **Marker**: pindai salah satu dari **[6 kartu marker siap cetak](https://utamiii.my.id/energi/ar/kartu/)**, dan adegan 3D muncul **menempel di atas kartu** (image-tracking MindAR; QR pada tiap kartu langsung membuka mode marker materi tersebut):
 
 | Konteks | Urutan perubahan energi |
 |---|---|
@@ -132,7 +136,7 @@ Panel keterangan menjelaskan tiap komponen (baterai, kabel, saklar, lampu) dan m
 
 Setiap adegan mengikuti **template seragam** dan menjawab tiga pertanyaan kunci — *energi dari mana? berubah jadi apa? dipakai untuk apa?* — lewat:
 
-- **Objek utama 3D** prosedural (Three.js) di atas papan claymorphism, bisa diputar bebas / dilihat lewat kamera.
+- **Objek utama 3D** prosedural (Three.js) di atas papan claymorphism, bisa diputar bebas / dilihat lewat kamera — sampai detail kecil seperti **helai-helai daun yang berkilau "menyerap" sinar matahari** pada adegan fotosintesis.
 - **Tahap interaktif** (3–5 tahap per konteks) — ketuk layar atau tombol tahap untuk mengikuti energi selangkah demi selangkah; **rantai energi** di atas menyala mengikuti tahap.
 - **Label menempel berwarna per bentuk energi** (kimia hijau, listrik amber, panas merah, mekanik ungu, kinetik biru, dst.) yang berganti sesuai tahap.
 - **Panah & partikel aliran** — elektron, foton, air, uap, bahan bakar — bergerak menyusuri jalurnya; efek **sebab-akibat** dijaga (mis. lampu rumah baru menyala setelah arus *tiba*).
@@ -149,14 +153,23 @@ Ketepatan konsep dijaga sesuai kaidah IPA: **ion bergerak di dalam baterai, elek
 </tr>
 </table>
 
-Kuis **20 soal pilihan ganda** seputar magnet &amp; listrik, tersusun sesuai taksonomi Bloom (C1–C6). Fitur:
+Kuis pilihan ganda **10 paket · 245 soal** — siswa memilih paket sesuai topik &amp; tingkatnya (paket AR Transformasi Energi berdiri sendiri, tidak dicampur ke paket lain):
 
-- **Identitas siswa** (nama, kelas, sekolah) sebelum mulai.
+| Paket | Mudah | Sedang | Sulit |
+|---|---|---|---|
+| **Paket Utama** (kisi-kisi ujian, campuran) | — | 20 soal | — |
+| **Magnet** | 20 | 25 | 30 |
+| **Listrik** | 20 | 25 | 30 |
+| **Energi** *(materi AR Transformasi Energi)* | 20 | 25 | 30 |
+
+Fitur:
+
+- **Identitas siswa** (nama, kelas, sekolah) sebelum mulai; pemilih paket dengan deep-link `?paket=`.
 - **Progress bar** &amp; navigasi soal; **wajib menjawab semua** sebelum mengumpulkan.
 - **Diagram SVG** pada soal tertentu (garis gaya, kekuatan magnet, rangkaian).
-- **Skor otomatis** — tiap benar = 5 poin, maksimal **100**, dengan predikat: *Sangat Baik / Baik / Cukup / Perlu Belajar Lagi*.
+- **Nilai 0–100 adaptif** — benar ÷ jumlah soal × 100, berapa pun ukuran paketnya; soal *Sulit* = HOTS level SD.
 - **Pembahasan lengkap** tiap soal: jawaban benar ditandai hijau, jawaban salah merah, plus penjelasan.
-- Hasil **otomatis tersimpan** ke basis data untuk direkap guru.
+- Hasil **otomatis tersimpan** ke basis data (beserta nama paketnya) untuk direkap guru.
 
 ---
 
@@ -197,7 +210,10 @@ Setiap halaman mendukung tema terang dan gelap; pilihan pengguna disimpan otomat
 ├── energi/                  🔄 transformasi energi — 6 konteks
 │   ├── index.html             menu pilih konteks
 │   ├── 3d/index.html          penampil 3D (?m=slug)
-│   └── ar/index.html          AR kamera markerless (?m=slug)
+│   └── ar/                    AR kamera (?m=slug · &mode=marker)
+│       ├── index.html           dua mode: markerless & marker (MindAR)
+│       ├── kartu/index.html     halaman cetak 6 kartu marker
+│       └── kartu-*.png · *.mind  kartu marker + target image-tracking
 ├── kuis/index.html          📝 kuis (memuat js/kuis.js)
 ├── js/
 │   ├── kuis.js                logika kuis + simpan hasil ke Supabase
