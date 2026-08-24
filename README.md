@@ -23,9 +23,9 @@
 
 <br>
 
-<img src="./docs/preview/showcase.png" width="100%" alt="Cuplikan tiga modul: Beranda, Rangkaian Listrik, dan Kuis">
+<img src="./docs/preview/showcase.png" width="100%" alt="Cuplikan tiga modul: Beranda, Transformasi Energi, dan Kuis">
 
-<sub><i>Beranda · Rangkaian Listrik · Kuis — semua berjalan di browser HP.</i></sub>
+<sub><i>Beranda · Transformasi Energi · Kuis — semua berjalan di browser HP.</i></sub>
 
 </div>
 
@@ -323,10 +323,23 @@ Model 3D siap-pakai (`.glb`, sudah beranimasi aliran medan) untuk di-**import ke
 
 > **Di Assemblr EDU:** *Add Object → Import 3D Model* → pilih `.glb` → panel **Animation** → pilih klip `MedanMagnet` → aktifkan **loop/autoplay**.
 
+**Diorama Transformasi Energi** (statis, dipotret pada tahap akhirnya — lampu menyala, buah terbentuk, dst.; animasi interaktifnya ada di versi web `/energi/`):
+
+| Konteks | Tahap yang dibekukan | Berkas |
+|---|---|---|
+| 🔋 Baterai → Smartphone | Layar menyala + panas + suara | [`energi-baterai.glb`](./assemblr/energi-baterai.glb) |
+| ☀️ Panel Surya → Rumah | Lampu·kipas·setrika menyala | [`energi-surya.glb`](./assemblr/energi-surya.glb) |
+| 🚗 Kendaraan Bensin | Melaju (mesin bekerja) | [`energi-motor.glb`](./assemblr/energi-motor.glb) |
+| 🌱 Fotosintesis | Tumbuh — bunga &amp; buah | [`energi-fotosintesis.glb`](./assemblr/energi-fotosintesis.glb) |
+| 💧 PLTA | Listrik sampai rumah | [`energi-plta.glb`](./assemblr/energi-plta.glb) |
+| 🏭 PLTU | Listrik sampai rumah | [`energi-pltu.glb`](./assemblr/energi-pltu.glb) |
+
+> Sebagai **marker** di Assemblr, pakai [kartu marker AR](./energi/ar/kartu/) (`energi/ar/kartu-*.png`) — gambar yang sama dengan yang dipakai mode marker web.
+
 ---
 
 ## 📄 Lisensi
 
 Dirilis di bawah lisensi **[MIT](./LICENSE)** © **Ksatria Bintang Samudra**.
 
-<div align="center"><sub>Dibuat dengan ❤️ untuk pembelajaran IPA · <a href="https://utamiii.my.id">utamiii.my.id</a></sub></div>
+<div align="center"><sub><b>adindautami</b> — Media Ajar IPA Interaktif · <a href="https://utamiii.my.id">utamiii.my.id</a></sub></div>
