@@ -1,13 +1,20 @@
 // Kuis Magnet & Listrik — utamiii.my.id
-// Input nama + kelas + sekolah · 20 soal · tiap benar = 5 poin (maks 100) · salah -> kunci + pembahasan.
-// Wajib jawab semua sebelum mengumpulkan. Hasil disimpan ke Supabase (tabel hasil_kuis_utami).
+// Pilih paket (utama / topik × tingkat) · isi identitas · 20 soal · tiap benar = 5 poin (maks 100).
+// Wajib jawab semua sebelum mengumpulkan. Hasil disimpan ke Supabase (tabel hasil_kuis_utami) + kolom paket.
 import { SUPABASE_URL, SUPABASE_ANON_KEY, TABLE, isConfigured } from '/js/config.js?v=1';
 
 const POINTS_PER = 5;
 
-// ---------- diagram SVG (selalu di atas kartu terang) ----------
+// ---------- soal: paket utama (kisi-kisi, dengan diagram) + bank per topik/tingkat ----------
 import { FIG, QUESTIONS } from '/js/soal.js?v=2';
+import { BANK } from '/js/bank.js?v=1';
 
+const PAKET = {
+  utama: { label: 'Paket Utama', topik: 'Magnet & Listrik', level: 'Ujian', sub: 'Paket ujian sesuai kisi-kisi — campuran magnet & listrik', soal: QUESTIONS },
+  ...BANK,
+};
+let paketKey = (() => { try { const p = new URLSearchParams(location.search).get('paket'); return PAKET[p] ? p : 'utama'; } catch (e) { return 'utama'; } })();
+const soalAktif = () => PAKET[paketKey].soal;
 
 // ---------- util DOM ----------
 const el = (t, c) => { const n = document.createElement(t); if (c) n.className = c; return n; };
@@ -15,7 +22,7 @@ const LETTERS = ["A", "B", "C", "D"];
 const app = document.getElementById('app');
 const escapeHtml = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-const state = { nama: "", kelas: "", sekolah: "", answers: new Array(QUESTIONS.length).fill(null), idx: 0, startedAt: 0 };
+const state = { nama: "", kelas: "", sekolah: "", answers: [], idx: 0, startedAt: 0 };
 
 async function saveResult(row) {
   if (!isConfigured()) return { ok: false, skipped: true };
@@ -29,6 +36,7 @@ async function saveResult(row) {
   } catch (e) { return { ok: false, error: e.message }; }
 }
 
+function paketClass(k, p) { return k === 'utama' ? 'pk-utama' : (p.topik === 'Magnet' ? 'pk-mg' : 'pk-el'); }
 function screenStart() {
   app.innerHTML = "";
   const wrap = el('div', 'k-wrap');
@@ -36,9 +44,20 @@ function screenStart() {
     <div class="k-hero">
       <div class="k-badge">📝 Kuis</div>
       <h1>Kuis Magnet &amp; Listrik</h1>
-      <p>20 soal pilihan ganda. Setiap jawaban benar bernilai <b>5 poin</b> (nilai maksimal <b>100</b>). Isi identitasmu dulu, ya.</p>
+      <p>Pilih paket soal, lalu isi identitasmu. Setiap paket berisi <b>20 soal</b>; tiap jawaban benar bernilai <b>${POINTS_PER} poin</b> (maksimal <b>100</b>).</p>
+    </div>
+    <div class="k-card k-paket">
+      <div class="k-pakh">Pilih Paket Soal <span class="k-pakn">7 paket · 140 soal</span></div>
+      <div class="k-pgrid">
+        ${Object.entries(PAKET).map(([k, p]) => `
+        <button type="button" class="k-pkt ${paketClass(k, p)} ${k === paketKey ? 'is-sel' : ''}" data-paket="${k}">
+          <span class="k-pkt-top"><b>${escapeHtml(p.topik)}</b><i>${escapeHtml(p.level)}</i></span>
+          <span class="k-pkt-sub">${escapeHtml(p.sub)}</span>
+        </button>`).join('')}
+      </div>
     </div>
     <form class="k-card k-form" id="k-form" novalidate>
+      <div class="k-formpaket">Paket terpilih: <b id="k-pname">${escapeHtml(PAKET[paketKey].label)}</b></div>
       <label class="k-field"><span>Nama lengkap</span><input id="f-nama" type="text" autocomplete="name" placeholder="mis. Ananda Putri" required><em class="k-err" id="e-nama"></em></label>
       <label class="k-field"><span>Kelas</span><input id="f-kelas" type="text" autocomplete="off" placeholder="mis. VI-A" required><em class="k-err" id="e-kelas"></em></label>
       <label class="k-field"><span>Nama sekolah</span><input id="f-sekolah" type="text" autocomplete="off" placeholder="mis. SD Negeri 1" required><em class="k-err" id="e-sekolah"></em></label>
@@ -46,6 +65,12 @@ function screenStart() {
       <a class="k-back" href="/">← Kembali ke beranda</a>
     </form>`;
   app.appendChild(wrap);
+  wrap.querySelectorAll('.k-pkt').forEach(b => b.addEventListener('click', () => {
+    paketKey = b.dataset.paket;
+    wrap.querySelectorAll('.k-pkt').forEach(x => x.classList.toggle('is-sel', x === b));
+    document.getElementById('k-pname').textContent = PAKET[paketKey].label;
+    try { history.replaceState(null, '', paketKey === 'utama' ? location.pathname : location.pathname + '?paket=' + paketKey); } catch (e) { }
+  }));
   document.getElementById('k-form').addEventListener('submit', (e) => {
     e.preventDefault();
     const nama = document.getElementById('f-nama').value.trim(), kelas = document.getElementById('f-kelas').value.trim(), sekolah = document.getElementById('f-sekolah').value.trim();
@@ -54,14 +79,15 @@ function screenStart() {
     document.getElementById('e-kelas').textContent = kelas ? "" : (ok = false, "Kelas wajib diisi.");
     document.getElementById('e-sekolah').textContent = sekolah ? "" : (ok = false, "Nama sekolah wajib diisi.");
     if (!ok) return;
-    Object.assign(state, { nama, kelas, sekolah, answers: new Array(QUESTIONS.length).fill(null), idx: 0, startedAt: Date.now() });
+    Object.assign(state, { nama, kelas, sekolah, answers: new Array(soalAktif().length).fill(null), idx: 0, startedAt: Date.now() });
     screenQuiz();
   });
 }
 
 function screenQuiz() {
   app.innerHTML = "";
-  const i = state.idx, Q = QUESTIONS[i], total = QUESTIONS.length;
+  const SOAL = soalAktif();
+  const i = state.idx, Q = SOAL[i], total = SOAL.length;
   const answered = state.answers.filter(a => a !== null).length;
   const unanswered = state.answers.map((a, k) => a === null ? k : -1).filter(k => k >= 0);
   const complete = unanswered.length === 0;
@@ -106,18 +132,28 @@ function screenQuiz() {
 }
 
 async function screenResult() {
-  const total = QUESTIONS.length;
-  let benar = 0; QUESTIONS.forEach((Q, i) => { if (state.answers[i] === Q.correct) benar++; });
+  const SOAL = soalAktif();
+  const total = SOAL.length;
+  let benar = 0; SOAL.forEach((Q, i) => { if (state.answers[i] === Q.correct) benar++; });
   const nilai = benar * POINTS_PER, salah = total - benar;
   const durasi = state.startedAt ? Math.round((Date.now() - state.startedAt) / 1000) : null;
   const grade = nilai >= 85 ? { t: "Sangat Baik", c: "#1f9c4d" } : nilai >= 70 ? { t: "Baik", c: "#2f6fd0" } : nilai >= 55 ? { t: "Cukup", c: "#c78a00" } : { t: "Perlu Belajar Lagi", c: "#e23c3c" };
-  const savePromise = saveResult({ nama: state.nama, kelas: state.kelas, sekolah: state.sekolah, jawaban: state.answers, benar, salah, nilai, jumlah_soal: total, durasi_detik: durasi });
+  const row = { nama: state.nama, kelas: state.kelas, sekolah: state.sekolah, jawaban: state.answers, benar, salah, nilai, jumlah_soal: total, durasi_detik: durasi, paket: paketKey };
+  const savePromise = (async () => {
+    let res = await saveResult(row);
+    if (!res.ok && !res.skipped) {
+      // fallback: kolom `paket` belum ada di tabel (migrasi belum dijalankan) — simpan tanpa paket
+      const { paket, ...tanpaPaket } = row;
+      res = await saveResult(tanpaPaket);
+    }
+    return res;
+  })();
 
   app.innerHTML = "";
   const wrap = el('div', 'k-wrap');
   const head = el('div', 'k-card k-result');
   head.innerHTML = `
-    <div class="k-rident">${escapeHtml(state.nama)} · <span>${escapeHtml(state.kelas)} · ${escapeHtml(state.sekolah)}</span></div>
+    <div class="k-rident">${escapeHtml(state.nama)} · <span>${escapeHtml(state.kelas)} · ${escapeHtml(state.sekolah)}</span><span class="k-rpaket">${escapeHtml(PAKET[paketKey].label)}</span></div>
     <div class="k-score">
       <div class="k-ring" style="--v:${nilai};--gc:${grade.c}"><div class="k-ring-in"><b>${nilai}</b><small>/100</small></div></div>
       <div class="k-scoremeta"><div class="k-grade" style="color:${grade.c}">${grade.t}</div>
@@ -128,7 +164,7 @@ async function screenResult() {
   wrap.appendChild(head);
   const rev = el('div', 'k-review');
   rev.innerHTML = `<h2 class="k-revh">Pembahasan</h2><p class="k-revsub">Jawaban salah ditandai merah beserta kunci &amp; penjelasannya.</p>`;
-  QUESTIONS.forEach((Q, i) => {
+  SOAL.forEach((Q, i) => {
     const ua = state.answers[i], ok = ua === Q.correct;
     const item = el('div', 'k-ritem ' + (ok ? 'is-ok' : 'is-no'));
     let html = `<div class="k-rq"><span class="k-rmark">${ok ? '✓' : '✕'}</span><span><b>Soal ${i + 1}.</b> ${escapeHtml(Q.q)}</span></div>${Q.fig ? `<div class="k-fig k-fig-sm">${FIG[Q.fig]}</div>` : ""}<ul class="k-ropts">`;

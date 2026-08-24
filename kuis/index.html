@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Kuis Magnet &amp; Listrik | adindautami</title>
-<meta name="description" content="Kuis interaktif magnet & listrik: 20 soal pilihan ganda, skor otomatis (maks 100), lengkap kunci jawaban dan pembahasan.">
+<meta name="description" content="Kuis interaktif magnet & listrik: 7 paket soal (utama + topik × tingkat mudah/sedang/sulit), skor otomatis, lengkap kunci jawaban dan pembahasan.">
 <meta name="theme-color" content="#eaf2ff">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" href="/favicon-32.png">
@@ -44,10 +44,10 @@
 body{font-family:var(--font-b); font-weight:600; color:var(--ink); min-height:100vh; -webkit-tap-highlight-color:transparent;
   background:
     radial-gradient(55% 40% at 90% 4%, rgba(236,72,153,.12), transparent 60%),
-    radial-gradient(140% 110% at 50% 0%, var(--bg1) 0%, var(--bg2) 74%) fixed}
+    radial-gradient(140% 110% at 50% 0%, var(--bg1) 0%, var(--bg2) 74%)}
 :root[data-theme="gelap"] body{background:
   radial-gradient(55% 40% at 90% 4%, rgba(236,72,153,.18), transparent 60%),
-  radial-gradient(140% 110% at 50% 0%, var(--bg1) 0%, var(--bg2) 76%) fixed}
+  radial-gradient(140% 110% at 50% 0%, var(--bg1) 0%, var(--bg2) 76%)}
 .topbar{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:max(12px,env(safe-area-inset-top)) clamp(14px,4vw,26px) 10px; max-width:760px; margin:0 auto}
 .brand{display:flex; align-items:center; gap:10px; text-decoration:none}
 .brand .mk{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;flex:0 0 auto;
@@ -78,6 +78,28 @@ body{font-family:var(--font-b); font-weight:600; color:var(--ink); min-height:10
 .k-btn-ghost:active{transform:translateY(2px)}
 .k-btn:disabled{opacity:.45; cursor:not-allowed; box-shadow:none; transform:none}
 .k-back{display:block; text-align:center; margin-top:4px; color:var(--sub); text-decoration:none; font-size:14px; font-weight:700}
+
+/* ---- pemilih paket soal ---- */
+.k-paket{margin-bottom:16px}
+.k-pakh{font-family:var(--font-d); font-weight:800; font-size:16.5px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; gap:8px}
+.k-pakn{font-family:var(--font-b); font-weight:800; font-size:11.5px; color:var(--sub); background:rgba(120,140,180,.12); padding:4px 10px; border-radius:999px}
+.k-pgrid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+@media (max-width:560px){.k-pgrid{grid-template-columns:1fr}}
+.k-pkt{display:flex; flex-direction:column; gap:5px; text-align:left; cursor:pointer; padding:12px 14px; border-radius:16px;
+  border:2.5px solid var(--line); background:var(--card); color:inherit; font-family:var(--font-b); transition:transform .12s, border-color .12s}
+.k-pkt:active{transform:translateY(1px)}
+.k-pkt-top{display:flex; align-items:center; gap:8px; font-family:var(--font-d); font-weight:800; font-size:14.5px}
+.k-pkt-top i{font-style:normal; font-size:10.5px; letter-spacing:.4px; text-transform:uppercase; padding:3px 9px; border-radius:999px; color:#fff}
+.k-pkt-sub{font-size:12px; font-weight:600; color:var(--sub); line-height:1.4}
+.k-pkt.pk-utama .k-pkt-top i{background:#7c3aed}
+.k-pkt.pk-mg .k-pkt-top i{background:#e8462f}
+.k-pkt.pk-el .k-pkt-top i{background:#f59e0b; color:#4a2c00}
+.k-pkt.is-sel{border-color:#7c3aed; box-shadow:0 0 0 3px rgba(124,58,237,.18)}
+.k-pkt.pk-mg.is-sel{border-color:#e8462f; box-shadow:0 0 0 3px rgba(232,70,47,.16)}
+.k-pkt.pk-el.is-sel{border-color:#f59e0b; box-shadow:0 0 0 3px rgba(245,158,11,.2)}
+.k-formpaket{font-size:13px; font-weight:700; color:var(--sub)}
+.k-formpaket b{color:var(--ink)}
+.k-rpaket{display:inline-block; margin-left:8px; font-size:11.5px; font-weight:800; color:#7c3aed; background:rgba(124,58,237,.12); padding:3px 10px; border-radius:999px}
 .k-quiztop{margin:6px 0 16px}
 .k-prog{height:12px; border-radius:999px; background:var(--track); overflow:hidden; border:2px solid var(--line)}
 .k-prog-bar{height:100%; border-radius:999px; background:linear-gradient(90deg,var(--quiz2),var(--quiz)); transition:width .3s cubic-bezier(.2,1.2,.4,1)}
@@ -146,6 +168,6 @@ body{font-family:var(--font-b); font-weight:600; color:var(--ink); min-height:10
   btn.addEventListener('click', function(){ var t=get()==='gelap'?'terang':'gelap'; try{localStorage.setItem(KEY,t)}catch(e){} apply(t); });
 })();
 </script>
-<script type="module" src="/js/kuis.js?v=2"></script>
+<script type="module" src="/js/kuis.js?v=3"></script>
 </body>
 </html>
