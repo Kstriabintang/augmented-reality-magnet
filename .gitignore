@@ -1,6 +1,5 @@
-.claude/
-.DS_Store
-node_modules/
-
-# Bandul punya repo sendiri (Kstriabintang/chensqy -> chensqy.my.id); jangan ikut di-commit ke sini
-chensqy/
+# Jangan publikasikan: kunci jawaban & aset pribadi
+Kisi Kisi Soal Dinda*.docx
+photo_*.jpg
+vendor/jsqr.min.js
+*.docx
