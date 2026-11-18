@@ -161,7 +161,7 @@ const clockM = new THREE.Clock();
 function initMarker() {
   mindar = new MindARThree({
     container: mstage,
-    imageTargetSrc: `/energi/ar/${slug}.mind?v=1`,
+    imageTargetSrc: `/energi/ar/${slug}.mind?v=2`,
     uiScanning: false, uiLoading: false, maxTrack: 1,
   });
   // vendor: resize() di sela start() bisa melempar getProjectionMatrix (listener internal) — redam.

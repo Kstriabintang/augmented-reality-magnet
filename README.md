@@ -321,7 +321,7 @@ Model 3D siap-pakai (`.glb`, sudah beranimasi aliran medan) untuk di-**import ke
 | 🧲🧲 **Tarik-menarik** | Dua magnet N–S berhadapan | [`magnet-tarik.glb`](./assemblr/magnet-tarik.glb) |
 | 🧲🧲 **Tolak-menolak** | Dua magnet N–N berhadapan | [`magnet-tolak.glb`](./assemblr/magnet-tolak.glb) |
 
-> **Di Assemblr EDU:** *Add Object → Import 3D Model* → pilih `.glb` → panel **Animation** → pilih klip `MedanMagnet` → aktifkan **loop/autoplay**.
+> **Di Assemblr EDU** (editor web, menurut panduan resmi): *3D Objects → Your 3D → Import 3D* → pilih `.glb` → saat mengisi data objek, pilih animasi default `MedanMagnet`. Assemblr EDU hanya menerima format GLB.
 
 **Diorama Transformasi Energi** (statis, dipotret pada tahap akhirnya — lampu menyala, buah terbentuk, dst.; animasi interaktifnya ada di versi web `/energi/`):
 
@@ -331,10 +331,10 @@ Model 3D siap-pakai (`.glb`, sudah beranimasi aliran medan) untuk di-**import ke
 | ☀️ Panel Surya → Rumah | Lampu·kipas·setrika menyala | [`energi-surya.glb`](./assemblr/energi-surya.glb) |
 | 🚗 Kendaraan Bensin | Melaju (mesin bekerja) | [`energi-motor.glb`](./assemblr/energi-motor.glb) |
 | 🌱 Fotosintesis | Tumbuh — bunga &amp; buah | [`energi-fotosintesis.glb`](./assemblr/energi-fotosintesis.glb) |
-| 💧 PLTA | Listrik sampai rumah | [`energi-plta.glb`](./assemblr/energi-plta.glb) |
+| 💧 PLTA | Listrik sampai rumah (bendungan dibelah, pelimpah, sungai) | [`energi-plta.glb`](./assemblr/energi-plta.glb) |
 | 🏭 PLTU | Listrik sampai rumah | [`energi-pltu.glb`](./assemblr/energi-pltu.glb) |
 
-> Sebagai **marker** di Assemblr, pakai [kartu marker AR](./energi/ar/kartu/) (`energi/ar/kartu-*.png`) — gambar yang sama dengan yang dipakai mode marker web.
+> [Kartu marker AR](./energi/ar/kartu/) (`energi/ar/kartu-*.png`) dipakai untuk mode marker di **versi web**. Di Assemblr, gunakan QR marker yang diunduh dari panel *Share Project → AR Graphic Marker*; kartu web tidak otomatis menjadi marker Assemblr (akun gratis hanya punya satu slot custom marker).
 
 ---
 

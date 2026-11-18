@@ -107,9 +107,9 @@ footer a{color:var(--en); font-weight:800; text-decoration:none}
   ];
   document.getElementById('grid').innerHTML = M.map(function(m){
     return '<div class="kartu">'
-      + '<img src="/energi/ar/kartu-'+m[0]+'.png" alt="Kartu marker '+m[1]+'" loading="lazy">'
+      + '<img src="/energi/ar/kartu-'+m[0]+'.png?v=2" alt="Kartu marker '+m[1]+'" loading="lazy">'
       + '<div class="krow">'
-      + '<a class="kbtn" href="/energi/ar/kartu-'+m[0]+'.png" download="kartu-'+m[0]+'.png"><svg viewBox="0 0 24 24"><path d="M12 3v12M6 11l6 6 6-6M4 21h16"/></svg>Unduh PNG</a>'
+      + '<a class="kbtn" href="/energi/ar/kartu-'+m[0]+'.png?v=2" download="kartu-'+m[0]+'.png"><svg viewBox="0 0 24 24"><path d="M12 3v12M6 11l6 6 6-6M4 21h16"/></svg>Unduh PNG</a>'
       + '<a class="kbtn ar" href="/energi/ar/?m='+m[0]+'&mode=marker"><svg viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3.2"/></svg>Buka AR Marker</a>'
       + '</div></div>';
   }).join('');
