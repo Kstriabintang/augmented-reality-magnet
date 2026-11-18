@@ -6,8 +6,8 @@
 import * as THREE from 'three';
 import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
 import { MindARThree } from '/vendor/mindar/mindar-image-three.prod.js';
-import { MATERI, ORDER, getMateri } from '/js/energi/registry.js?v=2';
-import { buildStages, buildChain, buildChips, buildLabels, makeNarator } from '/js/energi/ui.js?v=2';
+import { MATERI, ORDER, getMateri } from '/js/energi/registry.js?v=3';
+import { buildStages, buildChain, buildChips, buildLabels, makeNarator } from '/js/energi/ui.js?v=3';
 
 const qs = new URLSearchParams(location.search);
 const slug = getMateri(qs.get('m'));

@@ -109,7 +109,14 @@ export function makeBaterai() {
   // elektron: kutub − → (jalur B terbalik) → HP → (jalur A terbalik) → kutub +
   const ePts = [negT, [-2.35, .2, .2], [-2.3, .12, -.55], [-.6, .12, -1.15], [1.35, .12, -1.05], portOut,
     [1.5, .22, -.33], portIn, [1.5, .12, .25], [.9, .12, .75], [-.1, .12, 1.1], posT];
-  const electrons = new Flow(S, group, ePts, { n: 24, size: .055, color: 0x9fd8ff, glow: 0x9fd8ff, glowSize: 4.5, speed: .14, front: true });
+  // elektron = bola bulat dengan tanda "−" di tengah (revisi Dinda 2026-11-18). Sprite selalu
+  // menghadap kamera, jadi tanda − terbaca dari sudut mana pun (3D, AR bebas, AR marker).
+  const eTex = makeElectronTexture(); S.disposables.push(eTex);
+  const eMat = new THREE.SpriteMaterial({ map: eTex, transparent: true, depthWrite: false }); S.disposables.push(eMat);
+  const electrons = new Flow(S, group, ePts, {
+    n: 14, size: .25, glow: 0x9fd8ff, glowSize: 1.6, speed: .14, front: true,
+    make: () => { const g = new THREE.Group(); const sp = new THREE.Sprite(eMat); sp.scale.set(.25, .25, 1); sp.renderOrder = 2; g.add(sp); return g; },
+  });
   const uPhone = electrons.uNear(portOut); // elektron TIBA di HP → layar mulai redup menyala
 
   // ---------- anchor label ----------
@@ -186,6 +193,20 @@ export function makeBaterai() {
     setStage: S.setStage, setSpeed: S.setSpeed, anchors: S.anchors, dispose: S.dispose,
     debug: () => ({ stage: state.stage, cut: +cut.toFixed(2), lit: +lit.toFixed(2), front: +electrons.front.toFixed(2), rings: rings.active, heat: heat.active }),
   };
+}
+
+// tekstur elektron: bola biru bergradasi + tanda "−" putih di tengah
+function makeElectronTexture() {
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const x = c.getContext('2d');
+  const g = x.createRadialGradient(46, 42, 6, 64, 64, 60);
+  g.addColorStop(0, '#d6efff'); g.addColorStop(.45, '#4aa8f0'); g.addColorStop(1, '#1d5fc4');
+  x.fillStyle = g; x.beginPath(); x.arc(64, 64, 58, 0, Math.PI * 2); x.fill();
+  x.lineWidth = 5; x.strokeStyle = '#0f3d8a'; x.stroke();
+  x.fillStyle = '#ffffff'; x.strokeStyle = '#0f3d8a'; x.lineWidth = 4;
+  x.beginPath(); x.roundRect ? x.roundRect(30, 55, 68, 18, 9) : x.rect(30, 55, 68, 18); x.fill(); x.stroke();
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.needsUpdate = true;
+  return t;
 }
 
 // tekstur layar HP (UI sederhana: status bar + ikon aplikasi)

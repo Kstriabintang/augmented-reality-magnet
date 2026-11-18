@@ -1,11 +1,11 @@
 // REGISTRY modul Transformasi Energi — satu sumber kebenaran untuk 6 materi:
 // builder adegan + urutan tahap + narasi (teks & suara) + label 3D + rantai energi + pose kamera.
 // Template dosen: tiap AR menjawab (1) energi dari mana, (2) berubah jadi apa, (3) dipakai untuk apa.
-import { makeBaterai } from '/js/energi/baterai.js?v=1';
-import { makeSurya } from '/js/energi/surya.js?v=1';
+import { makeBaterai } from '/js/energi/baterai.js?v=2';
+import { makeSurya } from '/js/energi/surya.js?v=2';
 import { makeMotor } from '/js/energi/motor.js?v=1';
-import { makeFotosintesis } from '/js/energi/fotosintesis.js?v=2';
-import { makePLTA } from '/js/energi/plta.js?v=1';
+import { makeFotosintesis } from '/js/energi/fotosintesis.js?v=3';
+import { makePLTA } from '/js/energi/plta.js?v=2';
 import { makePLTU } from '/js/energi/pltu.js?v=1';
 
 // warna per BENTUK ENERGI (konsisten di tombol tahap, pill rantai, dan label 3D)
@@ -93,7 +93,7 @@ export const MATERI = {
   surya: {
     title: 'Panel Surya → Rumah', short: 'Panel Surya', emoji: '☀️', accent: 'cahaya',
     info: 'Cahaya Matahari → Panel Surya → Energi Listrik → Peralatan Rumah',
-    make: makeSurya,
+    make: makeSurya, autoRotate: false,   // rumah dibelah: sisi belakang tertutup
     home: { s: .33, rot: [.3, .25, 0], y: -.3 },
     cam: { pos: [4.8, 3.6, 6.0], tgt: [0, 1.0, 0] },
     chain: [
@@ -111,14 +111,14 @@ export const MATERI = {
       {
         key: 'listrik', no: '②', btn: 'Listrik', type: 'listrik', lit: 2,
         title: '② Panel Surya → Energi Listrik',
-        text: 'Panel surya mengubah energi cahaya matahari menjadi energi listrik. Listrik lalu mengalir melalui kabel menuju peralatan di rumah.',
+        text: 'Panel surya mengubah energi cahaya matahari menjadi energi listrik. Listrik lalu mengalir melalui kabel menuju peralatan di dalam rumah.',
         sub: 'Perhatikan panel berkilau saat mengubah energi, lalu arus mengalir di kabel.',
       },
       {
         key: 'alat', no: '③', btn: 'Alat', type: 'hasil', lit: 3,
         title: '③ Peralatan Menyala Satu per Satu',
-        text: 'Energi listrik digunakan peralatan rumah dan berubah lagi: lampu menghasilkan cahaya, kipas angin menghasilkan gerak, dan setrika menghasilkan panas.',
-        sub: 'Lampu: Listrik → Cahaya · Kipas: Listrik → Gerak · Setrika: Listrik → Panas.',
+        text: 'Energi listrik digunakan peralatan di dalam rumah dan berubah lagi: lampu menghasilkan cahaya, kipas angin menghasilkan gerak, dan setrika menghasilkan panas.',
+        sub: 'Dinding rumah dibuka agar isinya terlihat. Lampu: Listrik → Cahaya · Kipas: Listrik → Gerak · Setrika: Listrik → Panas.',
       },
     ],
     labels: [
@@ -126,7 +126,7 @@ export const MATERI = {
       { a: 'panel', t: 'Panel Surya' },
       { a: 'rumah', t: 'Rumah' },
       { a: 'cahaya', t: 'Energi Cahaya', st: ['cahaya', 'listrik', 'alat'], type: 'cahaya' },
-      { a: 'listrik', t: 'Energi Listrik', st: ['listrik', 'alat'], type: 'listrik' },
+      { a: 'listrik', t: 'Energi Listrik', st: ['listrik'], type: 'listrik' },
       { a: 'lampu', t: 'Lampu → Cahaya', st: ['alat'], type: 'cahaya' },
       { a: 'kipas', t: 'Kipas → Gerak', st: ['alat'], type: 'kinetik' },
       { a: 'setrika', t: 'Setrika → Panas', st: ['alat'], type: 'panas' },
@@ -188,7 +188,7 @@ export const MATERI = {
   fotosintesis: {
     title: 'Fotosintesis', short: 'Fotosintesis', emoji: '🌱', accent: 'proses',
     info: 'Cahaya Matahari + H₂O + CO₂ → Fotosintesis → Glukosa (Energi Kimia) + O₂ → Tumbuh',
-    make: makeFotosintesis,
+    make: makeFotosintesis, autoRotate: false,   // batang dibelah
     home: { s: .32, rot: [.25, .3, 0], y: -.4 },
     cam: { pos: [4.6, 3.8, 6.0], tgt: [0, 1.2, 0] },
     chain: [
@@ -209,7 +209,7 @@ export const MATERI = {
         key: 'bahan', no: '②', btn: 'H₂O·CO₂', type: 'bahan', lit: 2,
         title: '② Bahan Baku: Air + Karbon Dioksida',
         text: 'Air diserap akar lalu naik menuju daun. Pada saat yang sama, karbon dioksida dari udara masuk melalui daun.',
-        sub: 'Perhatikan tetes air naik lewat batang, dan molekul CO₂ masuk ke daun.',
+        sub: 'Batang dibelah agar terlihat: tetes air naik DI DALAM batang dari akar ke daun. Molekul CO₂ masuk ke daun dari udara.',
       },
       {
         key: 'proses', no: '③', btn: 'Proses', type: 'proses', lit: 4,
@@ -228,7 +228,7 @@ export const MATERI = {
       { a: 'matahari', t: 'Matahari' },
       { a: 'daun', t: 'Daun' },
       { a: 'cahaya', t: 'Energi Cahaya', st: ['cahaya', 'bahan', 'proses', 'tumbuh'], type: 'cahaya' },
-      { a: 'air', t: 'Air (H₂O) naik dari akar', st: ['bahan', 'proses'], type: 'bahan' },
+      { a: 'air', t: 'Air naik di dalam batang', st: ['bahan', 'proses'], type: 'bahan' },
       { a: 'co2', t: 'CO₂ masuk lewat daun', st: ['bahan', 'proses'], type: 'bahan' },
       { a: 'daun', t: 'Fotosintesis di daun', st: ['proses'], type: 'proses' },
       { a: 'glukosa', t: 'Glukosa — Energi Kimia', st: ['proses', 'tumbuh'], type: 'kimia' },
@@ -241,7 +241,7 @@ export const MATERI = {
   plta: {
     title: 'PLTA — Tenaga Air', short: 'PLTA', emoji: '💧', accent: 'potensial',
     info: 'PLTA → Air → Turbin → Generator → Listrik',
-    make: makePLTA,
+    make: makePLTA, autoRotate: false,   // bendungan dibelah
     home: { s: .34, rot: [.3, .4, 0], y: -.25 },
     cam: { pos: [4.8, 3.8, 6.0], tgt: [0, .9, 0] },
     chain: [
@@ -260,8 +260,8 @@ export const MATERI = {
       {
         key: 'kinetik', no: '②', btn: 'Mengalir', type: 'kinetik', lit: 2,
         title: '② Energi Kinetik — air mengalir deras',
-        text: 'Air dialirkan turun melalui pipa pesat. Saat bergerak turun dengan cepat, energi potensial berubah menjadi energi kinetik.',
-        sub: 'Perhatikan air deras di dalam pipa menuju turbin.',
+        text: 'Air dari waduk dialirkan turun melalui saluran (pipa pesat) di dalam bendungan. Saat bergerak turun dengan cepat, energi potensial berubah menjadi energi kinetik.',
+        sub: 'Bendungan dibelah agar terlihat: air deras turun di dalam bendungan menuju turbin.',
       },
       {
         key: 'mekanik', no: '③', btn: 'Turbin', type: 'mekanik', lit: 3,
@@ -282,7 +282,7 @@ export const MATERI = {
       { a: 'generator', t: 'Generator' },
       { a: 'rumah', t: 'Rumah' },
       { a: 'potensial', t: 'Energi Potensial (air tinggi)', st: ['potensial', 'kinetik'], type: 'potensial' },
-      { a: 'pipa', t: 'Energi Kinetik — air deras', st: ['kinetik', 'mekanik', 'listrik'], type: 'kinetik' },
+      { a: 'pipa', t: 'Energi Kinetik (pipa pesat)', st: ['kinetik', 'mekanik', 'listrik'], type: 'kinetik' },
       { a: 'turbin', t: 'Turbin — Energi Mekanik', st: ['mekanik', 'listrik'], type: 'mekanik' },
       { a: 'listrik', t: 'Energi Listrik', st: ['listrik'], type: 'listrik' },
       { a: 'rumah', t: 'Listrik sampai rumah', st: ['listrik'], type: 'listrik' },

@@ -3,8 +3,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
-import { MATERI, ORDER, getMateri } from '/js/energi/registry.js?v=2';
-import { buildStages, buildChain, buildChips, buildLabels, makeNarator } from '/js/energi/ui.js?v=2';
+import { MATERI, ORDER, getMateri } from '/js/energi/registry.js?v=3';
+import { buildStages, buildChain, buildChips, buildLabels, makeNarator } from '/js/energi/ui.js?v=3';
 
 const slug = getMateri(new URLSearchParams(location.search).get('m'));
 const materi = MATERI[slug];
@@ -58,7 +58,7 @@ controls.enablePan = false; // cegah objek "melayang" saat cubit-zoom di HP
 controls.minDistance = 3.6; controls.maxDistance = 12; controls.maxPolarAngle = Math.PI * .52;
 controls.target.set(...materi.cam.tgt);
 controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_ROTATE };
-let autoRotate = !reduce;
+let autoRotate = !reduce && materi.autoRotate !== false;   // adegan berpotongan (dibelah) tidak berputar sendiri
 controls.autoRotate = autoRotate; controls.autoRotateSpeed = .9;
 
 // ---------- UI dinamis ----------

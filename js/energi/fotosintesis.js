@@ -15,10 +15,39 @@ export function makeFotosintesis() {
 
   // ---------- pohon ----------
   const tree = new THREE.Group(); tree.position.set(-.35, 0, -.15); group.add(tree);
-  const trunk = track(new THREE.Mesh(new THREE.CylinderGeometry(.15, .23, 1.35, 12), std(0x8a5a33, { roughness: .9 })));
+  // BATANG DIBELAH (revisi Dinda 2026-11-18): separuh batang yang menghadap penonton dibuang,
+  // bidang belahan memperlihatkan bagian dalam batang + pembuluh tempat air naik — supaya air
+  // terlihat naik DI DALAM batang, bukan melayang di luar (cegah miskonsepsi).
+  const CUT = .45;                                    // arah belahan (rad dari +z ke +x): antara kamera 3D & depan marker
+  const CUT_D = new THREE.Vector3(Math.sin(CUT), 0, Math.cos(CUT));
+  const TR_H = 1.35, TR_RT = .21, TR_RB = .31;     // batang lebih tebal agar belahan terbaca di layar HP
+  const bark = std(0x8a5a33, { roughness: .9, side: THREE.DoubleSide }); S.disposables.push(bark);
+  const trunk = track(new THREE.Mesh(new THREE.CylinderGeometry(TR_RT, TR_RB, TR_H, 28, 1, false, CUT + Math.PI / 2, Math.PI), bark));
   trunk.position.y = .67; tree.add(trunk);
+  const cut = new THREE.Group(); cut.position.y = .67; cut.rotation.y = CUT; tree.add(cut);
+  {
+    const sh = new THREE.Shape();
+    sh.moveTo(-TR_RB, -TR_H / 2); sh.lineTo(TR_RB, -TR_H / 2); sh.lineTo(TR_RT, TR_H / 2); sh.lineTo(-TR_RT, TR_H / 2); sh.closePath();
+    const rim = track(new THREE.Mesh(new THREE.ShapeGeometry(sh), new THREE.MeshBasicMaterial({ color: 0x5a3517, side: THREE.DoubleSide })));
+    cut.add(rim);                                                         // tepi gelap = kulit batang yang terpotong
+    const shIn = new THREE.Shape(), k = .025;
+    shIn.moveTo(-TR_RB + k, -TR_H / 2 + k); shIn.lineTo(TR_RB - k, -TR_H / 2 + k); shIn.lineTo(TR_RT - k, TR_H / 2); shIn.lineTo(-TR_RT + k, TR_H / 2); shIn.closePath();
+    const face = track(new THREE.Mesh(new THREE.ShapeGeometry(shIn), std(0xf1d9a8, { roughness: .85, side: THREE.DoubleSide })));
+    face.position.z = .003; cut.add(face);
+    // serat kayu tipis di kiri-kanan pembuluh
+    const fiberMat = std(0xc89a63, { roughness: .9 }); S.disposables.push(fiberMat);
+    [-.13, .13].forEach(x => {
+      const f = new THREE.Mesh(new THREE.BoxGeometry(.012, TR_H * .9, .006), fiberMat); S.disposables.push(f.geometry);
+      f.position.set(x * .85, 0, .007); cut.add(f);
+    });
+  }
+  // pembuluh (jalur air) di tengah bidang belahan — menyala saat tahap bahan
+  const vesselMat = new THREE.MeshStandardMaterial({ color: 0x7cc9f0, roughness: .4, transparent: true, opacity: .55, emissive: 0x0a3a5c, emissiveIntensity: .2 });
+  S.disposables.push(vesselMat);
+  const vessel = track(new THREE.Mesh(new THREE.BoxGeometry(.11, TR_H * .98, .012), vesselMat));
+  vessel.position.z = .011; cut.add(vessel);
   const branch = track(new THREE.Mesh(new THREE.CylinderGeometry(.06, .09, .55, 8), std(0x8a5a33, { roughness: .9 })));
-  branch.position.set(.3, 1.25, .08); branch.rotation.z = -.7; tree.add(branch);
+  branch.position.set(-.3, 1.25, -.08); branch.rotation.z = .7; tree.add(branch);   // cabang di sisi belakang (tidak menutupi belahan)
   // akar terlihat di permukaan
   const rootGeo = new THREE.CylinderGeometry(.045, .09, .5, 8); S.disposables.push(rootGeo);
   const rootMat = std(0x7a4d2b, { roughness: .95 }); S.disposables.push(rootMat);
@@ -94,9 +123,11 @@ export function makeFotosintesis() {
   // cahaya matahari → daun
   const rays = new Flow(S, group, [[1.75, 2.5, -.78], [.9, 2.25, -.5], [-.05, 1.95, -.2]],
     { n: 10, size: .07, shape: 'cone', color: 0xffe08a, glow: 0xffd23e, glowSize: 3.4, speed: .3, fade: true });
-  // air dari akar naik lewat batang ke daun (tetes biru)
-  const water = new Flow(S, group, [[.05, .06, .35], [-.15, .5, .12], [-.5, 1.05, -.02], [-.3, 1.6, -.1]],
-    { n: 8, size: .05, color: 0x63c8f0, glow: 0x9fd8ff, glowSize: 3.2, speed: .14, front: true });
+  // air dari ujung akar → pangkal batang → naik DI DALAM batang (depan bidang belahan) → masuk tajuk
+  const TP = tree.position, inV = (y, k = .03) => [TP.x + CUT_D.x * k, y, TP.z + CUT_D.z * k];
+  const water = new Flow(S, group, [
+    [TP.x + .44, .03, TP.z + .24], [TP.x + .1, .15, TP.z + .15], inV(.24), inV(.7), inV(1.15), [TP.x, 1.62, TP.z],
+  ], { n: 10, size: .065, color: 0x2fa8e8, glow: 0x9fd8ff, glowSize: 2.4, speed: .13, front: true });
   // CO₂ dari udara masuk ke daun (molekul: 1 C hitam + 2 O abu terang)
   const co2 = new Flow(S, group, [[-2.05, 1.15, .75], [-1.45, 1.35, .45], [-.85, 1.6, .15]],
     {
@@ -139,8 +170,8 @@ export function makeFotosintesis() {
     matahari: [1.85, 3.3, -.8],
     cahaya: [.95, 2.6, -.5],
     daun: [-.35, 2.55, -.15],
-    air: [-.9, .55, .35],
-    co2: [-1.75, 1.7, .6],
+    air: [-1.05, .15, .85],
+    co2: [-1.2, 1.9, .55],
     o2: [.75, 3.3, -.4],
     glukosa: [-1.05, 1.25, .45],
     tumbuh: [.55, 1.1, .45],
@@ -176,6 +207,7 @@ export function makeFotosintesis() {
     // ② bahan baku: air naik dari akar + CO₂ masuk daun
     water.setActive(S.at('bahan'));
     water.update(dt, state.speed);
+    vesselMat.emissiveIntensity = S.at('bahan') ? .45 + .25 * (0.5 + 0.5 * Math.sin(t * 3)) : .2;
     co2.setActive(S.at('bahan'));
     co2.update(dt, state.speed);
 
