@@ -61,7 +61,7 @@ function screenStart() {
     <form class="k-card k-form" id="k-form" novalidate>
       <div class="k-formpaket">Paket terpilih: <b id="k-pname">${escapeHtml(PAKET[paketKey].label)}</b></div>
       <label class="k-field"><span>Nama lengkap</span><input id="f-nama" type="text" autocomplete="name" placeholder="mis. Ananda Putri" required><em class="k-err" id="e-nama"></em></label>
-      <label class="k-field"><span>Kelas</span><input id="f-kelas" type="text" autocomplete="off" placeholder="mis. VI-A" required><em class="k-err" id="e-kelas"></em></label>
+      <label class="k-field"><span>Kelas</span><input id="f-kelas" type="text" autocomplete="off" placeholder="mis. IV-A" required><em class="k-err" id="e-kelas"></em></label>
       <label class="k-field"><span>Nama sekolah</span><input id="f-sekolah" type="text" autocomplete="off" placeholder="mis. SD Negeri 1" required><em class="k-err" id="e-sekolah"></em></label>
       <button class="k-btn k-btn-primary" type="submit">Mulai Kuis →</button>
       <a class="k-back" href="/">← Kembali ke beranda</a>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Media Ajar IPA — Magnet &amp; Listrik | adindautami</title>
+<title>Media Ajar IPA — Energi, Magnet &amp; Listrik | adindautami</title>
 <meta name="description" content="Media ajar IPA interaktif untuk SD/SMP: transformasi energi 6 konteks (baterai & HP, panel surya, kendaraan, fotosintesis, PLTA, PLTU) dalam AR & 3D, medan magnet WebAR, rangkaian listrik, dan kuis bernilai otomatis. Karya Adinda Utami.">
 <meta name="theme-color" content="#eaf2ff">
 <link rel="icon" href="/favicon.ico" sizes="any">
@@ -11,7 +11,7 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://utamiii.my.id/">
-<meta property="og:title" content="Media Ajar IPA — Magnet & Listrik">
+<meta property="og:title" content="Media Ajar IPA — Energi, Magnet & Listrik">
 <meta property="og:description" content="Transformasi energi 6 konteks dalam AR & 3D + medan magnet WebAR + rangkaian listrik + kuis otomatis. Media ajar IPA untuk SD/SMP. Karya Adinda Utami.">
 <meta property="og:image" content="https://utamiii.my.id/og-image.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -76,7 +76,8 @@ header{display:flex; align-items:center; justify-content:space-between; gap:12px
 .eyebrow .dot{width:8px;height:8px;border-radius:50%;background:var(--volt);box-shadow:0 0 0 4px rgba(245,158,11,.25)}
 .hero h1{font-family:var(--font-d); font-weight:800; letter-spacing:-.4px; margin:16px 0 12px;
   font-size:clamp(30px,6vw,50px); line-height:1.02}
-.hero h1 .n{color:var(--n)} .hero h1 .s{color:var(--s)}
+.hero h1 .n{color:var(--n)} .hero h1 .s{color:var(--s)} .hero h1 .e{color:#1c8a4b}
+:root[data-theme="gelap"] .hero h1 .e{color:#5ad48d}
 .hero p{margin:0; max-width:460px; color:var(--sub); font-size:clamp(15px,2.6vw,17px); line-height:1.6; font-weight:600}
 .chips{display:flex; gap:9px; margin-top:20px; flex-wrap:wrap}
 .chip{display:inline-flex; align-items:center; gap:7px; font-family:var(--font-d); font-weight:700; font-size:13.5px;
@@ -215,6 +216,9 @@ header{display:flex; align-items:center; justify-content:space-between; gap:12px
   background:linear-gradient(120deg, rgba(236,72,153,.10), var(--card) 55%);
   border:2.5px solid var(--line); box-shadow:var(--shadow); transition:transform .18s ease}
 .kfeat:hover{transform:translateY(-4px)}
+.kfeat + .kfeat{margin-top:14px}
+.kfeat.ken{background:linear-gradient(120deg, rgba(28,138,75,.12), var(--card) 55%)}
+.kfeat.ken .kic{background:linear-gradient(160deg,#5ad48d,#1c8a4b)}
 .kic{flex:0 0 auto; width:68px; height:68px; border-radius:20px; display:grid; place-items:center;
   background:linear-gradient(160deg,var(--quiz2),var(--quiz)); box-shadow:var(--shadow-sm); border:2px solid rgba(255,255,255,.4)}
 .kic svg{width:36px;height:36px;fill:#fff}
@@ -272,7 +276,7 @@ footer{margin-top:54px; background:var(--card); border:2.5px solid var(--line); 
   <section class="hero" id="hero">
     <div>
       <span class="eyebrow reveal"><span class="dot"></span> Media Ajar IPA · SD / SMP</span>
-      <h1 class="reveal">Belajar <span class="n">Magnet</span> &amp; <span class="s">Listrik</span> sambil bermain</h1>
+      <h1 class="reveal">Belajar <span class="e">Energi</span>, <span class="n">Magnet</span> &amp; <span class="s">Listrik</span> sambil bermain</h1>
       <p class="reveal">Ikuti <b>perjalanan transformasi energi</b> dalam 6 konteks nyata — baterai &amp; smartphone, panel surya, kendaraan, fotosintesis, PLTA, dan PLTU — lewat AR &amp; 3D di kamera HP. Lengkap dengan medan magnet, rangkaian listrik, dan kuis bernilai otomatis.</p>
       <div class="chips reveal">
         <span class="chip mg"><span class="cd"></span>Magnet</span>
@@ -455,11 +459,19 @@ footer{margin-top:54px; background:var(--card); border:2.5px solid var(--line); 
 
   <h2 class="sec-h">Uji Pemahaman</h2>
   <p class="sec-sub">Sudah paham? Kerjakan kuisnya dan lihat nilaimu langsung.</p>
+  <a class="kfeat ken" href="/kuis/?paket=energi-mudah">
+    <span class="kic"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg></span>
+    <div>
+      <h3>Kuis Transformasi Energi</h3>
+      <p>3 tingkat: Mudah 20 · Sedang 25 · Sulit 30 soal · nilai otomatis 0–100 · lengkap kunci jawaban &amp; pembahasan.</p>
+    </div>
+    <span class="kgo"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+  </a>
   <a class="kfeat" href="/kuis/">
     <span class="kic"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4l-2-2-9 9-2-2-1 1zM3 5v14a2 2 0 0 0 2 2h11v-2H5V5h9V3H5a2 2 0 0 0-2 2z"/></svg></span>
     <div>
-      <h3>Kuis Magnet &amp; Listrik</h3>
-      <p>20 soal pilihan ganda · nilai otomatis (maksimal 100) · lengkap kunci jawaban &amp; pembahasan.</p>
+      <h3>Semua Paket Kuis</h3>
+      <p>10 paket · 245 soal pilihan ganda: Magnet, Listrik, dan Energi — pilih paket lalu kerjakan.</p>
     </div>
     <span class="kgo"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
   </a>
@@ -468,7 +480,7 @@ footer{margin-top:54px; background:var(--card); border:2.5px solid var(--line); 
   <p class="sec-sub">Tiga langkah, tanpa instal aplikasi apa pun.</p>
   <section class="steps" id="cara">
     <div class="step reveal"><span class="sn">1</span><p>Buka <b>utamiii.my.id</b> di HP<small>Cukup lewat browser — Chrome / Safari.</small></p></div>
-    <div class="step reveal"><span class="sn">2</span><p>Pilih materi &amp; izinkan kamera<small>Untuk mode AR magnet dan listrik.</small></p></div>
+    <div class="step reveal"><span class="sn">2</span><p>Pilih materi &amp; izinkan kamera<small>Untuk mode AR energi, magnet, dan listrik.</small></p></div>
     <div class="step reveal"><span class="sn">3</span><p>Belajar, lalu kerjakan kuis<small>Nilai keluar otomatis, lengkap pembahasan.</small></p></div>
   </section>
 
@@ -476,7 +488,7 @@ footer{margin-top:54px; background:var(--card); border:2.5px solid var(--line); 
     <div class="fcols">
       <div>
         <div class="fbrand"><span class="mk"><svg viewBox="0 0 24 24"><path d="M4 4h5v6a3 3 0 0 0 6 0V4h5v6a8 8 0 0 1-16 0V4z"/></svg></span>adindautami</div>
-        <p class="fabout">Media ajar IPA interaktif untuk SD/SMP: magnet, listrik, dan kuis — semua berjalan langsung di browser HP.</p>
+        <p class="fabout">Media ajar IPA interaktif untuk SD/SMP: transformasi energi, magnet, listrik, dan kuis — semua berjalan langsung di browser HP.</p>
       </div>
       <div>
         <h4>Materi</h4>
@@ -501,7 +513,7 @@ footer{margin-top:54px; background:var(--card); border:2.5px solid var(--line); 
         <h4>Untuk Guru</h4>
         <ul>
           <li><a href="https://admin.utamiii.my.id" rel="noopener">Dasbor Guru</a></li>
-          <li><a href="/kuis/">Bank Soal (20)</a></li>
+          <li><a href="/kuis/">Bank Soal (245)</a></li>
         </ul>
       </div>
     </div>
