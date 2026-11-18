@@ -5,7 +5,7 @@ import { makeBaterai } from '/js/energi/baterai.js?v=2';
 import { makeSurya } from '/js/energi/surya.js?v=2';
 import { makeMotor } from '/js/energi/motor.js?v=1';
 import { makeFotosintesis } from '/js/energi/fotosintesis.js?v=3';
-import { makePLTA } from '/js/energi/plta.js?v=2';
+import { makePLTA } from '/js/energi/plta.js?v=3';
 import { makePLTU } from '/js/energi/pltu.js?v=1';
 
 // warna per BENTUK ENERGI (konsisten di tombol tahap, pill rantai, dan label 3D)
@@ -254,7 +254,7 @@ export const MATERI = {
       {
         key: 'potensial', no: '①', btn: 'Waduk', type: 'potensial', lit: 1,
         title: '① Energi Potensial — air di tempat tinggi',
-        text: 'Air ditampung di waduk pada posisi tinggi di belakang bendungan. Karena letaknya tinggi, air menyimpan energi potensial gravitasi.',
+        text: 'Air ditampung di waduk pada posisi tinggi di belakang bendungan. Karena letaknya tinggi, air menyimpan energi potensial gravitasi. Kelebihan air waduk dibuang lewat pelimpah di dinding bendungan; air ini tidak melewati turbin.',
         sub: 'Semakin tinggi air, semakin besar energi potensialnya.',
       },
       {
@@ -278,6 +278,8 @@ export const MATERI = {
     ],
     labels: [
       { a: 'waduk', t: 'Waduk & Bendungan' },
+      { a: 'pelimpah', t: 'Pelimpah (kelebihan air)' },
+      { a: 'sungai', t: 'Sungai' },
       { a: 'turbin', t: 'Turbin' },
       { a: 'generator', t: 'Generator' },
       { a: 'rumah', t: 'Rumah' },
