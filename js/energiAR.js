@@ -137,8 +137,10 @@ stageEl.addEventListener('pointermove', e => {
   pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
   if (pts.size === 1 && last) {
     const dx = e.clientX - last.x, dy = e.clientY - last.y; moved += Math.abs(dx) + Math.abs(dy);
-    holder.rotation.y += dx * .016; holder.rotation.x += dy * .008;     // 1 kali usap selebar layar ≈ 360°
-    holder.rotation.x = Math.max(-1.2, Math.min(1.2, holder.rotation.x));
+    if (moved >= 14) {   // zona mati: ketuk yang sedikit goyang tidak memutar model
+      holder.rotation.y += dx * .016; holder.rotation.x += dy * .008;     // 1 kali usap selebar layar ≈ 360°
+      holder.rotation.x = Math.max(-1.2, Math.min(1.2, holder.rotation.x));
+    }
     last = { x: e.clientX, y: e.clientY };
   } else if (pts.size === 2) {
     const d = dist();
@@ -268,9 +270,11 @@ mstage.addEventListener('pointermove', e => {
   mpts.set(e.pointerId, { x: e.clientX, y: e.clientY });
   if (mpts.size === 1 && mLast) {
     const dx = e.clientX - mLast.x, dy = e.clientY - mLast.y; mMoved += Math.abs(dx) + Math.abs(dy);
-    userRig.rotation.y += dx * .016;                                     // putar 360° keliling diorama (1 usap selebar layar ≈ 1 putaran)
-    // miringkan: usap ke ATAS = lihat dari SAMPING (penting bila kartu tegak di layar laptop/dinding), ke bawah = dari atas
-    userRig.rotation.x = Math.max(-1.35, Math.min(.35, userRig.rotation.x + dy * .008));
+    if (mMoved >= 14) {   // zona mati: ketuk yang sedikit goyang tidak memutar model
+      userRig.rotation.y += dx * .016;                                     // putar 360° keliling diorama (1 usap selebar layar ≈ 1 putaran)
+      // miringkan: usap ke ATAS = lihat dari SAMPING (penting bila kartu tegak di layar laptop/dinding), ke bawah = dari atas
+      userRig.rotation.x = Math.max(-1.35, Math.min(.35, userRig.rotation.x + dy * .008));
+    }
     mLast = { x: e.clientX, y: e.clientY };
   } else if (mpts.size === 2) {
     const d = mDist();
