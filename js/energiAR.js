@@ -26,7 +26,7 @@ document.getElementById('ttl').textContent = materi.short;
 const HINT = {
   bebas: 'Seret memutar · cubit zoom · <b>ketuk layar</b> untuk memulai perjalanan energi',
   cari: `Arahkan kamera ke <b>Kartu ${materi.short}</b> sampai terdeteksi`,
-  dapat: 'Kartu terdeteksi! Seret memutar · cubit zoom · <b>ketuk</b> = tahap berikutnya',
+  dapat: 'Kartu terdeteksi! Usap kiri-kanan = putar 360° · usap ke atas = lihat dari samping (kartu berdiri/di layar) · cubit = zoom · <b>ketuk</b> = tahap berikutnya',
 };
 function setHint(html) { hintEl.innerHTML = html; }
 
@@ -127,6 +127,7 @@ async function startCam() {
 let pts = new Map(), last = null, pinchD = 0, moved = 0, downT = 0;
 const dist = () => { const a = [...pts.values()]; return Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); };
 stageEl.addEventListener('pointerdown', e => {
+  try { stageEl.setPointerCapture(e.pointerId); } catch (err) { }
   pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
   if (pts.size === 1) { last = { x: e.clientX, y: e.clientY }; moved = 0; downT = performance.now(); }
   if (pts.size === 2) pinchD = dist();
@@ -136,7 +137,7 @@ stageEl.addEventListener('pointermove', e => {
   pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
   if (pts.size === 1 && last) {
     const dx = e.clientX - last.x, dy = e.clientY - last.y; moved += Math.abs(dx) + Math.abs(dy);
-    holder.rotation.y += dx * .008; holder.rotation.x += dy * .008;
+    holder.rotation.y += dx * .016; holder.rotation.x += dy * .008;     // 1 kali usap selebar layar ≈ 360°
     holder.rotation.x = Math.max(-1.2, Math.min(1.2, holder.rotation.x));
     last = { x: e.clientX, y: e.clientY };
   } else if (pts.size === 2) {
@@ -146,7 +147,7 @@ stageEl.addEventListener('pointermove', e => {
   }
 });
 const pu = e => {
-  const wasTap = pts.size === 1 && moved < 8 && (performance.now() - downT) < 400;
+  const wasTap = pts.size === 1 && moved < 14 && (performance.now() - downT) < 400;
   pts.delete(e.pointerId); if (pts.size < 2) pinchD = 0; if (pts.size === 0) last = null;
   if (wasTap) advance();
 };
@@ -257,6 +258,7 @@ async function startMarker() {
 let mpts = new Map(), mLast = null, mPinch = 0, mMoved = 0, mDownT = 0;
 const mDist = () => { const a = [...mpts.values()]; return Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); };
 mstage.addEventListener('pointerdown', e => {
+  try { mstage.setPointerCapture(e.pointerId); } catch (err) { }
   mpts.set(e.pointerId, { x: e.clientX, y: e.clientY });
   if (mpts.size === 1) { mLast = { x: e.clientX, y: e.clientY }; mMoved = 0; mDownT = performance.now(); }
   if (mpts.size === 2) mPinch = mDist();
@@ -266,8 +268,9 @@ mstage.addEventListener('pointermove', e => {
   mpts.set(e.pointerId, { x: e.clientX, y: e.clientY });
   if (mpts.size === 1 && mLast) {
     const dx = e.clientX - mLast.x, dy = e.clientY - mLast.y; mMoved += Math.abs(dx) + Math.abs(dy);
-    userRig.rotation.y += dx * .009;                                     // yaw keliling diorama
-    userRig.rotation.x = Math.max(-.5, Math.min(1.1, userRig.rotation.x + dy * .008)); // tilt lihat atas/bawah
+    userRig.rotation.y += dx * .016;                                     // putar 360° keliling diorama (1 usap selebar layar ≈ 1 putaran)
+    // miringkan: usap ke ATAS = lihat dari SAMPING (penting bila kartu tegak di layar laptop/dinding), ke bawah = dari atas
+    userRig.rotation.x = Math.max(-1.35, Math.min(.35, userRig.rotation.x + dy * .008));
     mLast = { x: e.clientX, y: e.clientY };
   } else if (mpts.size === 2) {
     const d = mDist();
@@ -276,7 +279,7 @@ mstage.addEventListener('pointermove', e => {
   }
 });
 const mUp = e => {
-  const wasTap = mpts.size === 1 && mMoved < 8 && (performance.now() - mDownT) < 400;
+  const wasTap = mpts.size === 1 && mMoved < 14 && (performance.now() - mDownT) < 400;   // jari sedikit goyang tetap dihitung ketuk
   mpts.delete(e.pointerId); if (mpts.size < 2) mPinch = 0; if (mpts.size === 0) mLast = null;
   if (wasTap) advance();
 };
