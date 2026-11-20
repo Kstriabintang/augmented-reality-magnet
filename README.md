@@ -2,7 +2,7 @@
 
 <img src="./favicon-32.png" width="54" alt="adindautami logo">
 
-# 🧲⚡ adindautami — Media Ajar IPA
+# 🧲⚡ adindautami — Media Ajar IPAS
 
 ### Magnet, Listrik &amp; Transformasi Energi yang bisa **dilihat, disentuh, dan diuji** — langsung dari browser HP, tanpa instal aplikasi.
 
@@ -16,7 +16,7 @@
 
 <p>
   <a href="https://utamiii.my.id/"><img alt="Live" src="https://img.shields.io/badge/status-live-22c55e?style=for-the-badge"></a>
-  <img alt="Untuk SD/SMP" src="https://img.shields.io/badge/jenjang-SD%20%2F%20SMP-2563eb?style=for-the-badge">
+  <img alt="Untuk kelas 4 SD" src="https://img.shields.io/badge/jenjang-Kelas%204%20SD-2563eb?style=for-the-badge">
   <img alt="WebAR" src="https://img.shields.io/badge/WebAR-tanpa%20instal-ec4899?style=for-the-badge">
   <img alt="Lisensi MIT" src="https://img.shields.io/badge/lisensi-MIT-f59e0b?style=for-the-badge">
 </p>
@@ -54,7 +54,7 @@
 
 ## 🎯 Tentang
 
-**adindautami** adalah portal **media ajar IPA** untuk topik **Magnet**, **Listrik**, dan **Transformasi Energi**, dirancang khusus untuk siswa **SD/SMP**. Alih-alih hanya membaca teori, siswa bisa **berinteraksi langsung**:
+**adindautami** adalah portal **media ajar IPAS** untuk topik **Magnet**, **Listrik**, dan **Transformasi Energi**, dirancang khusus untuk siswa **kelas 4 SD**. Alih-alih hanya membaca teori, siswa bisa **berinteraksi langsung**:
 
 - melihat **garis-gaya magnet 3D** melayang di atas kartu lewat kamera HP (Augmented Reality),
 - **menyalakan rangkaian listrik** dan mengamati arus mengalir sampai lampu menyala,
@@ -63,7 +63,7 @@
 
 Semuanya berjalan **100% di browser** — tanpa instal aplikasi, tanpa login untuk siswa. Cukup buka tautan.
 
-> **Untuk siapa?** Guru IPA yang butuh media presentasi interaktif, dan siswa yang ingin belajar sambil bermain.
+> **Untuk siapa?** Guru kelas 4 SD yang butuh media presentasi interaktif untuk IPAS, dan siswa yang ingin belajar sambil bermain.
 
 ---
 
@@ -342,4 +342,4 @@ Model 3D siap-pakai (`.glb`, sudah beranimasi aliran medan) untuk di-**import ke
 
 Dirilis di bawah lisensi **[MIT](./LICENSE)** © **Ksatria Bintang Samudra**.
 
-<div align="center"><sub><b>adindautami</b> — Media Ajar IPA Interaktif · <a href="https://utamiii.my.id">utamiii.my.id</a></sub></div>
+<div align="center"><sub><b>adindautami</b> — Media Ajar IPAS Interaktif · <a href="https://utamiii.my.id">utamiii.my.id</a></sub></div>

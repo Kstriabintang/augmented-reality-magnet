@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Rangkaian Listrik 2D — Media Ajar IPA | adindautami</title>
+<title>Rangkaian Listrik 2D — Media Ajar IPAS | adindautami</title>
 <meta name="description" content="Simulasi rangkaian listrik interaktif: nyalakan saklar, lihat arus mengalir dari kutub positif ke negatif dan lampu menyala. Rangkaian terbuka vs tertutup.">
 <meta name="theme-color" content="#eaf2ff">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Rangkaian Listrik — Media Ajar IPA">
+<meta property="og:title" content="Rangkaian Listrik — Media Ajar IPAS">
 <meta property="og:description" content="Simulasi rangkaian listrik interaktif: nyalakan saklar, arus mengalir, lampu menyala.">
 <meta property="og:image" content="https://utamiii.my.id/og-image.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -152,22 +152,22 @@ body{font-family:var(--font-b); font-weight:600; color:var(--ink); min-height:10
     </div>
 
     <div class="controls">
-      <div class="status off" id="status"><b>Saklar OFF — Rangkaian Terbuka</b>Arus tidak mengalir, lampu mati.</div>
+      <div class="status off" id="status"><b>Saklar OFF: rangkaian terbuka</b>Arus tidak bisa mengalir, jadi lampunya mati.</div>
       <button class="bigbtn" id="toggle" type="button">Nyalakan Saklar</button>
     </div>
 
     <div class="panel">
       <h2>Keterangan</h2>
-      <p class="lead"><b>Rangkaian listrik</b> adalah susunan beberapa komponen listrik yang saling dihubungkan sehingga arus listrik dapat mengalir. Arus mengalir dari kutub <b style="color:var(--volt)">positif (+)</b> ke kutub <b style="color:var(--red)">negatif (−)</b> baterai.</p>
+      <p class="lead"><b>Rangkaian listrik</b> adalah susunan beberapa komponen listrik yang disambung satu sama lain, sehingga arus listrik bisa mengalir. Arusnya mengalir dari kutub <b style="color:var(--volt)">positif (+)</b> ke kutub <b style="color:var(--red)">negatif (−)</b> baterai.</p>
       <div class="komp">
-        <div><b>Baterai</b> — sumber energi listrik (kutub + dan −).</div>
-        <div><b>Kabel</b> — penghantar yang mengalirkan arus.</div>
-        <div><b>Saklar</b> — membuka/menutup jalur rangkaian.</div>
-        <div><b>Lampu</b> — beban yang menyala saat dialiri arus.</div>
+        <div><b>Baterai</b>: sumber energi listrik, punya kutub + dan −.</div>
+        <div><b>Kabel</b>: penghantar yang mengalirkan arus.</div>
+        <div><b>Saklar</b>: untuk membuka atau menutup jalur rangkaian.</div>
+        <div><b>Lampu</b>: beban yang menyala kalau dialiri arus.</div>
       </div>
       <div class="two">
-        <div class="mini a"><b>Rangkaian tertutup (saklar ON)</b>Jalur tersambung sempurna → arus mengalir → <b style="display:inline">lampu menyala</b>.</div>
-        <div class="mini b"><b>Rangkaian terbuka (saklar OFF / kabel putus)</b>Jalur terputus → arus tidak mengalir → lampu mati.</div>
+        <div class="mini a"><b>Rangkaian tertutup (saklar ON)</b>Jalurnya tersambung penuh, arus bisa mengalir, dan <b style="display:inline">lampu menyala</b>.</div>
+        <div class="mini b"><b>Rangkaian terbuka (saklar OFF / kabel putus)</b>Jalurnya terputus, arus tidak bisa mengalir, jadi lampu mati.</div>
       </div>
       <div class="tip">Ketuk <b>saklar</b> pada gambar atau tombol di atas untuk mencoba.</div>
     </div>
@@ -188,8 +188,8 @@ body{font-family:var(--font-b); font-weight:600; color:var(--ink); min-height:10
     svg.classList.toggle('on', on); svg.classList.toggle('off', !on);
     st.className='status '+(on?'on':'off');
     st.innerHTML = on
-      ? '<b>Saklar ON — Rangkaian Tertutup</b>Arus mengalir dari + ke −, lampu menyala.'
-      : '<b>Saklar OFF — Rangkaian Terbuka</b>Arus tidak mengalir, lampu mati.';
+      ? '<b>Saklar ON: rangkaian tertutup</b>Arus mengalir dari + ke −, jadi lampunya menyala.'
+      : '<b>Saklar OFF: rangkaian terbuka</b>Arus tidak bisa mengalir, jadi lampunya mati.';
     tg.className='bigbtn '+(on?'on':''); tg.textContent = on?'Matikan Saklar':'Nyalakan Saklar';
   }
   function toggle(){ on=!on; render(); }

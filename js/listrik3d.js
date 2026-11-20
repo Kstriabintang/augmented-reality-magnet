@@ -83,8 +83,8 @@ function setOn(v) {
   btn.className = 'bigbtn' + (v ? ' on' : ''); btn.textContent = v ? 'Matikan Saklar' : 'Nyalakan Saklar';
   status.className = 'status ' + (v ? 'on' : 'off');
   status.innerHTML = v
-    ? '<b>Rangkaian Tertutup</b>Arus mengalir dari + ke −, lampu menyala.'
-    : '<b>Rangkaian Terbuka</b>Saklar terbuka, arus tidak mengalir, lampu mati.';
+    ? '<b>Rangkaian tertutup</b>Arus mengalir dari + ke −, jadi lampunya menyala.'
+    : '<b>Rangkaian terbuka</b>Saklarnya terbuka, arus tidak bisa mengalir, jadi lampunya mati.';
 }
 btn.addEventListener('click', () => setOn(!circuit.isOn));
 setOn(/on/.test(location.hash)); // #on = mulai menyala (deep-link)

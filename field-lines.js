@@ -231,8 +231,8 @@ AFRAME.registerComponent('magnetic-field', {
       callouts: [
         { t: 'Kutub Utara (N)', a: [0.345, 0, 0.04], c: [0.50, 0.20, 0.12] },
         { t: 'Kutub Selatan (S)', a: [-0.345, 0, 0.04], c: [-0.50, 0.20, 0.12] },
-        { t: 'Garis rapat = medan KUAT', a: [0, 0.06, 0.02], c: [0, -0.30, 0.11] },
-        { t: 'Garis renggang = medan LEMAH', a: [-0.52, -0.13, 0], c: [-0.40, -0.36, 0.11] }
+        { t: 'Garis rapat: medan kuat', a: [0, 0.06, 0.02], c: [0, -0.30, 0.11] },
+        { t: 'Garis renggang: medan lemah', a: [-0.52, -0.13, 0], c: [-0.40, -0.36, 0.11] }
       ]
     };
   },

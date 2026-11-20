@@ -129,9 +129,9 @@ function buildField(mode) {
 
 // ---------- UI mode ----------
 const TEXT = {
-  single: { t: 'Magnet Tunggal', d: 'Satu batang magnet dengan kutub Utara (merah) dan Selatan (biru). Garis gaya keluar dari kutub Utara, melengkung di ruang sekitar, lalu masuk ke kutub Selatan.' },
-  attract: { t: 'Tarik-menarik (N–S)', d: 'Dua kutub berbeda saling berhadapan. Garis gaya menyambung dari Utara satu magnet ke Selatan magnet lain — keduanya saling tarik-menarik.' },
-  repel: { t: 'Tolak-menolak (N–N)', d: 'Dua kutub sama (Utara–Utara) berhadapan. Garis gaya saling menekan dan membelok menjauhi celah — keduanya saling tolak-menolak.' },
+  single: { t: 'Magnet Tunggal', d: 'Ini satu batang magnet. Kutub utaranya berwarna merah dan kutub selatannya biru. Coba perhatikan garis gayanya: keluar dari kutub utara, melengkung di sekitar magnet, lalu masuk lagi ke kutub selatan.' },
+  attract: { t: 'Tarik-menarik (N–S)', d: 'Sekarang ada dua magnet dengan kutub berbeda yang saling berhadapan. Garis gayanya menyambung dari kutub utara magnet yang satu ke kutub selatan magnet yang lain. Itu tandanya kedua magnet saling tarik-menarik.' },
+  repel: { t: 'Tolak-menolak (N–N)', d: 'Kali ini yang berhadapan adalah dua kutub yang sama, yaitu utara dengan utara. Garis gayanya saling menekan dan membelok menjauhi celah di antara keduanya. Itu tandanya kedua magnet saling tolak-menolak.' },
 };
 let mode = 'single';
 function setMode(m) {

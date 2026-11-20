@@ -6,8 +6,8 @@
 import * as THREE from 'three';
 import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
 import { MindARThree } from '/vendor/mindar/mindar-image-three.prod.js';
-import { MATERI, ORDER, getMateri } from '/js/energi/registry.js?v=4';
-import { buildStages, buildChain, buildChips, buildLabels, makeNarator } from '/js/energi/ui.js?v=4';
+import { MATERI, ORDER, getMateri } from '/js/energi/registry.js?v=5';
+import { buildStages, buildChain, buildChips, buildLabels, makeNarator } from '/js/energi/ui.js?v=5';
 
 const qs = new URLSearchParams(location.search);
 const slug = getMateri(qs.get('m'));
@@ -24,9 +24,9 @@ const hintEl = document.getElementById('hint');
 document.getElementById('ttl').textContent = materi.short;
 
 const HINT = {
-  bebas: 'Seret memutar · cubit zoom · <b>ketuk layar</b> untuk memulai perjalanan energi',
-  cari: `Arahkan kamera ke <b>Kartu ${materi.short}</b> sampai terdeteksi`,
-  dapat: 'Kartu terdeteksi! Usap kiri-kanan = putar 360° · usap ke atas = lihat dari samping (kartu berdiri/di layar) · cubit = zoom · <b>ketuk</b> = tahap berikutnya',
+  bebas: 'Geser untuk memutar, cubit untuk zoom, lalu <b>ketuk layar</b> untuk mulai.',
+  cari: `Arahkan kamera ke <b>Kartu ${materi.short}</b> sampai kartunya terbaca.`,
+  dapat: 'Kartunya sudah terbaca. Usap ke kiri atau kanan untuk memutar, usap ke atas untuk melihat dari samping, cubit untuk zoom, dan <b>ketuk</b> untuk lanjut.',
 };
 function setHint(html) { hintEl.innerHTML = html; }
 
@@ -119,7 +119,7 @@ async function startCam() {
     video.srcObject = stream; await video.play();
     if (perm) perm.style.display = 'none';
   } catch (e) {
-    if (perm) { perm.style.display = ''; perm.innerHTML = '<b>Kamera tidak bisa dibuka.</b><br>Izinkan akses kamera lalu muat ulang halaman — atau buka <a href="/energi/3d/?m=' + slug + '" style="color:#7ef0b0">versi 3D tanpa kamera</a>.'; }
+    if (perm) { perm.style.display = ''; perm.innerHTML = '<b>Kamera tidak bisa dibuka.</b><br>Izinkan akses kamera, lalu muat ulang halaman. Bisa juga buka <a href="/energi/3d/?m=' + slug + '" style="color:#7ef0b0">versi 3D tanpa kamera</a>.'; }
   }
 }
 
@@ -234,7 +234,7 @@ async function startMarker() {
   try { await mindar.start(); }
   catch (e) {
     markerFail = true;
-    setHint('Kamera tidak bisa dibuka — izinkan akses kamera lalu muat ulang.');
+    setHint('Kamera tidak bisa dibuka. Izinkan akses kamera, lalu muat ulang halaman.');
     if (perm) perm.style.display = 'none';
     return;
   }

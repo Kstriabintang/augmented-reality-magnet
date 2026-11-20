@@ -35,7 +35,7 @@
   <script src="/vendor/mindar-image-aframe-1.2.5.prod.js"></script>
 
   <!-- Logika garis medan + partikel mengalir -->
-  <script src="/field-lines.js"></script>
+  <script src="/field-lines.js?v=2"></script>
 
   <style>
     * { box-sizing: border-box; }
@@ -113,7 +113,7 @@
   <div id="welcome">
     <div class="card">
       <h1>AR Medan Magnet</h1>
-      <p class="sub">Pilih konfigurasi kutub untuk memulai. Setelah memilih, arahkan kamera ke foto/kartu magnet.</p>
+      <p class="sub">Pilih dulu susunan kutubnya. Setelah itu, arahkan kamera ke foto atau kartu magnet.</p>
       <div class="choices">
         <button data-mode="A"><b>Magnet Tunggal</b><span>Satu batang magnet (N–S) + garis gaya</span></button>
         <button data-mode="B"><b>N–S · Tarik-menarik</b><span>Dua magnet kutub beda berhadapan</span></button>
@@ -129,14 +129,14 @@
   </div>
 
   <div id="modebar">
-    <div class="title">Pilih konfigurasi kutub</div>
+    <div class="title">Pilih susunan kutub</div>
     <button data-mode="A">Magnet Tunggal</button>
     <button data-mode="B" class="active">N–S (Tarik)</button>
     <button data-mode="C">N–N (Tolak)</button>
   </div>
 
   <div id="info">
-    Objek 3D melayang di atas kartu — <b>gerakkan HP</b> mengelilinginya, atau <b>seret</b> untuk memutar
+    Objek 3D melayang di atas kartu. <b>Gerakkan HP</b> mengelilinginya, atau <b>geser</b> untuk memutar
   </div>
 
   <a-scene

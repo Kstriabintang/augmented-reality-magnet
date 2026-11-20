@@ -27,9 +27,9 @@ const narSpeak = document.getElementById('narspeak');
 const narClose = document.getElementById('narclose');
 
 const HINT = {
-  bebas: 'Seret memutar · cubit zoom · <b>ketuk layar</b> untuk memulai perjalanan energi',
-  cari: 'Arahkan kamera ke <b>Kartu Listrik</b> sampai terdeteksi',
-  dapat: 'Kartu terdeteksi! <b>Ketuk layar</b> atau pilih tahap ① ② ③',
+  bebas: 'Geser untuk memutar, cubit untuk zoom, lalu <b>ketuk layar</b> untuk mulai.',
+  cari: 'Arahkan kamera ke <b>Kartu Listrik</b> sampai kartunya terbaca.',
+  dapat: 'Kartunya sudah terbaca. <b>Ketuk layar</b> atau pilih tahap ① ② ③.',
 };
 function setHint(html) { hintEl.innerHTML = html; }
 
@@ -38,19 +38,19 @@ let mode = 'bebas'; // 'bebas' | 'marker'
 // ================= ALUR TRANSFORMASI ENERGI (3 tahap dosen) =================
 const STAGES = {
   kimia: {
-    title: '① Energi Kimia — di dalam baterai',
-    text: '“Baterai menyimpan energi dalam bentuk energi kimia. Ketika baterai digunakan, reaksi kimia di dalamnya membuat elektron dapat bergerak.”',
-    sub: 'Lihat ke dalam baterai: Anoda (−) melepaskan elektron · Katoda (+) menerima elektron · Elektrolit mengalirkan ion.',
+    title: 'Tahap 1: Energi kimia di dalam baterai',
+    text: 'Baterai menyimpan energi dalam bentuk energi kimia. Waktu baterai dipakai, terjadi reaksi kimia di dalamnya, dan reaksi itulah yang membuat elektron bisa bergerak.',
+    sub: 'Coba lihat ke dalam baterai. Anoda (−) melepaskan elektron, katoda (+) menerima elektron, dan elektrolit mengalirkan ion.',
   },
   listrik: {
-    title: '② Energi Kimia → Energi Listrik',
-    text: '“Energi kimia dalam baterai diubah menjadi energi listrik. Energi listrik digunakan untuk menggerakkan elektron dalam rangkaian.”',
-    sub: 'Perhatikan kabelnya: elektron (bola biru bercahaya) bergerak dari kutub − menuju kutub +. Saat elektron sampai di lampu… lampu mulai menyala!',
+    title: 'Tahap 2: Energi kimia berubah menjadi energi listrik',
+    text: 'Energi kimia di dalam baterai kemudian berubah menjadi energi listrik. Energi listrik inilah yang menggerakkan elektron di sepanjang rangkaian.',
+    sub: 'Perhatikan kabelnya. Bola-bola biru yang bercahaya itu adalah elektron. Elektron bergerak dari kutub − ke kutub +, dan begitu sampai di lampu, lampunya mulai menyala.',
   },
   transformasi: {
-    title: '③ Energi Listrik → Energi Cahaya',
-    text: '“Ketika energi listrik sampai pada lampu, energi tersebut diubah menjadi energi cahaya. Akibatnya, lampu menyala.”',
-    sub: 'Energi Kimia → Energi Listrik → Energi Cahaya. (Sebagian kecil energi juga berubah menjadi energi panas.)',
+    title: 'Tahap 3: Energi listrik berubah menjadi cahaya',
+    text: 'Saat energi listrik sampai di lampu, energinya berubah menjadi energi cahaya. Karena itulah lampu bisa menyala.',
+    sub: 'Jadi perjalanannya dari energi kimia, ke energi listrik, lalu ke energi cahaya. Sebagian kecil energinya juga berubah menjadi panas.',
   },
 };
 const ORDER = [null, 'kimia', 'listrik', 'transformasi'];
@@ -244,7 +244,7 @@ async function startMarker() {
     await mindar.start();
   } catch (e) {
     markerFail = true;
-    setHint('Kamera tidak bisa dibuka — izinkan akses kamera lalu muat ulang.');
+    setHint('Kamera tidak bisa dibuka. Izinkan akses kamera, lalu muat ulang halaman.');
     return;
   }
   markerFail = false;
